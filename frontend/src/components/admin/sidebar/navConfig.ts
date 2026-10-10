@@ -1,8 +1,7 @@
 import {
   LayoutDashboard,
   Package, Grid3X3, Layers, Award, Hash, Image,
-  ShoppingCart, Clock, CheckCircle, Truck, XCircle,
-  RotateCcw, RefreshCw, AlertCircle,
+  ShoppingCart, Truck,
   Users, Star, Heart,
   Boxes, TrendingDown, ClipboardList, History,
   Percent, Gift, Megaphone, ImageIcon, Mail,
@@ -11,7 +10,7 @@ import {
   CreditCard, Banknote, Smartphone, Wallet,
   Bell, MessageCircle,
   BarChart3, PieChart, TrendingUp, UserCheck, Archive,
-  Cog, Store, Search, ReceiptText, ShoppingBag,
+  Cog, Store, Search, ReceiptText,
   UserCog, Lock, Activity, Cpu,
   type LucideIcon,
 } from 'lucide-react';
@@ -61,15 +60,7 @@ export const ADMIN_NAV: NavSection[] = [
   {
     title: 'Orders',
     items: [
-      { label: 'All Orders',  href: '/admin/orders',             icon: ShoppingCart },
-      { label: 'Pending',     href: '/admin/orders/pending',     icon: Clock,        badge: 'alert' },
-      { label: 'Confirmed',   href: '/admin/orders/confirmed',   icon: CheckCircle },
-      { label: 'Processing',  href: '/admin/orders/processing',  icon: RefreshCw },
-      { label: 'Shipped',     href: '/admin/orders/shipped',     icon: Truck },
-      { label: 'Delivered',   href: '/admin/orders/delivered',   icon: CheckCircle },
-      { label: 'Cancelled',   href: '/admin/orders/cancelled',   icon: XCircle },
-      { label: 'Returns',     href: '/admin/orders/returns',     icon: RotateCcw },
-      { label: 'Refunds',     href: '/admin/orders/refunds',     icon: AlertCircle },
+      { label: 'All Orders', href: '/admin/orders', icon: ShoppingCart },
     ],
   },
   {

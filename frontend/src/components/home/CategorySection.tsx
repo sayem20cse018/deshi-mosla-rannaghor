@@ -92,7 +92,7 @@ function SkeletonCat() {
 }
 
 export function CategorySection() {
-  const { data: rawCats = [], isLoading } = useCategories();
+  const { data: rawCats = [], isLoading, isError } = useCategories();
   const categories = rawCats;
 
   return (
