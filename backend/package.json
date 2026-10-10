@@ -101,4 +101,12 @@
                  "coverageDirectory":  "../coverage",
                  "testEnvironment":  "node"
              }
+,
+  "overrides": {
+    "braces": "^3.0.3",
+    "micromatch": "^4.0.8",
+    "minimatch": "^9.0.5",
+    "glob": "^10.4.5",
+    "lodash": "^4.17.21"
+  }
 }
