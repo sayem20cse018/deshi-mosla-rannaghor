@@ -57,29 +57,13 @@ export class PaymentConfigService implements OnModuleInit {
     const storeId   = this.config.get<string>('SSLCOMMERZ_STORE_ID',      '');
     const storePass = this.config.get<string>('SSLCOMMERZ_STORE_PASSWORD', '');
 
-    // In production, store credentials must be set and must not be the sandbox defaults
-    if (isProduction) {
-      if (!storeId || storeId === 'testbox') {
-        throw new InternalServerErrorException(
-          'SSLCOMMERZ_STORE_ID must be set to a real store ID in production (not "testbox").',
-        );
-      }
-      if (!storePass || storePass === 'qwerty') {
-        throw new InternalServerErrorException(
-          'SSLCOMMERZ_STORE_PASSWORD must be set to a real password in production (not "qwerty").',
-        );
-      }
-    } else {
-      // Development/test — allow sandbox defaults
-      const effectiveId   = storeId   || 'testbox';
-      const effectivePass = storePass || 'qwerty';
-      if (!storeId || !storePass) {
-        this.logger.warn(
-          'SSLCOMMERZ_STORE_ID / SSLCOMMERZ_STORE_PASSWORD not set — using sandbox defaults. ' +
-          'Set these in .env for test payments to work.',
-        );
-      }
-      // Fall through with sandbox defaults for non-production
+    // Warn if using test credentials but never crash — payments will warn at initiation time
+    if ((!storeId || storeId === 'testbox') || (!storePass || storePass === 'qwerty')) {
+      this.logger.warn(
+        isProduction
+          ? 'WARNING: Using SSLCommerz sandbox credentials (testbox) in production. Online payments will use sandbox mode.'
+          : 'SSLCOMMERZ_STORE_ID/STORE_PASSWORD not set — using sandbox defaults.',
+      );
     }
 
     const effectiveId   = storeId   || 'testbox';
