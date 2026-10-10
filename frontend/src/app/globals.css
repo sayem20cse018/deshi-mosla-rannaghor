@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts for Bengali */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* shadcn/ui CSS variables — Brand: Deep Forest Green */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 142 76% 36%;        /* brand-700 #15803d */
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 24 100% 50%;         /* spice-500 #f97316 */
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 142 76% 36%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 24 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142 76% 36%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-bengali antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bengali font-semibold;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-gray-100; }
+  ::-webkit-scrollbar-thumb { @apply bg-brand-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-700; }
+}
+
+@layer components {
+  /* Price tag */
+  .price-tag {
+    @apply text-brand-700 font-bold;
+  }
+
+  .price-original {
+    @apply text-gray-400 line-through text-sm;
+  }
+
+  .discount-badge {
+    @apply bg-spice-500 text-white text-xs font-bold px-2 py-0.5 rounded;
+  }
+
+  /* Product card */
+  .product-card {
+    @apply bg-white rounded-xl border border-gray-100 overflow-hidden
+           hover:shadow-lg hover:border-brand-200 transition-all duration-300
+           group cursor-pointer;
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply bg-brand-700 hover:bg-brand-800 text-white font-semibold
+           px-6 py-2.5 rounded-lg transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-brand-50 text-brand-700 font-semibold
+           border border-brand-300 px-6 py-2.5 rounded-lg transition-colors duration-200;
+  }
+
+  /* Section heading */
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-gray-800;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 text-sm mt-1;
+  }
+
+  /* Floating elements z-index */
+  .floating-cart { @apply fixed right-4 top-1/2 -translate-y-1/2 z-40; }
+  .floating-whatsapp { @apply fixed right-4 bottom-20 z-40; }
+  .floating-backtop { @apply fixed right-4 bottom-4 z-40; }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  /* Cart item */
+  .cart-badge {
+    @apply absolute -top-2 -right-2 bg-spice-500 text-white text-xs
+           w-5 h-5 rounded-full flex items-center justify-center font-bold;
+  }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>দেশি মসলার রান্নাঘর — Bengali Grocery</title>
+<style>
+:root{
+  --green:#147a43;--green2:#0f6337;--light:#f5faf6;--cream:#fffaf0;
+  --gold:#d99b18;--text:#183126;--muted:#6c7c74;--border:#e7ece8;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;color:var(--text);background:#fff}
+a{text-decoration:none;color:inherit}.top{background:#116b3b;color:#fff;font-size:12px;padding:7px 5%;display:flex;justify-content:space-between}
+.header{background:#fff;border-bottom:1px solid #edf1ee;position:sticky;top:0;z-index:5}
+.nav{max-width:1180px;margin:auto;display:flex;align-items:center;gap:22px;padding:14px 18px}
+.logo{font-weight:900;font-size:22px;color:var(--green);line-height:1}.logo small{display:block;font-size:9px;color:#a56e10;letter-spacing:1px;margin-top:4px}
+.search{flex:1;display:flex;border:1px solid #dce5df;border-radius:24px;overflow:hidden;background:#fafcfb}.search input{border:0;background:transparent;outline:0;padding:11px 16px;flex:1}.search button{border:0;background:var(--green);color:white;padding:0 18px}
+.icons{display:flex;gap:14px;font-size:13px}.catbar{background:var(--green);color:#fff}.catnav{max-width:1180px;margin:auto;display:flex;gap:26px;padding:10px 18px;font-size:13px}
+.hero{max-width:1180px;margin:20px auto;display:grid;grid-template-columns:2fr 1fr;gap:14px;padding:0 18px}
+.hero-main{min-height:280px;border-radius:14px;background:linear-gradient(110deg,#fff7dd,#f4df9e 48%,#dcae36);position:relative;overflow:hidden;padding:45px 42px}
+.hero-main:after{content:"";position:absolute;right:25px;bottom:-55px;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle,#fff9e8 0 35%,#d9a52d 36% 40%,transparent 41%)}
+.hero h1{font-size:38px;margin:0 0 8px;color:#b87800}.hero p{font-size:17px;margin:0 0 22px}.btn{display:inline-block;background:var(--green);color:white;padding:11px 20px;border-radius:22px;font-size:13px;font-weight:bold}
+.hero-side{border-radius:14px;background:#eef8f1;border:1px solid #e0ece3;padding:28px;display:flex;flex-direction:column;justify-content:center}.hero-side h3{margin:0 0 10px;color:var(--green);font-size:23px}.hero-side p{color:var(--muted);font-size:14px}
+.container{max-width:1180px;margin:auto;padding:0 18px}.section{margin:30px 0}.title{display:flex;align-items:end;justify-content:space-between;border-bottom:2px solid #e6d59f;padding-bottom:8px;margin-bottom:16px}.title h2{margin:0;color:#087040;font-size:20px}.title a{font-size:11px;color:var(--green)}
+.categories{display:grid;grid-template-columns:repeat(8,1fr);gap:12px}.category{border:1px solid var(--border);border-radius:12px;background:#fffaf0;padding:14px 7px;text-align:center;transition:.2s}.category:hover{transform:translateY(-3px)}.circle{width:58px;height:58px;margin:auto auto 8px;border-radius:50%;display:grid;place-items:center;background:#f4f7e9;font-size:29px}.category span{font-size:11px}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{border:1px solid var(--border);border-radius:12px;background:white;padding:11px;position:relative;box-shadow:0 2px 8px #163d2410}.badge{position:absolute;top:10px;left:10px;background:#e9f7e9;color:#167340;font-size:9px;font-weight:bold;border-radius:8px;padding:4px 7px}.pic{height:155px;border-radius:9px;background:#f7f8f4;display:grid;place-items:center;margin-bottom:10px}.pack{width:85px;height:118px;border-radius:8px 8px 12px 12px;background:linear-gradient(90deg,#fff,#f3f0dc);border:1px solid #d8d5c4;box-shadow:0 8px 15px #0001;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}.pack:before{content:"দেশি";position:absolute;top:8px;font-weight:bold;color:#168049;font-size:11px}.pack b{color:#ad7609;font-size:13px;margin-top:10px}.jar{width:96px;height:90px;border-radius:18px 18px 12px 12px;background:#eee8d2;border:1px solid #c8bea0;display:grid;place-items:center;position:relative}.jar:before{content:"গাওয়া ঘি";background:#fff8d8;color:#b77b08;padding:8px;font-size:12px;font-weight:bold;border-radius:4px}.bottle{width:45px;height:112px;background:linear-gradient(90deg,#b87814,#f1c94d,#a76a0b);border-radius:7px 7px 10px 10px;position:relative}.bottle:before{content:"";position:absolute;top:-13px;left:11px;width:23px;height:15px;background:#5c3b17;border-radius:3px}.bottle:after{content:"তেল";position:absolute;top:44px;left:5px;background:#fff9df;padding:5px 8px;color:#16713e;font-size:11px;font-weight:bold}
+.card h3{font-size:13px;margin:5px 0;height:36px}.price{font-weight:800;color:#157542}.old{text-decoration:line-through;color:#9aa59e;font-size:11px;margin-left:5px}.actions{display:flex;gap:7px;margin-top:9px}.actions button{flex:1;border:1px solid #13804a;background:white;color:#147a43;border-radius:7px;padding:7px;font-size:10px;font-weight:bold}.actions button:last-child{background:#147a43;color:#fff}
+.offer{margin:36px 0;background:linear-gradient(105deg,#f8efc9,#f3f8df);border-radius:15px;min-height:175px;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;overflow:hidden}.offer h2{font-size:27px;color:#bd7d00;margin:0 0 8px}.offer p{margin:0 0 14px}.offer-art{font-size:100px;filter:drop-shadow(0 12px 8px #0002)}
+.recipe-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.recipe{height:150px;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(135deg,#e6d2a0,#9d6c31)}.recipe:nth-child(2){background:linear-gradient(135deg,#dce9c5,#8ea74c)}.recipe:nth-child(3){background:linear-gradient(135deg,#f2d6b1,#a7522c)}.recipe:nth-child(4){background:linear-gradient(135deg,#e9d7c7,#7d4b32)}.recipe div{position:absolute;bottom:0;left:0;right:0;padding:28px 12px 11px;color:#fff;background:linear-gradient(transparent,#000b)}.recipe b{font-size:16px}.newsletter{margin:35px 0;padding:34px;border-radius:15px;background:#eaf6ed;display:flex;justify-content:space-between;align-items:center}.newsletter h2{margin:0 0 5px;color:var(--green)}.email{display:flex;background:#fff;border-radius:25px;overflow:hidden;width:390px}.email input{border:0;outline:0;padding:12px 16px;flex:1}.email button{border:0;background:var(--green);color:white;padding:0 22px}
+footer{background:#f6faf7;border-top:1px solid #e1e9e3;padding:35px 0 20px}.foot{max-width:1180px;margin:auto;padding:0 18px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:35px}.foot h4{margin:0 0 12px;color:var(--green)}.foot p,.foot li{font-size:11px;color:#6b7971;line-height:1.8}.foot ul{padding:0;margin:0;list-style:none}.copy{max-width:1180px;margin:25px auto 0;padding:14px 18px 0;border-top:1px solid #dfe7e1;font-size:10px;color:#7c8780}
+@media(max-width:850px){.nav{flex-wrap:wrap}.search{order:3;flex-basis:100%}.hero{grid-template-columns:1fr}.categories{grid-template-columns:repeat(4,1fr)}.products{grid-template-columns:repeat(2,1fr)}.recipe-grid{grid-template-columns:repeat(2,1fr)}.newsletter{display:block}.email{width:100%;margin-top:15px}.foot{grid-template-columns:1fr 1fr}.catnav{overflow:auto;white-space:nowrap}}
+@media(max-width:520px){.top{display:none}.nav{gap:10px}.icons{font-size:11px}.hero-main{padding:30px 24px}.hero h1{font-size:28px}.categories{grid-template-columns:repeat(4,1fr);gap:7px}.category{padding:9px 3px}.circle{width:45px;height:45px;font-size:22px}.products{grid-template-columns:1fr 1fr;gap:9px}.pic{height:120px}.pack{transform:scale(.82)}.card h3{font-size:11px}.offer{padding:25px}.offer-art{font-size:65px}.recipe-grid{grid-template-columns:1fr 1fr}.foot{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><span>🚚 সারা বাংলাদেশে ডেলিভারি সুবিধা</span><span>আজকের অফার • সহজ পেমেন্ট • নিরাপদ শপিং</span></div>
+
+<header class="header">
+  <div class="nav">
+    <a class="logo" href="#">দেশি মসলার রান্নাঘর<small>DESHI MOSLAR RANNAGHAR</small></a>
+    <div class="search"><input placeholder="মসলা, তেল, চাল বা পণ্য খুঁজুন..."><button>🔍</button></div>
+    <div class="icons"><span>♡ Wishlist</span><span>🛒 Cart</span><span>👤 Login</span></div>
+  </div>
+</header>
+<div class="catbar"><div class="catnav"><a>হোম</a><a>শপ</a><a>ক্যাটাগরি</a><a>অফার</a><a>রেসিপি</a><a>বেস্ট সেলার</a><a>নতুন পণ্য</a><a>আমাদের গল্প</a></div></div>
+
+<section class="hero">
+  <div class="hero-main">
+    <h1>প্রতিদিনের খাবারে<br>দেশি স্বাদের ছোঁয়া</h1>
+    <p>বিশুদ্ধ মসলা, ঘি, তেল ও ঘরোয়া রান্নার প্রয়োজনীয় পণ্য</p>
+    <a class="btn" href="#products">এখনই শপ করুন →</a>
+  </div>
+  <div class="hero-side">
+    <h3>দেশি পণ্যের বিশ্বস্ত ঠিকানা</h3>
+    <p>বাছাই করা মানসম্মত পণ্য, সহজ অর্ডার এবং নির্ভরযোগ্য ডেলিভারি।</p>
+    <a class="btn" href="#categories">ক্যাটাগরি দেখুন</a>
+  </div>
+</section>
+
+<main class="container">
+<section class="section" id="categories">
+  <div class="title"><h2>FEATURED CATEGORIES</h2><a href="#">VIEW ALL →</a></div>
+  <div class="categories">
+    <div class="category"><div class="circle">🌶️</div><span>মসলা</span></div>
+    <div class="category"><div class="circle">🌾</div><span>আটা & ময়দা</span></div>
+    <div class="category"><div class="circle">🫒</div><span>দেশি তেল</span></div>
+    <div class="category"><div class="circle">🍚</div><span>চাল</span></div>
+    <div class="category"><div class="circle">🥣</div><span>ডাল</span></div>
+    <div class="category"><div class="circle">🍯</div><span>মধু</span></div>
+    <div class="category"><div class="circle">🫙</div><span>আচার</span></div>
+    <div class="category"><div class="circle">🍵</div><span>চা & কফি</span></div>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="title"><h2>TOP SELLING PRODUCTS</h2><a href="#">VIEW ALL →</a></div>
+  <div class="products">
+    <article class="card"><span class="badge">Best Selling</span><div class="pic"><div class="pack"><b>কালোজিরা</b></div></div><h3>কালোজিরা — Premium Quality</h3><div><span class="price">৳180</span><span class="old">৳220</span></div><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">Best Selling</span><div class="pic"><div class="jar"></div></div><h3>খাঁটি ঘি — দেশি গাওয়া ঘি</h3><div><span class="price">৳850</span><span class="old">৳950</span></div><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">Popular</span><div class="pic"><div class="pack"><b>গমের আটা</b></div></div><h3>Whole Wheat Flour — আটা</h3><div><span class="price">৳125</span><span class="old">৳150</span></div><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">-10%</span><div class="pic"><div class="bottle"></div></div><h3>সরিষার তেল — Cold Pressed</h3><div><span class="price">৳450</span><span class="old">৳500</span></div><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+  </div>
+</section>
+
+<div class="offer">
+  <div><h2>আমাদের খাঁটি ঘি</h2><p>ঘরোয়া স্বাদ • মানসম্মত পণ্য • বিশেষ অফার</p><a class="btn" href="#">অফার দেখুন</a></div>
+  <div class="offer-art">🫙 🍚 🥘</div>
+</div>
+
+<section class="section">
+  <div class="title"><h2>AMADER NATURAL OIL</h2><a href="#">VIEW ALL ITEMS →</a></div>
+  <div class="products">
+    <article class="card"><div class="pic"><div class="bottle"></div></div><h3>খাঁটি সরিষার তেল</h3><span class="price">৳450</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><div class="pic"><div class="bottle"></div></div><h3>দেশি নারিকেল তেল</h3><span class="price">৳350</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><div class="pic"><div class="bottle"></div></div><h3>Cold Pressed Oil</h3><span class="price">৳520</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><div class="pic"><div class="bottle"></div></div><h3>অলিভ অয়েল</h3><span class="price">৳780</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="title"><h2>RECIPE-BASED SHOPPING</h2><a href="#">সব রেসিপি →</a></div>
+  <div class="recipe-grid">
+    <div class="recipe"><div><b>🍛 বিরিয়ানি</b><br><small>প্রয়োজনীয় সব উপকরণ একসাথে</small></div></div>
+    <div class="recipe"><div><b>🐟 মাছের ঝোল</b><br><small>দেশি স্বাদের সহজ রান্না</small></div></div>
+    <div class="recipe"><div><b>🥘 গরুর মাংস</b><br><small>মসলার পারফেক্ট কম্বিনেশন</small></div></div>
+    <div class="recipe"><div><b>🍲 খিচুড়ি</b><br><small>এক ক্লিকেই ingredients</small></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="title"><h2>NEW ARRIVALS</h2><a href="#">VIEW ALL →</a></div>
+  <div class="products">
+    <article class="card"><span class="badge">New</span><div class="pic"><div class="pack"><b>মধু</b></div></div><h3>Natural Honey — খাঁটি মধু</h3><span class="price">৳550</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">New</span><div class="pic"><div class="pack"><b>মসলা</b></div></div><h3>Premium Mixed Spice</h3><span class="price">৳260</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">New</span><div class="pic"><div class="pack"><b>মসুর ডাল</b></div></div><h3>দেশি মসুর ডাল</h3><span class="price">৳170</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+    <article class="card"><span class="badge">New</span><div class="pic"><div class="pack"><b>আচার</b></div></div><h3>আমের আচার — ঘরোয়া স্বাদ</h3><span class="price">৳320</span><div class="actions"><button>Add to Cart</button><button>Buy Now</button></div></article>
+  </div>
+</section>
+
+<div class="newsletter">
+  <div><h2>Subscribe to দেশি মসলার রান্নাঘর</h2><p>নতুন পণ্য, অফার ও রান্নার আইডিয়া সরাসরি আপনার ইনবক্সে।</p></div>
+  <div class="email"><input placeholder="আপনার Email লিখুন"><button>Subscribe</button></div>
+</div>
+</main>
+
+<footer>
+<div class="foot">
+  <div><h4>দেশি মসলার রান্নাঘর</h4><p>বাংলাদেশি পরিবারের জন্য মানসম্মত দেশি মসলা, খাবার ও রান্নার প্রয়োজনীয় পণ্যের একটি Bengali-first online grocery platform.</p><p>📞 01XXXXXXXXX<br>✉ support@deshimoslarannaghar.com</p></div>
+  <div><h4>About Us</h4><ul><li>আমাদের গল্প</li><li>যোগাযোগ</li><li>Privacy Policy</li><li>Terms & Conditions</li></ul></div>
+  <div><h4>Customer Care</h4><ul><li>My Orders</li><li>Delivery Info</li><li>Return & Refund</li><li>Help Center</li></ul></div>
+  <div><h4>Categories</h4><ul><li>মসলা</li><li>তেল</li><li>চাল & ডাল</li><li>মধু & ঘি</li></ul></div>
+</div>
+<div class="copy">© 2026 দেশি মসলার রান্নাঘর. All rights reserved.</div>
+</footer>
+</body>
+</html>
