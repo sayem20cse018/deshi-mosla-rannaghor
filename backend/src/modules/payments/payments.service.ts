@@ -53,9 +53,14 @@ export class PaymentsService {
       throw new BadRequestException('Payment is already in progress for this order.');
     }
 
-    // Resolve config — throws InternalServerErrorException if misconfigured in production
+    // Resolve config — never throws, check enabled flag
     const cfg = this.paymentConfig.get();
 
+    if (!cfg.enabled) {
+      throw new BadRequestException(
+        'Online payment is currently unavailable: ' + (cfg.disabledReason ?? 'configuration error'),
+      );
+    }
     const customerName    = dto.customerName    ?? order.user?.name    ?? order.address.fullName;
     const customerEmail   = dto.customerEmail   ?? order.user?.email   ?? 'guest@deshimoslar.com';
     const customerPhone   = dto.customerPhone   ?? order.user?.phone   ?? order.address.phone;

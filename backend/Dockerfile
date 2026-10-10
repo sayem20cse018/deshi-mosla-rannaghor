@@ -17,9 +17,10 @@ COPY . .
 RUN npm run build
 RUN npm prune --production
 
-# Make start script executable and ensure LF line endings
-RUN chmod +x scripts/start.sh && sed -i 's/\r//' scripts/start.sh
+# Strip any Windows CRLF from start script, make executable
+RUN sed -i 's/\r//' scripts/start.sh && chmod +x scripts/start.sh
 
 EXPOSE 3000
 
-CMD ["sh", "scripts/start.sh"]
+# Use sh explicitly to avoid /bin/sh vs dash differences
+CMD ["/bin/sh", "scripts/start.sh"]
