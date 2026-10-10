@@ -8,17 +8,15 @@ import { Public } from '../../common/decorators/public.decorator';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Get all active categories' })
-  findAll() {
-    return this.categoriesService.findAll();
-  }
+  @Public() @Get()
+  @ApiOperation({ summary: 'Get all active categories (tree)' })
+  findAll() { return this.categoriesService.findAll(); }
 
-  @Public()
-  @Get(':slug')
-  @ApiOperation({ summary: 'Get category by slug with products' })
-  findOne(@Param('slug') slug: string) {
-    return this.categoriesService.findBySlug(slug);
-  }
+  @Public() @Get('flat')
+  @ApiOperation({ summary: 'Get all categories flat list' })
+  findFlat() { return this.categoriesService.findAllFlat(); }
+
+  @Public() @Get(':slug')
+  @ApiOperation({ summary: 'Get single category by slug' })
+  findOne(@Param('slug') slug: string) { return this.categoriesService.findBySlug(slug); }
 }
