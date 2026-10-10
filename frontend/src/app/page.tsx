@@ -1,2 +1,6 @@
-// Root page — redirects to the (shop) group homepage
-export { default } from './(shop)/page';
+import { redirect } from 'next/navigation';
+
+// Root redirects to the (shop) group homepage
+export default function RootPage() {
+  redirect('/');
+}

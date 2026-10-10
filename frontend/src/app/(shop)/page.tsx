@@ -1,60 +1,67 @@
-import { Suspense } from 'react';
-import { HeroBanner } from '@/components/home/HeroBanner';
-import { AnnouncementBar } from '@/components/home/AnnouncementBar';
-import { CategorySection } from '@/components/home/CategorySection';
-import { BestSellingSection } from '@/components/home/BestSellingSection';
-import { SpecialOfferBanner } from '@/components/home/SpecialOfferBanner';
-import { FeaturedSection } from '@/components/home/FeaturedSection';
-import { RecipeSection } from '@/components/home/RecipeSection';
-import { NewArrivalsSection } from '@/components/home/NewArrivalsSection';
-import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { NewsletterSection } from '@/components/home/NewsletterSection';
-import { TrustBadges } from '@/components/home/TrustBadges';
+import type { Metadata } from 'next';
+import { HeroBanner }           from '@/components/home/HeroBanner';
+import { TrustBadges }          from '@/components/home/TrustBadges';
+import { CategorySection }      from '@/components/home/CategorySection';
+import { BestSellingSection }   from '@/components/home/BestSellingSection';
+import { SpecialOfferBanner }   from '@/components/home/SpecialOfferBanner';
+import { FeaturedSection }      from '@/components/home/FeaturedSection';
+import { CookingCollections }   from '@/components/home/CookingCollections';
+import { RecipeSection }        from '@/components/home/RecipeSection';
+import { NewArrivalsSection }   from '@/components/home/NewArrivalsSection';
+import { BrandStorySection }    from '@/components/home/BrandStorySection';
+import { TestimonialsSection }  from '@/components/home/TestimonialsSection';
+import { NewsletterSection }    from '@/components/home/NewsletterSection';
+
+export const metadata: Metadata = {
+  title: 'দেশি মসলার রান্নাঘর | অনলাইন গ্রোসারি শপ',
+  description:
+    'বাংলাদেশের সেরা অনলাইন মসলা ও গ্রোসারি শপ। দেশীয় মসলা, চাল, ডাল, তেল এবং রান্নার প্রয়োজনীয় পণ্য ঘরে বসে অর্ডার করুন। ক্যাশ অন ডেলিভারি ও ফ্রি ডেলিভারি সুবিধা।',
+  keywords: ['মসলা', 'গ্রোসারি', 'অনলাইন শপ', 'সরিষার তেল', 'মধু', 'চাল', 'ডাল', 'বাংলাদেশ'],
+  openGraph: {
+    title: 'দেশি মসলার রান্নাঘর',
+    description: 'প্রতিটি রান্নায় আসল স্বাদ — দেশীয় মসলা ও গ্রোসারি পণ্য',
+    type: 'website',
+  },
+};
 
 export default function HomePage() {
   return (
-    <main>
-      {/* Hero */}
-      <Suspense fallback={<div className="h-[500px] skeleton" />}>
-        <HeroBanner />
-      </Suspense>
+    <>
+      {/* 1. Hero Banner — 3-slide auto carousel */}
+      <HeroBanner />
 
-      {/* Trust badges */}
+      {/* 2. Trust badges */}
       <TrustBadges />
 
-      {/* Shop by Category */}
-      <Suspense fallback={<div className="h-64 skeleton mx-4 my-6 rounded-xl" />}>
-        <CategorySection />
-      </Suspense>
+      {/* 3. Shop by Category */}
+      <CategorySection />
 
-      {/* Best Selling Products */}
-      <Suspense fallback={<div className="h-96 skeleton mx-4 my-6 rounded-xl" />}>
-        <BestSellingSection />
-      </Suspense>
+      {/* 4. Best Selling Products */}
+      <BestSellingSection />
 
-      {/* Special Offer Banner */}
+      {/* 5. Special Offer Banners */}
       <SpecialOfferBanner />
 
-      {/* Featured Products */}
-      <Suspense fallback={<div className="h-96 skeleton mx-4 my-6 rounded-xl" />}>
-        <FeaturedSection />
-      </Suspense>
+      {/* 6. Featured Products */}
+      <FeaturedSection />
 
-      {/* Recipe Based Shopping */}
-      <Suspense fallback={<div className="h-64 skeleton mx-4 my-6 rounded-xl" />}>
-        <RecipeSection />
-      </Suspense>
+      {/* 7. Cooking Collections */}
+      <CookingCollections />
 
-      {/* New Arrivals */}
-      <Suspense fallback={<div className="h-96 skeleton mx-4 my-6 rounded-xl" />}>
-        <NewArrivalsSection />
-      </Suspense>
+      {/* 8. Recipe-Based Shopping */}
+      <RecipeSection />
 
-      {/* Testimonials */}
+      {/* 9. New Arrivals */}
+      <NewArrivalsSection />
+
+      {/* 10. Brand Story */}
+      <BrandStorySection />
+
+      {/* 11. Testimonials */}
       <TestimonialsSection />
 
-      {/* Newsletter */}
+      {/* 12. Newsletter */}
       <NewsletterSection />
-    </main>
+    </>
   );
 }

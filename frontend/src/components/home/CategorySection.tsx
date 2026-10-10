@@ -1,45 +1,61 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 
-// Static categories — will be replaced with API data in Step 2
 const CATEGORIES = [
-  { slug: 'mosla', name: 'মসলা', emoji: '🌶️', count: '১০০+' },
-  { slug: 'tel', name: 'রান্নার তেল', emoji: '🫙', count: '৮+' },
-  { slug: 'chal', name: 'চাল', emoji: '🍚', count: '১৫+' },
-  { slug: 'dal', name: 'ডাল', emoji: '🫘', count: '১২+' },
-  { slug: 'ata-maida', name: 'আটা ও ময়দা', emoji: '🌾', count: '৬+' },
-  { slug: 'lobon', name: 'লবণ', emoji: '🧂', count: '৫+' },
-  { slug: 'chini-gur', name: 'চিনি ও গুড়', emoji: '🍯', count: '৭+' },
-  { slug: 'cha-kofi', name: 'চা ও কফি', emoji: '☕', count: '৬+' },
+  { slug: 'mosla',         name: 'মসলা',          nameEn: 'Spices',           emoji: '🌶️', count: '৮০+',  color: 'from-red-50    to-orange-50',  border: 'border-red-100',    text: 'text-red-700'    },
+  { slug: 'tel',           name: 'রান্নার তেল',   nameEn: 'Cooking Oil',      emoji: '🫙', count: '১২+',  color: 'from-yellow-50 to-amber-50',   border: 'border-yellow-100', text: 'text-yellow-700'  },
+  { slug: 'chal',          name: 'চাল',            nameEn: 'Rice',             emoji: '🍚', count: '১৫+',  color: 'from-blue-50   to-cyan-50',    border: 'border-blue-100',   text: 'text-blue-700'    },
+  { slug: 'dal',           name: 'ডাল',            nameEn: 'Lentils',          emoji: '🫘', count: '১০+',  color: 'from-green-50  to-emerald-50', border: 'border-green-100',  text: 'text-green-700'   },
+  { slug: 'ata-maida',     name: 'আটা ও ময়দা',   nameEn: 'Flour',            emoji: '🌾', count: '৮+',   color: 'from-amber-50  to-yellow-50',  border: 'border-amber-100',  text: 'text-amber-700'   },
+  { slug: 'lobon',         name: 'লবণ',            nameEn: 'Salt',             emoji: '🧂', count: '৫+',   color: 'from-slate-50  to-gray-50',    border: 'border-slate-100',  text: 'text-slate-700'   },
+  { slug: 'chini-gur',     name: 'চিনি ও গুড়',   nameEn: 'Sugar & Molasses', emoji: '🍯', count: '৭+',   color: 'from-orange-50 to-red-50',     border: 'border-orange-100', text: 'text-orange-700'  },
+  { slug: 'cha-kofi',      name: 'চা ও কফি',      nameEn: 'Tea & Coffee',     emoji: '☕', count: '১০+',  color: 'from-stone-50  to-amber-50',   border: 'border-stone-100',  text: 'text-stone-700'   },
+  { slug: 'snacks',        name: 'স্ন্যাকস',       nameEn: 'Snacks',           emoji: '🍿', count: '২০+',  color: 'from-pink-50   to-rose-50',    border: 'border-pink-100',   text: 'text-pink-700'    },
+  { slug: 'noodles',       name: 'নুডলস',          nameEn: 'Noodles',          emoji: '🍜', count: '৮+',   color: 'from-violet-50 to-purple-50',  border: 'border-violet-100', text: 'text-violet-700'  },
+  { slug: 'sauce-achar',   name: 'সস ও আচার',     nameEn: 'Sauce & Pickle',   emoji: '🥫', count: '১৫+',  color: 'from-lime-50   to-green-50',   border: 'border-lime-100',   text: 'text-lime-700'    },
+  { slug: 'modhu',         name: 'মধু',            nameEn: 'Honey',            emoji: '🍯', count: '৬+',   color: 'from-yellow-50 to-orange-50',  border: 'border-yellow-100', text: 'text-yellow-800'  },
+  { slug: 'cooking-items', name: 'রান্নার পণ্য',   nameEn: 'Cooking Items',    emoji: '🥘', count: '৩০+',  color: 'from-teal-50   to-cyan-50',    border: 'border-teal-100',   text: 'text-teal-700'    },
 ];
 
 export function CategorySection() {
   return (
-    <section className="py-10">
+    <section className="section-wrap bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="section-title">ক্যাটাগরির সমূহ</h2>
-            <p className="section-subtitle">পছন্দের ক্যাটাগরি থেকে পণ্য বেছে নিন</p>
-          </div>
-          <Link href="/categories" className="flex items-center gap-1 text-brand-700 hover:text-brand-800 text-sm font-medium">
-            সব দেখুন <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+        <SectionHeader
+          title="ক্যাটাগরির সমূহ"
+          subtitle="পছন্দের ক্যাটাগরি থেকে পণ্য বেছে নিন"
+          accent="শপ বাই ক্যাটাগরি"
+          href="/categories"
+        />
+
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2.5 md:gap-3">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               href={`/category/${cat.slug}`}
-              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white border border-gray-100 hover:border-brand-300 hover:shadow-md transition-all text-center"
+              className={`group flex flex-col items-center gap-2 p-3 md:p-4 rounded-2xl bg-gradient-to-br ${cat.color} border ${cat.border} hover:shadow-md hover:scale-105 transition-all duration-200 text-center`}
             >
-              <div className="w-12 h-12 bg-brand-50 group-hover:bg-brand-100 rounded-full flex items-center justify-center text-2xl transition-colors">
+              <div className="text-3xl md:text-4xl group-hover:scale-110 transition-transform duration-300 leading-none">
                 {cat.emoji}
               </div>
-              <p className="text-xs font-medium text-gray-700 leading-tight">{cat.name}</p>
-              <p className="text-xs text-gray-400">{cat.count} পণ্য</p>
+              <div>
+                <p className={`text-xs font-bold leading-tight ${cat.text}`}>{cat.name}</p>
+                <p className="text-gray-400 text-[10px] mt-0.5">{cat.count} পণ্য</p>
+              </div>
             </Link>
           ))}
+
+          {/* View all card */}
+          <Link
+            href="/categories"
+            className="group flex flex-col items-center gap-2 p-3 md:p-4 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-800 border border-brand-600 hover:shadow-lg hover:scale-105 transition-all duration-200 text-center"
+          >
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+              <ArrowRight className="w-5 h-5 text-white" />
+            </div>
+            <p className="text-white text-xs font-bold leading-tight">সব ক্যাটাগরি</p>
+          </Link>
         </div>
       </div>
     </section>

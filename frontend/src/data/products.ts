@@ -1,0 +1,38 @@
+import { ProductCardData } from '@/components/product/ProductCard';
+
+export const BEST_SELLERS: ProductCardData[] = [
+  { id: 'bs-1', name: 'ধনে গুঁড়া (দেশি)',         slug: 'coriander-powder',     price: 130, discountPrice: 110, discountPercent: 15, weight: '৫০০ গ্রাম', stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.8, reviewCount: 256 },
+  { id: 'bs-2', name: 'সরিষার তেল (ঘানি ভাঙা)',    slug: 'cold-press-mustard-oil', price: 280, discountPrice: 250, discountPercent: 11, weight: '১ লিটার',   stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.9, reviewCount: 412 },
+  { id: 'bs-3', name: 'হলুদ গুঁড়া (খাঁটি)',        slug: 'turmeric-powder',      price: 90,  discountPrice: 75,  discountPercent: 17, weight: '৫০০ গ্রাম', stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.7, reviewCount: 318 },
+  { id: 'bs-4', name: 'মিনিকেট চাল (প্রিমিয়াম)',  slug: 'premium-miniket-rice', price: 350, discountPrice: 320, discountPercent: 9,  weight: '৫ কেজি',    stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.6, reviewCount: 189 },
+  { id: 'bs-5', name: 'মসুর ডাল (লাল)',             slug: 'red-lentil',           price: 130, discountPrice: 115, discountPercent: 12, weight: '১ কেজি',    stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.5, reviewCount: 224 },
+  { id: 'bs-6', name: 'বিরিয়ানি মসলা',             slug: 'biryani-masala',       price: 80,  discountPrice: null,discountPercent: null, weight: '৫০ গ্রাম',  stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.8, reviewCount: 340 },
+  { id: 'bs-7', name: 'মরিচ গুঁড়া (তীক্ষ্ণ)',     slug: 'red-chili-powder',     price: 160, discountPrice: 140, discountPercent: 13, weight: '৫০০ গ্রাম', stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.6, reviewCount: 198 },
+  { id: 'bs-8', name: 'গমের আটা (সাদা)',            slug: 'wheat-flour',          price: 160, discountPrice: 145, discountPercent: 9,  weight: '২ কেজি',    stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.4, reviewCount: 156 },
+  { id: 'bs-9', name: 'খেজুরের গুড় (শীতকালীন)',   slug: 'date-palm-jaggery',   price: 380, discountPrice: 350, discountPercent: 8,  weight: '৫০০ গ্রাম', stockStatus: 'LOW_STOCK',isBestSeller: true, avgRating: 4.9, reviewCount: 87  },
+  { id: 'bs-10',name: 'কারি মসলা (বিশেষ)',          slug: 'special-curry-masala', price: 180, discountPrice: 155, discountPercent: 14, weight: '১৫০ গ্রাম', stockStatus: 'IN_STOCK', isBestSeller: true, avgRating: 4.7, reviewCount: 273 },
+];
+
+export const FEATURED: ProductCardData[] = [
+  { id: 'ft-1', name: 'সুন্দরবনের মধু (খাঁটি)',    slug: 'sundarbans-pure-honey', price: 600, discountPrice: 550, discountPercent: 8,  weight: '৫০০ গ্রাম', stockStatus: 'LOW_STOCK', isFeatured: true, avgRating: 4.9, reviewCount: 124 },
+  { id: 'ft-2', name: 'গরম মসলা গুঁড়া',            slug: 'garam-masala-powder',  price: 150, discountPrice: 130, discountPercent: 13, weight: '১০০ গ্রাম', stockStatus: 'IN_STOCK',  isFeatured: true, avgRating: 4.7, reviewCount: 211 },
+  { id: 'ft-3', name: 'দেশি চা পাতা',              slug: 'bangladeshi-tea-leaves',price: 320, discountPrice: 290, discountPercent: 9,  weight: '৪০০ গ্রাম', stockStatus: 'IN_STOCK',  isFeatured: true, avgRating: 4.8, reviewCount: 163 },
+  { id: 'ft-4', name: 'নারকেল তেল (খাঁটি)',        slug: 'pure-coconut-oil',     price: 320, discountPrice: null,discountPercent: null, weight: '৫০০ মিলি', stockStatus: 'IN_STOCK',  isFeatured: true, avgRating: 4.6, reviewCount: 98  },
+  { id: 'ft-5', name: 'লাল আটা (সম্পূর্ণ গম)',     slug: 'whole-wheat-flour',    price: 180, discountPrice: 160, discountPercent: 11, weight: '২ কেজি',    stockStatus: 'IN_STOCK',  isFeatured: true, avgRating: 4.5, reviewCount: 77  },
+];
+
+export const NEW_ARRIVALS: ProductCardData[] = [
+  { id: 'na-1', name: 'হিমালয়ান পিংক সল্ট',        slug: 'himalayan-pink-salt',  price: 120, discountPrice: 100, discountPercent: 17, weight: '৫০০ গ্রাম', stockStatus: 'IN_STOCK', isNewArrival: true, avgRating: 4.7, reviewCount: 43  },
+  { id: 'na-2', name: 'লিচু ফুলের মধু',             slug: 'lychee-blossom-honey', price: 500, discountPrice: null,discountPercent: null, weight: '৫০০ গ্রাম', stockStatus: 'LOW_STOCK',isNewArrival: true, avgRating: 4.8, reviewCount: 28  },
+  { id: 'na-3', name: 'মালাই চা মিশ্রণ',            slug: 'creamy-tea-blend',     price: 220, discountPrice: 195, discountPercent: 11, weight: '২০০ গ্রাম', stockStatus: 'IN_STOCK', isNewArrival: true, avgRating: 4.9, reviewCount: 56  },
+  { id: 'na-4', name: 'গোলমরিচ (কালো)',             slug: 'black-pepper',         price: 160, discountPrice: null,discountPercent: null, weight: '১০০ গ্রাম', stockStatus: 'IN_STOCK', isNewArrival: true, avgRating: 4.6, reviewCount: 31  },
+  { id: 'na-5', name: 'তিল (সাদা)',                 slug: 'white-sesame-seeds',   price: 110, discountPrice: 95,  discountPercent: 14, weight: '২০০ গ্রাম', stockStatus: 'IN_STOCK', isNewArrival: true, avgRating: 4.5, reviewCount: 19  },
+  { id: 'na-6', name: 'চিলি সস (এক্সট্রা হট)',      slug: 'extra-hot-chili-sauce',price: 90,  discountPrice: null,discountPercent: null, weight: '২৫০ গ্রাম', stockStatus: 'IN_STOCK', isNewArrival: true, avgRating: 4.4, reviewCount: 22  },
+];
+
+export const OFFERS: ProductCardData[] = [
+  { id: 'of-1', name: 'সয়াবিন তেল',                slug: 'soybean-oil',          price: 850, discountPrice: 790, discountPercent: 7,  weight: '৫ লিটার',   stockStatus: 'IN_STOCK', avgRating: 4.5, reviewCount: 145 },
+  { id: 'of-2', name: 'মাংসের মসলা',               slug: 'meat-masala',          price: 175, discountPrice: 145, discountPercent: 17, weight: '১৫০ গ্রাম', stockStatus: 'IN_STOCK', avgRating: 4.6, reviewCount: 92  },
+  { id: 'of-3', name: 'টমেটো সস',                  slug: 'tomato-sauce',         price: 120, discountPrice: 105, discountPercent: 13, weight: '৩৪০ গ্রাম', stockStatus: 'IN_STOCK', avgRating: 4.4, reviewCount: 78  },
+  { id: 'of-4', name: 'নাজিরশাইল চাল',             slug: 'nazirshail-rice',      price: 420, discountPrice: 390, discountPercent: 7,  weight: '৫ কেজি',    stockStatus: 'IN_STOCK', avgRating: 4.7, reviewCount: 110 },
+];
