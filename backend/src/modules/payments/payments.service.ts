@@ -2,23 +2,17 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { PaymentConfigService } from './payment-config.service';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 
-// ── SSLCommerz endpoints ──────────────────────────────────
-const SSL_SANDBOX      = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php';
-const SSL_LIVE         = 'https://securepay.sslcommerz.com/gwprocess/v4/api.php';
-const SSL_VERIFY_SANDBOX = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php';
-const SSL_VERIFY_LIVE    = 'https://securepay.sslcommerz.com/validator/api/validationserverAPI.php';
-
-// ── Sentinel value — never a real userId ─────────────────
+// ── Sentinel value — never a real UUID ───────────────────
 const GUEST_SENTINEL = '__GUEST__';
+export { GUEST_SENTINEL };
 
 @Injectable()
 export class PaymentsService {
@@ -26,81 +20,22 @@ export class PaymentsService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: ConfigService,
+    private readonly paymentConfig: PaymentConfigService,
   ) {}
-
-  // ─────────────────────────────────────────────────────────
-  // PRIVATE: build production-safe callback URLs
-  // ─────────────────────────────────────────────────────────
-  private getCallbackUrls(): {
-    successUrl: string;
-    failUrl:    string;
-    cancelUrl:  string;
-    ipnUrl:     string;
-  } {
-    const nodeEnv     = this.config.get<string>('NODE_ENV', 'development');
-    const isProduction = nodeEnv === 'production';
-    const frontendUrl  = this.stripTrailingSlash(
-      this.config.get<string>('FRONTEND_URL', 'http://localhost:3000'),
-    );
-
-    // Backend URL — required in production, optional in dev (falls back to localhost)
-    let backendUrl = this.config.get<string>('BACKEND_URL', '');
-    if (!backendUrl) {
-      if (isProduction) {
-        // Fail fast — never silently use localhost in production
-        throw new InternalServerErrorException(
-          'BACKEND_URL environment variable is required in production for SSLCommerz IPN callbacks.',
-        );
-      }
-      // Development fallback
-      const port = this.config.get<string>('PORT', '5000');
-      backendUrl = `http://localhost:${port}`;
-    }
-    backendUrl = this.stripTrailingSlash(backendUrl);
-    const apiPrefix = this.stripTrailingSlash(
-      this.config.get<string>('API_PREFIX', 'api/v1'),
-    );
-
-    const successUrl = this.config.get<string>(
-      'SSLCOMMERZ_SUCCESS_URL',
-      `${frontendUrl}/payment/success`,
-    );
-    const failUrl = this.config.get<string>(
-      'SSLCOMMERZ_FAIL_URL',
-      `${frontendUrl}/payment/failed`,
-    );
-    const cancelUrl = this.config.get<string>(
-      'SSLCOMMERZ_CANCEL_URL',
-      `${frontendUrl}/payment/cancel`,
-    );
-    const ipnUrl = this.config.get<string>(
-      'SSLCOMMERZ_WEBHOOK_URL',
-      `${backendUrl}/${apiPrefix}/payments/webhook/sslcommerz`,
-    );
-
-    return { successUrl, failUrl, cancelUrl, ipnUrl };
-  }
-
-  private stripTrailingSlash(url: string): string {
-    return url.replace(/\/+$/, '');
-  }
 
   // ─────────────────────────────────────────────────────────
   // 1. INITIATE SSLCOMMERZ PAYMENT
   //    userId = real UUID for auth users
-  //    userId = GUEST_SENTINEL for guest orders (userId IS NULL in DB)
+  //    userId = GUEST_SENTINEL (__GUEST__) for guest orders
   // ─────────────────────────────────────────────────────────
   async initiateSSLCommerzPayment(userId: string, dto: InitiatePaymentDto) {
     const isGuest = userId === GUEST_SENTINEL;
 
-    // ── Load order with correct ownership check ───────────
+    // Load order with correct ownership check
     const order = await this.prisma.order.findFirst({
       where: isGuest
-        // Guest: order must have no owner
-        ? { id: dto.orderId, userId: null }
-        // Auth:  order must belong to THIS user — prevents one user paying another's order
-        : { id: dto.orderId, userId },
+        ? { id: dto.orderId, userId: null }       // guest: no owner
+        : { id: dto.orderId, userId },             // auth: must belong to this user
       include: { address: true, payment: true, user: true },
     });
 
@@ -118,34 +53,31 @@ export class PaymentsService {
       throw new BadRequestException('Payment is already in progress for this order.');
     }
 
-    // ── Customer info ─────────────────────────────────────
+    // Resolve config — throws InternalServerErrorException if misconfigured in production
+    const cfg = this.paymentConfig.get();
+
     const customerName    = dto.customerName    ?? order.user?.name    ?? order.address.fullName;
     const customerEmail   = dto.customerEmail   ?? order.user?.email   ?? 'guest@deshimoslar.com';
     const customerPhone   = dto.customerPhone   ?? order.user?.phone   ?? order.address.phone;
     const customerAddress = dto.customerAddress ?? order.address.fullAddress;
 
-    // ── Generate unique transaction ID ───────────────────
     const tran_id = `DMR-${order.orderNumber}-${uuidv4().slice(0, 8).toUpperCase()}`;
 
-    const storeId   = this.config.get<string>('SSLCOMMERZ_STORE_ID',       'testbox');
-    const storePass = this.config.get<string>('SSLCOMMERZ_STORE_PASSWORD',  'qwerty');
-    const isLive    = this.config.get<string>('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-
-    // ── Production-safe URLs (throws if BACKEND_URL missing in prod) ──
-    const { successUrl, failUrl, cancelUrl, ipnUrl } = this.getCallbackUrls();
-
-    this.logger.log(`SSLCommerz initiate: orderId=${order.id} ipnUrl=${ipnUrl}`);
+    this.logger.log(
+      `SSLCommerz initiate: orderId=${order.id} mode=${cfg.isLive ? 'LIVE' : 'SANDBOX'} ` +
+      `ipnUrl=${cfg.ipnUrl}`,
+    );
 
     const params = new URLSearchParams({
-      store_id:         storeId,
-      store_passwd:     storePass,
+      store_id:         cfg.storeId,
+      store_passwd:     cfg.storePass,
       total_amount:     Number(order.totalAmount).toFixed(2),
       currency:         'BDT',
       tran_id,
-      success_url:      successUrl,
-      fail_url:         failUrl,
-      cancel_url:       cancelUrl,
-      ipn_url:          ipnUrl,
+      success_url:      cfg.successUrl,
+      fail_url:         cfg.failUrl,
+      cancel_url:       cfg.cancelUrl,
+      ipn_url:          cfg.ipnUrl,
       cus_name:         customerName,
       cus_email:        customerEmail,
       cus_add1:         customerAddress,
@@ -163,13 +95,13 @@ export class PaymentsService {
       product_name:     `Deshi Moslar Rannaghar Order #${order.orderNumber}`,
       product_category: 'Grocery',
       product_profile:  'general',
-      value_a:          order.id,           // orderId for IPN lookup
+      value_a:          order.id,
       value_b:          isGuest ? 'guest' : userId,
       value_c:          order.orderNumber,
       value_d:          isGuest ? 'guest' : 'auth',
     });
 
-    // ── Mark payment PROCESSING + store tran_id ──────────
+    // Mark payment PROCESSING + store tran_id
     await this.prisma.$transaction(async (tx) => {
       await tx.order.update({
         where: { id: order.id },
@@ -215,11 +147,8 @@ export class PaymentsService {
       });
     });
 
-    // ── Call SSLCommerz API ───────────────────────────────
-    const endpoint = isLive ? SSL_LIVE : SSL_SANDBOX;
-
     try {
-      const response = await axios.post(endpoint, params.toString(), {
+      const response = await axios.post(cfg.endpoint, params.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         timeout: 15000,
       });
@@ -227,7 +156,7 @@ export class PaymentsService {
       const sslData = response.data;
 
       if (sslData?.status === 'SUCCESS' && sslData?.GatewayPageURL) {
-        this.logger.log(`SSLCommerz initiated: tran_id=${tran_id}, order=${order.orderNumber}`);
+        this.logger.log(`SSLCommerz session created: tran_id=${tran_id}, order=${order.orderNumber}`);
         return {
           success:       true,
           gatewayUrl:    sslData.GatewayPageURL,
@@ -244,7 +173,7 @@ export class PaymentsService {
         `Payment gateway error: ${sslData?.failedreason ?? 'Unknown error'}`,
       );
     } catch (err: any) {
-      if (err instanceof BadRequestException || err instanceof InternalServerErrorException) throw err;
+      if (err instanceof BadRequestException) throw err;
       await this.rollbackPaymentStatus(order.id);
       this.logger.error(`SSLCommerz init failed: ${err.message}`);
       throw new BadRequestException('Could not connect to payment gateway. Please try again.');
@@ -257,10 +186,10 @@ export class PaymentsService {
   async handleSSLCommerzIPN(body: Record<string, any>) {
     const { tran_id, val_id, status, value_a: orderId } = body;
 
-    this.logger.log(`IPN received: tran_id=${tran_id}, status=${status}, orderId=${orderId}`);
+    this.logger.log(`IPN: tran_id=${tran_id}, status=${status}, orderId=${orderId}`);
 
     if (!tran_id || !orderId) {
-      this.logger.warn('IPN missing tran_id or orderId');
+      this.logger.warn('IPN missing tran_id or orderId — ignored');
       return { received: true };
     }
 
@@ -270,35 +199,36 @@ export class PaymentsService {
     });
 
     if (!payment) {
-      this.logger.warn(`IPN: payment not found for tran_id=${tran_id}`);
+      this.logger.warn(`IPN: no payment found for tran_id=${tran_id}`);
       return { received: true };
     }
 
-    // Idempotency — skip if already finalized
+    // Idempotency — if already finalized, skip silently
     if (['PAID', 'FAILED', 'CANCELLED'].includes(payment.paymentStatus)) {
-      this.logger.log(`IPN: already finalized (${payment.paymentStatus}), skipping`);
+      this.logger.log(`IPN: already finalized (${payment.paymentStatus}) — skipped`);
       return { received: true };
     }
 
-    const isLive    = this.config.get<string>('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-    const storeId   = this.config.get<string>('SSLCOMMERZ_STORE_ID',       'testbox');
-    const storePass = this.config.get<string>('SSLCOMMERZ_STORE_PASSWORD',  'qwerty');
-    const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
-
+    const cfg = this.paymentConfig.get();
     let verified = false;
-    let rawVerification: any = null;
+    let rawVerification: unknown = null;
 
     if (status === 'VALID' || status === 'VALIDATED') {
       try {
-        const vRes = await axios.get(verifyEndpoint, {
-          params: { val_id, store_id: storeId, store_passwd: storePass, format: 'json' },
+        const vRes = await axios.get(cfg.verifyEndpoint, {
+          params: {
+            val_id,
+            store_id:     cfg.storeId,
+            store_passwd: cfg.storePass,
+            format:       'json',
+          },
           timeout: 10000,
         });
         rawVerification = vRes.data;
         verified = vRes.data?.status === 'VALID' || vRes.data?.status === 'VALIDATED';
-        this.logger.log(`IPN SSL verify: ${vRes.data?.status}`);
+        this.logger.log(`IPN verify: ${vRes.data?.status}`);
       } catch (e: any) {
-        this.logger.error(`IPN SSL verification failed: ${e.message}`);
+        this.logger.error(`IPN verify failed: ${e.message}`);
       }
     }
 
@@ -358,7 +288,7 @@ export class PaymentsService {
   }
 
   // ─────────────────────────────────────────────────────────
-  // 3. SUCCESS CALLBACK (browser redirect)
+  // 3. SUCCESS CALLBACK (browser redirect from gateway)
   // ─────────────────────────────────────────────────────────
   async handlePaymentSuccess(body: Record<string, any>) {
     const { tran_id, val_id, status, value_a: orderId } = body;
@@ -374,20 +304,19 @@ export class PaymentsService {
 
     if (!payment) return { success: false, orderId: orderId ?? null };
 
-    // Already processed by IPN — idempotent
+    // Already processed by IPN — idempotent return
     if (payment.paymentStatus === 'PAID') {
       return { success: true, orderId: payment.orderId };
     }
 
-    const isLive = this.config.get<string>('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-    const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
+    const cfg = this.paymentConfig.get();
 
     try {
-      const vRes = await axios.get(verifyEndpoint, {
+      const vRes = await axios.get(cfg.verifyEndpoint, {
         params: {
           val_id,
-          store_id:     this.config.get('SSLCOMMERZ_STORE_ID',      'testbox'),
-          store_passwd: this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty'),
+          store_id:     cfg.storeId,
+          store_passwd: cfg.storePass,
           format:       'json',
         },
         timeout: 10000,
@@ -398,11 +327,11 @@ export class PaymentsService {
           await tx.payment.update({
             where: { id: payment.id },
             data: {
-              paymentStatus: 'PAID',
-              gatewayTxnId:  val_id,
+              paymentStatus:  'PAID',
+              gatewayTxnId:   val_id,
               gatewayResponse: vRes.data,
-              verifiedAt:    new Date(),
-              paidAt:        new Date(),
+              verifiedAt:     new Date(),
+              paidAt:         new Date(),
             },
           });
           await tx.order.update({
@@ -457,7 +386,7 @@ export class PaymentsService {
   }
 
   // ─────────────────────────────────────────────────────────
-  // 6. REFUND (auth users only — guest orders don't get refunds here)
+  // 6. REFUND
   // ─────────────────────────────────────────────────────────
   async initiateRefund(orderId: string, userId: string, reason: string, amount?: number) {
     const payment = await this.prisma.payment.findFirst({
@@ -501,11 +430,7 @@ export class PaymentsService {
       });
     });
 
-    return {
-      success:      true,
-      message:      'Refund process started.',
-      refundAmount,
-    };
+    return { success: true, message: 'Refund process started.', refundAmount };
   }
 
   // ─────────────────────────────────────────────────────────
@@ -525,7 +450,7 @@ export class PaymentsService {
         ...payment,
         amount:          Number(payment.amount),
         refundAmount:    payment.refundAmount ? Number(payment.refundAmount) : null,
-        gatewayResponse: undefined, // never expose raw gateway data
+        gatewayResponse: undefined, // never expose raw gateway response
       },
     };
   }
@@ -597,6 +522,3 @@ export class PaymentsService {
     });
   }
 }
-
-// ── Export sentinel for use in orders.service.ts ─────────
-export { GUEST_SENTINEL };

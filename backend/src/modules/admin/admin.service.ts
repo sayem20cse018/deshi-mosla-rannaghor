@@ -1605,4 +1605,172 @@ export class AdminService {
     return { success: true, data: products };
   }
 
+
+  // ---------------------------------------------------------------------------
+  // BLOG MANAGEMENT
+  // ---------------------------------------------------------------------------
+
+  async adminGetBlogs(p: { page?:number; limit?:number; search?:string; isPublished?:string }) {
+    const { page=1, limit=20, search, isPublished } = p;
+    const skip = (page-1)*limit;
+    const where: any = {};
+    if (search) where.OR = [{ title: { contains: search, mode: 'insensitive' } }, { excerpt: { contains: search, mode: 'insensitive' } }];
+    if (isPublished !== undefined) where.isPublished = isPublished === 'true';
+    const [posts, total] = await Promise.all([
+      this.prisma.blogPost.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } }),
+      this.prisma.blogPost.count({ where }),
+    ]);
+    return { success: true, data: posts, meta: { page, limit, total, totalPages: Math.ceil(total/limit) } };
+  }
+
+  async adminGetBlog(id: string) {
+    const post = await this.prisma.blogPost.findUnique({ where: { id } });
+    if (!post) throw new Error('Blog post not found');
+    return { success: true, data: post };
+  }
+
+  async adminCreateBlog(dto: { title: string; titleEn?: string; slug: string; excerpt?: string; excerptEn?: string; content?: string; contentEn?: string; coverImage?: string; isPublished?: boolean; metaTitle?: string; metaDesc?: string; sortOrder?: number }) {
+    const post = await this.prisma.blogPost.create({ data: { ...dto, publishedAt: dto.isPublished ? new Date() : null } });
+    return { success: true, data: post };
+  }
+
+  async adminUpdateBlog(id: string, dto: Record<string, unknown>) {
+    const data: any = { ...dto };
+    if (dto.isPublished === true) data.publishedAt = new Date();
+    if (dto.isPublished === false) data.publishedAt = null;
+    const post = await this.prisma.blogPost.update({ where: { id }, data });
+    return { success: true, data: post };
+  }
+
+  async adminDeleteBlog(id: string) {
+    await this.prisma.blogPost.delete({ where: { id } });
+    return { success: true, message: 'Blog post deleted.' };
+  }
+
+  // ---------------------------------------------------------------------------
+  // FAQ MANAGEMENT
+  // ---------------------------------------------------------------------------
+
+  async adminGetFaqs(p: { page?:number; limit?:number; search?:string }) {
+    const { page=1, limit=50, search } = p;
+    const skip = (page-1)*limit;
+    const where: any = {};
+    if (search) where.OR = [{ question: { contains: search, mode: 'insensitive' } }, { answer: { contains: search, mode: 'insensitive' } }];
+    const [faqs, total] = await Promise.all([
+      this.prisma.fAQ.findMany({ where, skip, take: limit, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] }),
+      this.prisma.fAQ.count({ where }),
+    ]);
+    return { success: true, data: faqs, meta: { page, limit, total, totalPages: Math.ceil(total/limit) } };
+  }
+
+  async adminCreateFaq(dto: { question: string; questionEn?: string; answer: string; answerEn?: string; isPublished?: boolean; sortOrder?: number }) {
+    const faq = await this.prisma.fAQ.create({ data: dto });
+    return { success: true, data: faq };
+  }
+
+  async adminUpdateFaq(id: string, dto: Record<string, unknown>) {
+    const faq = await this.prisma.fAQ.update({ where: { id }, data: dto as any });
+    return { success: true, data: faq };
+  }
+
+  async adminDeleteFaq(id: string) {
+    await this.prisma.fAQ.delete({ where: { id } });
+    return { success: true, message: 'FAQ deleted.' };
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAYMENT TRANSACTIONS
+  // ---------------------------------------------------------------------------
+
+  async adminGetTransactions(p: { page?:number; limit?:number; search?:string; status?:string; method?:string; from?:string; to?:string }) {
+    const { page=1, limit=25, search, status, method, from, to } = p;
+    const skip = (page-1)*limit;
+    const where: any = {};
+    if (status) where.paymentStatus = status;
+    if (method) where.paymentMethod = method;
+    if (from || to) {
+      const dF: any = {};
+      if (from) { const d = new Date(from); d.setHours(0,0,0,0); dF.gte = d; }
+      if (to)   { const d = new Date(to);   d.setHours(23,59,59,999); dF.lte = d; }
+      where.createdAt = dF;
+    }
+    if (search) {
+      where.OR = [
+        { transactionId: { contains: search, mode: 'insensitive' } },
+        { order: { orderNumber: { contains: search, mode: 'insensitive' } } },
+        { order: { address: { phone: { contains: search, mode: 'insensitive' } } } },
+      ];
+    }
+
+    const [payments, total] = await Promise.all([
+      this.prisma.payment.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          order: {
+            select: { id: true, orderNumber: true, userId: true,
+              address: { select: { fullName: true, phone: true } },
+              user: { select: { name: true, email: true, phone: true } },
+            },
+          },
+          transactions: { orderBy: { createdAt: 'desc' }, take: 3 },
+        },
+      }),
+      this.prisma.payment.count({ where }),
+    ]);
+
+    return {
+      success: true,
+      data: payments.map(p => ({
+        ...p,
+        amount: Number(p.amount),
+        refundAmount: p.refundAmount ? Number(p.refundAmount) : null,
+        gatewayResponse: undefined,
+      })),
+      meta: { page, limit, total, totalPages: Math.ceil(total/limit) },
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // ACTIVITY LOGS
+  // ---------------------------------------------------------------------------
+
+  async adminGetActivityLogs(p: { page?:number; limit?:number; adminId?:string; action?:string; entity?:string; from?:string; to?:string }) {
+    const { page=1, limit=30, adminId, action, entity, from, to } = p;
+    const skip = (page-1)*limit;
+    const where: any = {};
+    if (adminId) where.adminId = adminId;
+    if (action)  where.action  = { contains: action,  mode: 'insensitive' };
+    if (entity)  where.entity  = { contains: entity,  mode: 'insensitive' };
+    if (from || to) {
+      const dF: any = {};
+      if (from) { const d = new Date(from); d.setHours(0,0,0,0); dF.gte = d; }
+      if (to)   { const d = new Date(to);   d.setHours(23,59,59,999); dF.lte = d; }
+      where.createdAt = dF;
+    }
+
+    const [logs, total] = await Promise.all([
+      this.prisma.adminActivityLog.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: { admin: { select: { id: true, name: true, email: true, role: true } } },
+      }),
+      this.prisma.adminActivityLog.count({ where }),
+    ]);
+
+    return { success: true, data: logs, meta: { page, limit, total, totalPages: Math.ceil(total/limit) } };
+  }
+
+  async adminLogActivity(adminId: string, action: string, entity: string, entityId?: string, details?: Record<string, unknown>) {
+    try {
+      await this.prisma.adminActivityLog.create({
+        data: { adminId, action, entity, entityId, details: details as any },
+      });
+    } catch { /* non-blocking */ }
+  }
+
 }

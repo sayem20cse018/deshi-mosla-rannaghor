@@ -292,6 +292,9 @@ export function CartDrawer() {
                   </p>
                 )}
               </div>
+            </>
+          )}
+        </div>
 
         {/* ===== STICKY FOOTER ===== */}
         {items.length > 0 && (

@@ -527,4 +527,71 @@ export class AdminController {
     return this.adminService.adminGetFullLowStock();
   }
 
+
+  // ─── BLOG ────────────────────────────────────────────────────────────────
+
+  @Get('blog')
+  adminGetBlogs(@Query('page') page?: string, @Query('limit') limit?: string, @Query('search') search?: string, @Query('isPublished') isPublished?: string) {
+    return this.adminService.adminGetBlogs({ page: page?Number(page):1, limit: limit?Number(limit):20, search, isPublished });
+  }
+
+  @Get('blog/:id')
+  adminGetBlog(@Param('id') id: string) { return this.adminService.adminGetBlog(id); }
+
+  @Post('blog')
+  adminCreateBlog(@Body() dto: Record<string, unknown>) { return this.adminService.adminCreateBlog(dto as any); }
+
+  @Patch('blog/:id')
+  adminUpdateBlog(@Param('id') id: string, @Body() dto: Record<string, unknown>) { return this.adminService.adminUpdateBlog(id, dto); }
+
+  @Delete('blog/:id')
+  adminDeleteBlog(@Param('id') id: string) { return this.adminService.adminDeleteBlog(id); }
+
+  // ─── FAQ ─────────────────────────────────────────────────────────────────
+
+  @Public()
+  @Get('faqs')
+  adminGetFaqs(@Query('page') page?: string, @Query('limit') limit?: string, @Query('search') search?: string) {
+    return this.adminService.adminGetFaqs({ page: page?Number(page):1, limit: limit?Number(limit):50, search });
+  }
+
+  @Post('faqs')
+  adminCreateFaq(@Body() dto: Record<string, unknown>) { return this.adminService.adminCreateFaq(dto as any); }
+
+  @Patch('faqs/:id')
+  adminUpdateFaq(@Param('id') id: string, @Body() dto: Record<string, unknown>) { return this.adminService.adminUpdateFaq(id, dto); }
+
+  @Delete('faqs/:id')
+  adminDeleteFaq(@Param('id') id: string) { return this.adminService.adminDeleteFaq(id); }
+
+  // ─── PAYMENT TRANSACTIONS ────────────────────────────────────────────────
+
+  @Get('transactions')
+  adminGetTransactions(
+    @Query('page')    page?:   string,
+    @Query('limit')   limit?:  string,
+    @Query('search')  search?: string,
+    @Query('status')  status?: string,
+    @Query('method')  method?: string,
+    @Query('from')    from?:   string,
+    @Query('to')      to?:     string,
+  ) {
+    return this.adminService.adminGetTransactions({ page: page?Number(page):1, limit: limit?Number(limit):25, search, status, method, from, to });
+  }
+
+  // ─── ACTIVITY LOGS ───────────────────────────────────────────────────────
+
+  @Get('activity-logs')
+  adminGetActivityLogs(
+    @Query('page')     page?:    string,
+    @Query('limit')    limit?:   string,
+    @Query('adminId')  adminId?: string,
+    @Query('action')   action?:  string,
+    @Query('entity')   entity?:  string,
+    @Query('from')     from?:    string,
+    @Query('to')       to?:      string,
+  ) {
+    return this.adminService.adminGetActivityLogs({ page: page?Number(page):1, limit: limit?Number(limit):30, adminId, action, entity, from, to });
+  }
+
 }

@@ -987,3 +987,39 @@ model Promotion {
   @@index([startDate, endDate])
   @@map("promotions")
 }
+
+model BlogPost {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(300)
+  titleEn     String?  @db.VarChar(300)
+  slug        String   @unique @db.VarChar(320)
+  excerpt     String?  @db.Text
+  excerptEn   String?  @db.Text
+  content     String?  @db.Text
+  contentEn   String?  @db.Text
+  coverImage  String?  @db.VarChar(500)
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  metaTitle   String?  @db.VarChar(200)
+  metaDesc    String?  @db.VarChar(500)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([isPublished])
+  @@index([publishedAt])
+  @@map("blog_posts")
+}
+
+model FAQ {
+  id          String   @id @default(uuid())
+  question    String   @db.Text
+  questionEn  String?  @db.Text
+  answer      String   @db.Text
+  answerEn    String?  @db.Text
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([isPublished, sortOrder])
+  @@map("faqs")
+}
