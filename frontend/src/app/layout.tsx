@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     default: 'দেশি মসলার রান্নাঘর | Deshi Moslar Rannaghar',
     template: '%s | দেশি মসলার রান্নাঘর',
   },
+  metadataBase: new URL('http://localhost:3000'),
   description:
     'বাংলাদেশের সেরা অনলাইন মসলা ও গ্রোসারি শপ। দেশীয় মসলা, চাল, ডাল, তেল এবং রান্নার প্রয়োজনীয় পণ্য ঘরে বসে অর্ডার করুন।',
   keywords: ['মসলা', 'গ্রোসারি', 'অনলাইন শপ', 'বাংলাদেশ', 'spices', 'grocery', 'deshi moslar'],

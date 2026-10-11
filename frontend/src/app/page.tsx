@@ -1,6 +1,3 @@
-import { redirect } from 'next/navigation';
-
-// Root redirects to the (shop) group homepage
-export default function RootPage() {
-  redirect('/');
-}
+// Root page — the (shop) layout wraps this automatically
+// Importing directly from the shop group's page
+export { default } from './(shop)/page';
