@@ -38,14 +38,14 @@ const NAV_LINKS = [
 
 export function Header() {
   const pathname = usePathname();
-  const { getItemCount, getTotal, openCart } = useCartStore();
+  const { getItemCount, getTotals, openCart } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const itemCount = getItemCount();
-  const cartTotal = getTotal();
+  const cartTotal = getTotals().grandTotal;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);

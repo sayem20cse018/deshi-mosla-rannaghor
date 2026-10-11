@@ -21,7 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   const { fetchUser, isAuthenticated } = useAuthStore();
-  const { fetchCart } = useCartStore();
+  const { fetchFromServer, syncToServer } = useCartStore();
 
   useEffect(() => {
     fetchUser();
@@ -29,9 +29,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchCart();
+      fetchFromServer();
     }
-  }, [isAuthenticated, fetchCart]);
+  }, [isAuthenticated, fetchFromServer]);
 
   return (
     <QueryClientProvider client={queryClient}>

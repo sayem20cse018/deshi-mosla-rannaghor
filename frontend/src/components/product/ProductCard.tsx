@@ -59,7 +59,21 @@ export function ProductCard({ product, className, variant = 'default' }: Product
     e.preventDefault();
     if (isOOS || addingCart) return;
     setAddingCart(true);
-    await addItem(product.id);
+    await addItem(
+      {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        discountPrice: product.discountPrice ?? null,
+        discountPercent: product.discountPercent ?? null,
+        weight: product.weight ?? null,
+        stockStatus: product.stockStatus,
+        primaryImage: product.primaryImage ?? null,
+        availableStock: product.availableStock ?? 99,
+      },
+      1,
+    );
     setAddingCart(false);
   }
 

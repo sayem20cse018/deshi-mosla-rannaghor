@@ -13,6 +13,12 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  @Get('count')
+  @ApiOperation({ summary: 'Get cart item count (lightweight)' })
+  getCount(@CurrentUser('id') userId: string) {
+    return this.cartService.getItemCount(userId);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get user cart' })
   getCart(@CurrentUser('id') userId: string) {

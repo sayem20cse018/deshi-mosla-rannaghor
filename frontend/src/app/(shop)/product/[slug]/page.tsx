@@ -31,17 +31,32 @@ export default function ProductDetailPage() {
   const [wishlisted, setWishlisted] = useState(false);
   const [addingCart, setAddingCart] = useState(false);
 
+  function buildProductArg() {
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: Number(product.price),
+      discountPrice: product.discountPrice ? Number(product.discountPrice) : null,
+      discountPercent: product.discountPercent ?? null,
+      weight: product.weight ?? null,
+      stockStatus: product.stockStatus,
+      primaryImage: product.images?.[0]?.url ?? null,
+      availableStock: product.inventory?.availableStock ?? 99,
+    };
+  }
+
   async function handleAddToCart() {
     if (!product) return;
     setAddingCart(true);
-    await addItem(product.id, qty);
+    await addItem(buildProductArg(), qty);
     setAddingCart(false);
   }
 
   async function handleBuyNow() {
     if (!product) return;
     setAddingCart(true);
-    await addItem(product.id, qty);
+    await addItem(buildProductArg(), qty);
     setAddingCart(false);
     openCart();
   }

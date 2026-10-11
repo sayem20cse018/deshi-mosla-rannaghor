@@ -183,8 +183,9 @@
     @apply transition-all duration-300 hover:ring-2 hover:ring-brand-300 hover:ring-offset-1;
   }
 
-  /* Safe bottom padding for mobile nav */
+  /* Safe area padding helpers */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .mb-safe  { margin-bottom:  env(safe-area-inset-bottom, 16px); }
 }
 
 /* ── Animations ──────────────────────────────────────────── */
