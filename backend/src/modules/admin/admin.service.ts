@@ -1773,4 +1773,214 @@ export class AdminService {
     } catch { /* non-blocking */ }
   }
 
+  // ─── DELIVERY CHARGES CRUD ────────────────────────────────────────────────
+
+  async adminGetDeliveryCharges(p: { page?: number; limit?: number; search?: string; isActive?: string }) {
+    const page  = p.page  ?? 1;
+    const limit = p.limit ?? 20;
+    const skip  = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (p.isActive !== undefined && p.isActive !== '') {
+      where['isActive'] = p.isActive === 'true';
+    }
+    if (p.search) {
+      where['OR'] = [
+        { label:    { contains: p.search, mode: 'insensitive' } },
+        { division: { contains: p.search, mode: 'insensitive' } },
+        { district: { contains: p.search, mode: 'insensitive' } },
+        { area:     { contains: p.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.deliveryCharge.findMany({
+        where: where as any,
+        skip,
+        take:    limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.deliveryCharge.count({ where: where as any }),
+    ]);
+
+    return { success: true, data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async adminCreateDeliveryCharge(dto: {
+    label: string;
+    division?: string;
+    district?: string;
+    area?: string;
+    charge: number;
+    minOrderFree?: number;
+    isActive?: boolean;
+  }) {
+    const record = await this.prisma.deliveryCharge.create({
+      data: {
+        label:       dto.label,
+        division:    dto.division,
+        district:    dto.district,
+        area:        dto.area,
+        charge:      dto.charge,
+        minOrderFree: dto.minOrderFree,
+        isActive:    dto.isActive ?? true,
+      },
+    });
+    return { success: true, data: record };
+  }
+
+  async adminUpdateDeliveryCharge(id: string, dto: Record<string, unknown>) {
+    const record = await this.prisma.deliveryCharge.update({
+      where: { id },
+      data:  dto as any,
+    });
+    return { success: true, data: record };
+  }
+
+  async adminDeleteDeliveryCharge(id: string) {
+    // Soft-delete if referenced by active deliveries, else hard-delete
+    const usageCount = await this.prisma.delivery.count({
+      where: {
+        order: {
+          status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED', 'REFUNDED'] },
+        },
+        deliveryCharge: {
+          equals: await this.prisma.deliveryCharge
+            .findUnique({ where: { id }, select: { charge: true } })
+            .then((r) => r?.charge ?? 0) as any,
+        },
+      },
+    });
+
+    if (usageCount > 0) {
+      const updated = await this.prisma.deliveryCharge.update({
+        where: { id },
+        data:  { isActive: false },
+      });
+      return { success: true, data: updated, softDeleted: true };
+    }
+
+    await this.prisma.deliveryCharge.delete({ where: { id } });
+    return { success: true };
+  }
+
+  // ─── PAYMENT ADMIN QUERIES ────────────────────────────────────────────────
+
+  async adminGetCODOrders(p: { page?: number; limit?: number; codStatus?: string; from?: string; to?: string }) {
+    const page  = p.page  ?? 1;
+    const limit = p.limit ?? 25;
+    const skip  = (page - 1) * limit;
+
+    const where: Record<string, unknown> = { paymentMethod: 'CASH_ON_DELIVERY' };
+    if (p.codStatus) where['codStatus'] = p.codStatus;
+    if (p.from || p.to) {
+      where['createdAt'] = {};
+      if (p.from) (where['createdAt'] as Record<string, unknown>)['gte'] = new Date(p.from);
+      if (p.to)   (where['createdAt'] as Record<string, unknown>)['lte'] = new Date(p.to);
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.payment.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          order: {
+            select: {
+              id:          true,
+              orderNumber: true,
+              totalAmount: true,
+              createdAt:   true,
+              address: {
+                select: { fullName: true, phone: true, district: true },
+              },
+              user: {
+                select: { id: true, name: true, email: true, phone: true },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.payment.count({ where: where as any }),
+    ]);
+
+    // Pending COD total
+    const pendingTotal = await this.prisma.payment.aggregate({
+      _sum: { amount: true },
+      where: { paymentMethod: 'CASH_ON_DELIVERY', codStatus: 'PENDING' },
+    });
+
+    return {
+      success: true,
+      data,
+      meta:    { page, limit, total, totalPages: Math.ceil(total / limit) },
+      pendingTotal: Number(pendingTotal._sum.amount ?? 0),
+    };
+  }
+
+  async adminUpdateCODStatus(paymentId: string, codStatus: 'PENDING' | 'COLLECTED' | 'FAILED') {
+    const updateData: Record<string, unknown> = { codStatus };
+    if (codStatus === 'COLLECTED') {
+      updateData['paymentStatus'] = 'PAID';
+      updateData['paidAt']        = new Date();
+    }
+
+    const payment = await this.prisma.payment.update({
+      where: { id: paymentId },
+      data:  updateData as any,
+    });
+
+    if (codStatus === 'COLLECTED') {
+      await this.prisma.order.update({
+        where: { id: payment.orderId },
+        data:  { paymentStatus: 'PAID' },
+      });
+    }
+
+    return { success: true, data: payment };
+  }
+
+  async adminGetOnlinePayments(p: { page?: number; limit?: number; status?: string; method?: string; from?: string; to?: string }) {
+    const page  = p.page  ?? 1;
+    const limit = p.limit ?? 25;
+    const skip  = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {
+      paymentMethod: { not: 'CASH_ON_DELIVERY' },
+    };
+    if (p.status) where['paymentStatus'] = p.status;
+    if (p.method) where['paymentMethod'] = p.method;
+    if (p.from || p.to) {
+      where['createdAt'] = {};
+      if (p.from) (where['createdAt'] as Record<string, unknown>)['gte'] = new Date(p.from);
+      if (p.to)   (where['createdAt'] as Record<string, unknown>)['lte'] = new Date(p.to);
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.payment.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          transactions: { orderBy: { createdAt: 'desc' }, take: 1 },
+          order: {
+            select: {
+              id:          true,
+              orderNumber: true,
+              createdAt:   true,
+              user: {
+                select: { id: true, name: true, email: true },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.payment.count({ where: where as any }),
+    ]);
+
+    return { success: true, data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+  }
+
 }

@@ -595,4 +595,84 @@ export class AdminController {
     return this.adminService.adminGetActivityLogs({ page: page?Number(page):1, limit: limit?Number(limit):30, adminId, action, entity, from, to });
   }
 
+  // ─── DELIVERY CHARGES ────────────────────────────────────────────────────
+
+  @Get('delivery/charges')
+  adminGetDeliveryCharges(
+    @Query('page')     page?:     string,
+    @Query('limit')    limit?:    string,
+    @Query('search')   search?:   string,
+    @Query('isActive') isActive?: string,
+  ) {
+    return this.adminService.adminGetDeliveryCharges({
+      page:     page  ? Number(page)  : 1,
+      limit:    limit ? Number(limit) : 20,
+      search,
+      isActive,
+    });
+  }
+
+  @Post('delivery/charges')
+  adminCreateDeliveryCharge(@Body() dto: Record<string, unknown>) {
+    return this.adminService.adminCreateDeliveryCharge(dto as any);
+  }
+
+  @Patch('delivery/charges/:id')
+  adminUpdateDeliveryCharge(@Param('id') id: string, @Body() dto: Record<string, unknown>) {
+    return this.adminService.adminUpdateDeliveryCharge(id, dto);
+  }
+
+  @Delete('delivery/charges/:id')
+  adminDeleteDeliveryCharge(@Param('id') id: string) {
+    return this.adminService.adminDeleteDeliveryCharge(id);
+  }
+
+  // ─── COD PAYMENTS ────────────────────────────────────────────────────────
+
+  @Get('payments/cod')
+  adminGetCODOrders(
+    @Query('page')      page?:      string,
+    @Query('limit')     limit?:     string,
+    @Query('codStatus') codStatus?: string,
+    @Query('from')      from?:      string,
+    @Query('to')        to?:        string,
+  ) {
+    return this.adminService.adminGetCODOrders({
+      page:      page  ? Number(page)  : 1,
+      limit:     limit ? Number(limit) : 25,
+      codStatus,
+      from,
+      to,
+    });
+  }
+
+  @Patch('payments/cod/:paymentId/status')
+  adminUpdateCODStatus(
+    @Param('paymentId') paymentId: string,
+    @Body('codStatus')  codStatus: 'PENDING' | 'COLLECTED' | 'FAILED',
+  ) {
+    return this.adminService.adminUpdateCODStatus(paymentId, codStatus);
+  }
+
+  // ─── ONLINE PAYMENTS ──────────────────────────────────────────────────────
+
+  @Get('payments/online')
+  adminGetOnlinePayments(
+    @Query('page')   page?:   string,
+    @Query('limit')  limit?:  string,
+    @Query('status') status?: string,
+    @Query('method') method?: string,
+    @Query('from')   from?:   string,
+    @Query('to')     to?:     string,
+  ) {
+    return this.adminService.adminGetOnlinePayments({
+      page:   page  ? Number(page)  : 1,
+      limit:  limit ? Number(limit) : 25,
+      status,
+      method,
+      from,
+      to,
+    });
+  }
+
 }
