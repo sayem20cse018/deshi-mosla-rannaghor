@@ -159,7 +159,7 @@ export default function BlogPage() {
                   <tr key={String(blog.id)} className="hover:bg-gray-50/60 transition-colors">
                     <td className="px-4 py-3">
                       <p className="font-semibold text-gray-900">{truncate(String(blog.title ?? blog.titleEn ?? ''), 60)}</p>
-                      {blog.titleEn && <p className="text-xs text-gray-400 mt-0.5">{truncate(String(blog.titleEn), 60)}</p>}
+                      {Boolean(blog.titleEn) && <p className="text-xs text-gray-400 mt-0.5">{truncate(String(blog.titleEn), 60)}</p>}
                     </td>
                     <td className="px-4 py-3">
                       {blog.isPublished

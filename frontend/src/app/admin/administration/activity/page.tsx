@@ -115,7 +115,7 @@ export default function ActivityPage() {
                       <p className="font-semibold text-gray-900">
                         {String(log.adminName ?? log.admin ?? '—')}
                       </p>
-                      {log.adminEmail && (
+                      {Boolean(log.adminEmail) && (
                         <p className="text-xs text-gray-400">{String(log.adminEmail)}</p>
                       )}
                     </td>

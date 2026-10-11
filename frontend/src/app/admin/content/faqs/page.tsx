@@ -123,7 +123,7 @@ export default function FaqsPage() {
                     <td className="px-4 py-3 text-gray-400 font-bold w-16">{String(faq.sortOrder ?? '—')}</td>
                     <td className="px-4 py-3">
                       <p className="font-semibold text-gray-900">{truncate(String(faq.question ?? ''), 80)}</p>
-                      {faq.questionEn && (
+                      {Boolean(faq.questionEn) && (
                         <p className="text-xs text-gray-400 mt-0.5">{truncate(String(faq.questionEn), 80)}</p>
                       )}
                     </td>
