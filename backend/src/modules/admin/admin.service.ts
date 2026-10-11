@@ -2143,4 +2143,49 @@ export class AdminService {
     return { success: true, message: 'Reordered.' };
   }
 
+
+  // ---------------------------------------------------------------------------
+  // CUSTOMER WISHLIST VIEW
+  // ---------------------------------------------------------------------------
+
+  async adminGetWishlists(p: { page?: number; limit?: number; search?: string }) {
+    const { page = 1, limit = 20, search } = p;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (search) {
+      where.user = { OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+      ]};
+    }
+
+    const [wishlists, total] = await Promise.all([
+      this.prisma.wishlist.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          user: { select: { id: true, name: true, email: true, phone: true } },
+          items: {
+            take: 5,
+            include: { product: { select: { id: true, name: true, slug: true, price: true, discountPrice: true, images: { where: { isPrimary: true }, take: 1, select: { url: true } } } } },
+          },
+          _count: { select: { items: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      this.prisma.wishlist.count({ where }),
+    ]);
+
+    return {
+      success: true,
+      data: wishlists.map(w => ({
+        ...w,
+        itemCount: w._count.items,
+      })),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
 }

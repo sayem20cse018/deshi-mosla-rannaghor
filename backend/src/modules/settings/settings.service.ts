@@ -26,6 +26,12 @@ const DEFAULTS: Record<string, { value: string; description: string; group: stri
   'seo.meta_title':     { value: 'দেশি মসলার রান্নাঘর | Deshi Moslar Rannaghar', description: 'Default SEO title', group: 'seo' },
   'seo.meta_desc':      { value: 'বাংলাদেশের বিশ্বস্ত অনলাইন মসলা ও গ্রোসারি শপ।', description: 'Default meta description', group: 'seo' },
   'seo.keywords':       { value: 'মসলা, grocery, online shop, Bangladesh', description: 'SEO keywords', group: 'seo' },
+  // Static pages content
+  'pages.about.content':    { value: '', description: 'About us page content', group: 'pages' },
+  'pages.privacy.content':  { value: '', description: 'Privacy policy content', group: 'pages' },
+  'pages.terms.content':    { value: '', description: 'Terms and conditions', group: 'pages' },
+  'pages.return.content':   { value: '', description: 'Return policy content', group: 'pages' },
+  'pages.shipping.content': { value: '', description: 'Shipping policy content', group: 'pages' },
   'tax.rate':           { value: '0', description: 'Tax rate (%)', group: 'tax' },
   'tax.enabled':        { value: 'false', description: 'Enable tax calculation', group: 'tax' },
   'delivery.free_threshold': { value: '1000', description: 'Free delivery above this amount (৳)', group: 'delivery' },

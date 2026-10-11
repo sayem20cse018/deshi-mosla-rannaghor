@@ -739,4 +739,16 @@ export class AdminController {
     return this.adminService.adminDeleteAnnouncement(id);
   }
 
+
+  // ─── CUSTOMER WISHLISTS ───────────────────────────────────────────────────
+
+  @Get('wishlists')
+  adminGetWishlists(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.adminService.adminGetWishlists({ page: page?Number(page):1, limit: limit?Number(limit):20, search });
+  }
+
 }
