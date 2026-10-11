@@ -111,6 +111,7 @@ export class ProductsService {
 
   // ── Public: related products ──────────────────────────
   async getRelated(slug: string, limit = 6) {
+    const safeLimit = Math.min(20, Math.max(1, Number(limit) || 6));
     const product = await this.prisma.product.findUnique({
       where: { slug },
       select: { id: true, categoryId: true },
@@ -124,7 +125,7 @@ export class ProductsService {
         id: { not: product.id },
       },
       select: CARD_SELECT,
-      take: limit,
+      take: safeLimit,
       orderBy: { isBestSeller: 'desc' },
     });
 
@@ -133,25 +134,28 @@ export class ProductsService {
 
   // ── Public: featured / best-sellers / new-arrivals ────
   async getFeatured(limit = 10) {
+    const safeLimit = Math.min(50, Math.max(1, Number(limit) || 10));
     const products = await this.prisma.product.findMany({
       where: { isActive: true, isFeatured: true },
-      select: CARD_SELECT, take: limit, orderBy: { createdAt: 'desc' },
+      select: CARD_SELECT, take: safeLimit, orderBy: { createdAt: 'desc' },
     });
     return { success: true, data: products.map(formatCard) };
   }
 
   async getBestSellers(limit = 10) {
+    const safeLimit = Math.min(50, Math.max(1, Number(limit) || 10));
     const products = await this.prisma.product.findMany({
       where: { isActive: true, isBestSeller: true },
-      select: CARD_SELECT, take: limit,
+      select: CARD_SELECT, take: safeLimit,
     });
     return { success: true, data: products.map(formatCard) };
   }
 
   async getNewArrivals(limit = 10) {
+    const safeLimit = Math.min(50, Math.max(1, Number(limit) || 10));
     const products = await this.prisma.product.findMany({
       where: { isActive: true, isNewArrival: true },
-      select: CARD_SELECT, take: limit, orderBy: { createdAt: 'desc' },
+      select: CARD_SELECT, take: safeLimit, orderBy: { createdAt: 'desc' },
     });
     return { success: true, data: products.map(formatCard) };
   }
@@ -264,7 +268,47 @@ export class ProductsService {
       ];
     }
 
-    if (q.category)   where.category     = { slug: q.category };
+    // Category: match exact slug OR parent slug (include sub-categories)
+    if (q.category) {
+      where.OR = [
+        ...(where.OR as any[] ?? []),
+        // handled below via category filter — clear OR for category
+      ];
+      delete where.OR; // reset; category uses its own AND condition
+      if (q.search) {
+        where.AND = [
+          {
+            OR: [
+              { name:   { contains: q.search, mode: 'insensitive' } },
+              { nameEn: { contains: q.search, mode: 'insensitive' } },
+              { sku:    { contains: q.search, mode: 'insensitive' } },
+              { tags:   { has: q.search } },
+              { description: { contains: q.search, mode: 'insensitive' } },
+            ],
+          },
+          {
+            OR: [
+              { category: { slug: q.category } },
+              { category: { parent: { slug: q.category } } },
+            ],
+          },
+        ];
+      } else {
+        where.OR = [
+          { category: { slug: q.category } },
+          { category: { parent: { slug: q.category } } },
+        ];
+      }
+    } else if (q.search) {
+      where.OR = [
+        { name:   { contains: q.search, mode: 'insensitive' } },
+        { nameEn: { contains: q.search, mode: 'insensitive' } },
+        { sku:    { contains: q.search, mode: 'insensitive' } },
+        { tags:   { has: q.search } },
+        { description: { contains: q.search, mode: 'insensitive' } },
+      ];
+    }
+
     if (q.brand)      where.brand        = { slug: q.brand };
     if (q.stockStatus) where.stockStatus = q.stockStatus as any;
     if (q.isFeatured)  where.isFeatured  = true;

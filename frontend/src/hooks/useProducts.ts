@@ -30,7 +30,7 @@ export interface ProductsResponse {
 function buildParams(q: ProductQuery) {
   const p: Record<string, any> = {};
   Object.entries(q).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== '' && v !== false) p[k] = v;
+    if (v !== undefined && v !== null && v !== '') p[k] = v;
   });
   return p;
 }
