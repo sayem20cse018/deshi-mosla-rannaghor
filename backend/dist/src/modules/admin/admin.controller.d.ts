@@ -1439,4 +1439,235 @@ export declare class AdminController {
             stockStatus: import(".prisma/client").$Enums.StockStatus;
         }[];
     }>;
+    adminGetBlogs(page?: string, limit?: string, search?: string, isPublished?: string): Promise<{
+        success: boolean;
+        data: {
+            title: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            metaTitle: string | null;
+            metaDesc: string | null;
+            sortOrder: number;
+            content: string | null;
+            titleEn: string | null;
+            isPublished: boolean;
+            excerpt: string | null;
+            excerptEn: string | null;
+            contentEn: string | null;
+            coverImage: string | null;
+            publishedAt: Date | null;
+        }[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
+    adminGetBlog(id: string): Promise<{
+        success: boolean;
+        data: {
+            title: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            metaTitle: string | null;
+            metaDesc: string | null;
+            sortOrder: number;
+            content: string | null;
+            titleEn: string | null;
+            isPublished: boolean;
+            excerpt: string | null;
+            excerptEn: string | null;
+            contentEn: string | null;
+            coverImage: string | null;
+            publishedAt: Date | null;
+        };
+    }>;
+    adminCreateBlog(dto: Record<string, unknown>): Promise<{
+        success: boolean;
+        data: {
+            title: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            metaTitle: string | null;
+            metaDesc: string | null;
+            sortOrder: number;
+            content: string | null;
+            titleEn: string | null;
+            isPublished: boolean;
+            excerpt: string | null;
+            excerptEn: string | null;
+            contentEn: string | null;
+            coverImage: string | null;
+            publishedAt: Date | null;
+        };
+    }>;
+    adminUpdateBlog(id: string, dto: Record<string, unknown>): Promise<{
+        success: boolean;
+        data: {
+            title: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            metaTitle: string | null;
+            metaDesc: string | null;
+            sortOrder: number;
+            content: string | null;
+            titleEn: string | null;
+            isPublished: boolean;
+            excerpt: string | null;
+            excerptEn: string | null;
+            contentEn: string | null;
+            coverImage: string | null;
+            publishedAt: Date | null;
+        };
+    }>;
+    adminDeleteBlog(id: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    adminGetFaqs(page?: string, limit?: string, search?: string): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            sortOrder: number;
+            isPublished: boolean;
+            answer: string;
+            question: string;
+            questionEn: string | null;
+            answerEn: string | null;
+        }[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
+    adminCreateFaq(dto: Record<string, unknown>): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            sortOrder: number;
+            isPublished: boolean;
+            answer: string;
+            question: string;
+            questionEn: string | null;
+            answerEn: string | null;
+        };
+    }>;
+    adminUpdateFaq(id: string, dto: Record<string, unknown>): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            sortOrder: number;
+            isPublished: boolean;
+            answer: string;
+            question: string;
+            questionEn: string | null;
+            answerEn: string | null;
+        };
+    }>;
+    adminDeleteFaq(id: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    adminGetTransactions(page?: string, limit?: string, search?: string, status?: string, method?: string, from?: string, to?: string): Promise<{
+        success: boolean;
+        data: {
+            amount: number;
+            refundAmount: number | null;
+            gatewayResponse: undefined;
+            order: {
+                user: {
+                    name: string;
+                    email: string;
+                    phone: string;
+                } | null;
+                address: {
+                    phone: string;
+                    fullName: string;
+                };
+                id: string;
+                orderNumber: string;
+                userId: string | null;
+            };
+            transactions: {
+                id: string;
+                createdAt: Date;
+                status: import(".prisma/client").$Enums.TransactionStatus;
+                amount: import("@prisma/client/runtime/library").Decimal;
+                paymentId: string;
+                txnId: string;
+                method: import(".prisma/client").$Enums.PaymentMethod;
+                gateway: string | null;
+                rawResponse: import("@prisma/client/runtime/library").JsonValue | null;
+                ipnData: import("@prisma/client/runtime/library").JsonValue | null;
+            }[];
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+            paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+            orderId: string;
+            transactionId: string | null;
+            gatewayTxnId: string | null;
+            codStatus: import(".prisma/client").$Enums.CodStatus | null;
+            bankName: string | null;
+            accountNumber: string | null;
+            paymentRef: string | null;
+            verifiedAt: Date | null;
+            paidAt: Date | null;
+            failedAt: Date | null;
+            failureReason: string | null;
+            refundedAt: Date | null;
+            refundReason: string | null;
+            refundTxnId: string | null;
+        }[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
+    adminGetActivityLogs(page?: string, limit?: string, adminId?: string, action?: string, entity?: string, from?: string, to?: string): Promise<{
+        success: boolean;
+        data: ({
+            admin: {
+                name: string;
+                email: string;
+                id: string;
+                role: import(".prisma/client").$Enums.AdminRole;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            adminId: string;
+            action: string;
+            entity: string;
+            entityId: string | null;
+            details: import("@prisma/client/runtime/library").JsonValue | null;
+            ipAddress: string | null;
+        })[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
 }

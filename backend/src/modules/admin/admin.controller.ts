@@ -6,6 +6,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/create-category.dto'
 import { CreateBrandDto, UpdateBrandDto } from './dto/create-brand.dto';
 import { CreateVariantDto, UpdateVariantDto } from './dto/create-variant.dto';
 import { AdminService } from './admin.service';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -673,6 +674,41 @@ export class AdminController {
       from,
       to,
     });
+  }
+
+
+  // ─── ADMIN USER MANAGEMENT ────────────────────────────────────────────────
+
+  @Get('admin-users')
+  adminGetAdminUsers() {
+    return this.adminService.adminGetAdminUsers();
+  }
+
+  @Post('admin-users')
+  adminCreateAdminUser(@Body() dto: { name: string; email: string; phone: string; password: string; role?: string }) {
+    return this.adminService.adminCreateAdminUser(dto as any);
+  }
+
+  @Patch('admin-users/:id')
+  adminUpdateAdminUser(@Param('id') id: string, @Body() dto: { name?: string; role?: string; isActive?: boolean; isBlocked?: boolean }) {
+    return this.adminService.adminUpdateAdminUser(id, dto);
+  }
+
+  @Post('admin-users/:id/reset-password')
+  adminResetPassword(@Param('id') id: string, @Body() body: { password: string }) {
+    return this.adminService.adminResetAdminUserPassword(id, body.password);
+  }
+
+  @Delete('admin-users/:id')
+  adminDeleteAdminUser(@Param('id') id: string, @CurrentUser('id') requesterId: string) {
+    return this.adminService.adminDeleteAdminUser(id, requesterId);
+  }
+
+  // ─── SYSTEM HEALTH ────────────────────────────────────────────────────────
+
+  @Get('system/health')
+  adminSystemHealth() {
+    return this.adminService.adminGetSystemHealth();
   }
 
 }

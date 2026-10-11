@@ -1983,4 +1983,119 @@ export class AdminService {
     return { success: true, data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
+
+  // ---------------------------------------------------------------------------
+  // ADMIN USER MANAGEMENT (manages User table with role=ADMIN/SUPER_ADMIN)
+  // ---------------------------------------------------------------------------
+
+  async adminGetAdminUsers() {
+    const users = await this.prisma.user.findMany({
+      where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } },
+      select: {
+        id: true, name: true, email: true, phone: true, role: true,
+        avatar: true, isActive: true, isBlocked: true, lastLoginAt: true, createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return { success: true, data: users };
+  }
+
+  async adminCreateAdminUser(dto: {
+    name: string; email: string; phone: string; password: string;
+    role?: 'ADMIN' | 'SUPER_ADMIN' | 'MANAGER' | 'SUPPORT';
+  }) {
+    const bcrypt = await import('bcryptjs');
+    const existing = await this.prisma.user.findFirst({
+      where: { OR: [{ email: dto.email }, { phone: dto.phone }] },
+    });
+    if (existing) throw new Error('Email or phone already in use.');
+    const hashed = await bcrypt.hash(dto.password, 12);
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name, email: dto.email, phone: dto.phone,
+        password: hashed, role: (dto.role ?? 'ADMIN') as any,
+        isActive: true,
+        cart: { create: {} },
+      },
+      select: {
+        id: true, name: true, email: true, phone: true, role: true,
+        isActive: true, createdAt: true,
+      },
+    });
+    return { success: true, data: user };
+  }
+
+  async adminUpdateAdminUser(id: string, dto: {
+    name?: string; role?: string; isActive?: boolean; isBlocked?: boolean;
+  }) {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...(dto.name      !== undefined && { name:      dto.name }),
+        ...(dto.role      !== undefined && { role:      dto.role as any }),
+        ...(dto.isActive  !== undefined && { isActive:  dto.isActive }),
+        ...(dto.isBlocked !== undefined && { isBlocked: dto.isBlocked }),
+      },
+      select: { id: true, name: true, email: true, role: true, isActive: true, isBlocked: true },
+    });
+    return { success: true, data: user };
+  }
+
+  async adminResetAdminUserPassword(id: string, newPassword: string) {
+    const bcrypt = await import('bcryptjs');
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({ where: { id }, data: { password: hashed } });
+    return { success: true, message: 'Password reset successfully.' };
+  }
+
+  async adminDeleteAdminUser(id: string, requesterId: string) {
+    if (id === requesterId) throw new Error('Cannot delete your own admin account.');
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new Error('User not found.');
+    if (!['ADMIN', 'SUPER_ADMIN', 'MANAGER', 'SUPPORT'].includes(user.role)) {
+      throw new Error('This user is not an admin.');
+    }
+    await this.prisma.user.update({ where: { id }, data: { isActive: false, isBlocked: true } });
+    return { success: true, message: 'Admin user deactivated.' };
+  }
+
+  // ---------------------------------------------------------------------------
+  // SYSTEM HEALTH
+  // ---------------------------------------------------------------------------
+
+  async adminGetSystemHealth() {
+    const [
+      totalUsers, totalProducts, totalOrders,
+      pendingOrders, totalRevenue, dbCheck,
+    ] = await Promise.all([
+      this.prisma.user.count(),
+      this.prisma.product.count({ where: { isActive: true } }),
+      this.prisma.order.count(),
+      this.prisma.order.count({ where: { status: 'PENDING' } }),
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: { status: { in: ['DELIVERED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'PACKED'] } },
+      }),
+      this.prisma.$queryRaw<[{ '?column?': number }]>`SELECT 1`.then(() => true).catch(() => false),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        database: { status: dbCheck ? 'healthy' : 'error', message: dbCheck ? 'Connected' : 'Connection error' },
+        stats: {
+          totalUsers, totalProducts, totalOrders, pendingOrders,
+          totalRevenue: Number(totalRevenue._sum.totalAmount ?? 0),
+        },
+        environment: {
+          nodeEnv:   process.env.NODE_ENV ?? 'unknown',
+          nodeVersion: process.version,
+          uptime:    Math.floor(process.uptime()),
+          memoryMB:  Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        },
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
 }

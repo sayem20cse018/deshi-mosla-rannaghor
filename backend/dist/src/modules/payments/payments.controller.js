@@ -17,15 +17,15 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const payments_service_1 = require("./payments.service");
+const payment_config_service_1 = require("./payment-config.service");
 const initiate_payment_dto_1 = require("./dto/initiate-payment.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const public_decorator_1 = require("../../common/decorators/public.decorator");
-const config_1 = require("@nestjs/config");
 let PaymentsController = class PaymentsController {
-    constructor(paymentsService, config) {
+    constructor(paymentsService, paymentConfig) {
         this.paymentsService = paymentsService;
-        this.config = config;
+        this.paymentConfig = paymentConfig;
     }
     initiatePayment(userId, dto) {
         return this.paymentsService.initiateSSLCommerzPayment(userId, dto);
@@ -34,22 +34,22 @@ let PaymentsController = class PaymentsController {
         return this.paymentsService.handleSSLCommerzIPN(body);
     }
     async paymentSuccess(body, res) {
-        const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
+        const cfg = this.paymentConfig.get();
         const result = await this.paymentsService.handlePaymentSuccess(body);
         if (result.success && result.orderId) {
-            return res.redirect(`${frontendUrl}/order/${result.orderId}/confirmation?paid=true`);
+            return res.redirect(`${cfg.frontendUrl}/order/${result.orderId}/confirmation?paid=true`);
         }
-        return res.redirect(`${frontendUrl}/payment/failed?order_id=${result.orderId ?? ''}`);
+        return res.redirect(`${cfg.frontendUrl}/payment/failed?order_id=${result.orderId ?? ''}`);
     }
     async paymentFailed(body, res) {
-        const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
+        const cfg = this.paymentConfig.get();
         const result = await this.paymentsService.handlePaymentFailed(body);
-        return res.redirect(`${frontendUrl}/payment/failed?order_id=${result.orderId ?? ''}`);
+        return res.redirect(`${cfg.frontendUrl}/payment/failed?order_id=${result.orderId ?? ''}`);
     }
     async paymentCancel(body, res) {
-        const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
+        const cfg = this.paymentConfig.get();
         const result = await this.paymentsService.handlePaymentCancelled(body);
-        return res.redirect(`${frontendUrl}/payment/cancel?order_id=${result.orderId ?? ''}`);
+        return res.redirect(`${cfg.frontendUrl}/payment/cancel?order_id=${result.orderId ?? ''}`);
     }
     getPaymentStatus(userId, orderId) {
         return this.paymentsService.getPaymentStatus(orderId, userId);
@@ -63,7 +63,7 @@ __decorate([
     (0, common_1.Post)('initiate'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)('access-token'),
-    (0, swagger_1.ApiOperation)({ summary: 'Initiate SSLCommerz payment for an order' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Initiate SSLCommerz payment for an authenticated order' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
@@ -75,7 +75,7 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('webhook/sslcommerz'),
     (0, common_1.HttpCode)(200),
-    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz IPN webhook endpoint' }),
+    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz IPN webhook endpoint (server-to-server)' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -86,7 +86,7 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('success'),
     (0, common_1.HttpCode)(200),
-    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz payment success callback' }),
+    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz payment success callback (browser redirect)' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -148,6 +148,6 @@ exports.PaymentsController = PaymentsController = __decorate([
     (0, swagger_1.ApiTags)('Payments'),
     (0, common_1.Controller)('payments'),
     __metadata("design:paramtypes", [payments_service_1.PaymentsService,
-        config_1.ConfigService])
+        payment_config_service_1.PaymentConfigService])
 ], PaymentsController);
 //# sourceMappingURL=payments.controller.js.map

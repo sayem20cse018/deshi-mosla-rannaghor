@@ -257,6 +257,25 @@ let AdminController = class AdminController {
     adminGetFullLowStock() {
         return this.adminService.adminGetFullLowStock();
     }
+    adminGetBlogs(page, limit, search, isPublished) {
+        return this.adminService.adminGetBlogs({ page: page ? Number(page) : 1, limit: limit ? Number(limit) : 20, search, isPublished });
+    }
+    adminGetBlog(id) { return this.adminService.adminGetBlog(id); }
+    adminCreateBlog(dto) { return this.adminService.adminCreateBlog(dto); }
+    adminUpdateBlog(id, dto) { return this.adminService.adminUpdateBlog(id, dto); }
+    adminDeleteBlog(id) { return this.adminService.adminDeleteBlog(id); }
+    adminGetFaqs(page, limit, search) {
+        return this.adminService.adminGetFaqs({ page: page ? Number(page) : 1, limit: limit ? Number(limit) : 50, search });
+    }
+    adminCreateFaq(dto) { return this.adminService.adminCreateFaq(dto); }
+    adminUpdateFaq(id, dto) { return this.adminService.adminUpdateFaq(id, dto); }
+    adminDeleteFaq(id) { return this.adminService.adminDeleteFaq(id); }
+    adminGetTransactions(page, limit, search, status, method, from, to) {
+        return this.adminService.adminGetTransactions({ page: page ? Number(page) : 1, limit: limit ? Number(limit) : 25, search, status, method, from, to });
+    }
+    adminGetActivityLogs(page, limit, adminId, action, entity, from, to) {
+        return this.adminService.adminGetActivityLogs({ page: page ? Number(page) : 1, limit: limit ? Number(limit) : 30, adminId, action, entity, from, to });
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -931,6 +950,114 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "adminGetFullLowStock", null);
+__decorate([
+    (0, common_1.Get)('blog'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('search')),
+    __param(3, (0, common_1.Query)('isPublished')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminGetBlogs", null);
+__decorate([
+    (0, common_1.Get)('blog/:id'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminGetBlog", null);
+__decorate([
+    (0, common_1.Post)('blog'),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminCreateBlog", null);
+__decorate([
+    (0, common_1.Patch)('blog/:id'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminUpdateBlog", null);
+__decorate([
+    (0, common_1.Delete)('blog/:id'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminDeleteBlog", null);
+__decorate([
+    Public(),
+    (0, common_1.Get)('faqs'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminGetFaqs", null);
+__decorate([
+    (0, common_1.Post)('faqs'),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminCreateFaq", null);
+__decorate([
+    (0, common_1.Patch)('faqs/:id'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminUpdateFaq", null);
+__decorate([
+    (0, common_1.Delete)('faqs/:id'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminDeleteFaq", null);
+__decorate([
+    (0, common_1.Get)('transactions'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('search')),
+    __param(3, (0, common_1.Query)('status')),
+    __param(4, (0, common_1.Query)('method')),
+    __param(5, (0, common_1.Query)('from')),
+    __param(6, (0, common_1.Query)('to')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminGetTransactions", null);
+__decorate([
+    (0, common_1.Get)('activity-logs'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('adminId')),
+    __param(3, (0, common_1.Query)('action')),
+    __param(4, (0, common_1.Query)('entity')),
+    __param(5, (0, common_1.Query)('from')),
+    __param(6, (0, common_1.Query)('to')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "adminGetActivityLogs", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('Admin'),
     (0, common_1.Controller)('admin'),

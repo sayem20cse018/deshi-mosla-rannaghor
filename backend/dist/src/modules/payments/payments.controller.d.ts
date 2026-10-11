@@ -1,11 +1,11 @@
 import { Response } from 'express';
 import { PaymentsService } from './payments.service';
+import { PaymentConfigService } from './payment-config.service';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
-import { ConfigService } from '@nestjs/config';
 export declare class PaymentsController {
     private readonly paymentsService;
-    private readonly config;
-    constructor(paymentsService: PaymentsService, config: ConfigService);
+    private readonly paymentConfig;
+    constructor(paymentsService: PaymentsService, paymentConfig: PaymentConfigService);
     initiatePayment(userId: string, dto: InitiatePaymentDto): Promise<{
         success: boolean;
         gatewayUrl: any;

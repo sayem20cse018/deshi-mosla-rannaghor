@@ -13,46 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var PaymentsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GUEST_SENTINEL = exports.PaymentsService = void 0;
+exports.PaymentsService = exports.GUEST_SENTINEL = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const axios_1 = __importDefault(require("axios"));
 const uuid_1 = require("uuid");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
-const SSL_SANDBOX = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php';
-const SSL_LIVE = 'https://securepay.sslcommerz.com/gwprocess/v4/api.php';
-const SSL_VERIFY_SANDBOX = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php';
-const SSL_VERIFY_LIVE = 'https://securepay.sslcommerz.com/validator/api/validationserverAPI.php';
+const payment_config_service_1 = require("./payment-config.service");
 const GUEST_SENTINEL = '__GUEST__';
 exports.GUEST_SENTINEL = GUEST_SENTINEL;
 let PaymentsService = PaymentsService_1 = class PaymentsService {
-    constructor(prisma, config) {
+    constructor(prisma, paymentConfig) {
         this.prisma = prisma;
-        this.config = config;
+        this.paymentConfig = paymentConfig;
         this.logger = new common_1.Logger(PaymentsService_1.name);
-    }
-    getCallbackUrls() {
-        const nodeEnv = this.config.get('NODE_ENV', 'development');
-        const isProduction = nodeEnv === 'production';
-        const frontendUrl = this.stripTrailingSlash(this.config.get('FRONTEND_URL', 'http://localhost:3000'));
-        let backendUrl = this.config.get('BACKEND_URL', '');
-        if (!backendUrl) {
-            if (isProduction) {
-                throw new common_1.InternalServerErrorException('BACKEND_URL environment variable is required in production for SSLCommerz IPN callbacks.');
-            }
-            const port = this.config.get('PORT', '5000');
-            backendUrl = `http://localhost:${port}`;
-        }
-        backendUrl = this.stripTrailingSlash(backendUrl);
-        const apiPrefix = this.stripTrailingSlash(this.config.get('API_PREFIX', 'api/v1'));
-        const successUrl = this.config.get('SSLCOMMERZ_SUCCESS_URL', `${frontendUrl}/payment/success`);
-        const failUrl = this.config.get('SSLCOMMERZ_FAIL_URL', `${frontendUrl}/payment/failed`);
-        const cancelUrl = this.config.get('SSLCOMMERZ_CANCEL_URL', `${frontendUrl}/payment/cancel`);
-        const ipnUrl = this.config.get('SSLCOMMERZ_WEBHOOK_URL', `${backendUrl}/${apiPrefix}/payments/webhook/sslcommerz`);
-        return { successUrl, failUrl, cancelUrl, ipnUrl };
-    }
-    stripTrailingSlash(url) {
-        return url.replace(/\/+$/, '');
     }
     async initiateSSLCommerzPayment(userId, dto) {
         const isGuest = userId === GUEST_SENTINEL;
@@ -73,26 +46,27 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
         if (order.paymentStatus === 'PROCESSING') {
             throw new common_1.BadRequestException('Payment is already in progress for this order.');
         }
+        const cfg = this.paymentConfig.get();
+        if (!cfg.enabled) {
+            throw new common_1.BadRequestException('Online payment is currently unavailable: ' + (cfg.disabledReason ?? 'configuration error'));
+        }
         const customerName = dto.customerName ?? order.user?.name ?? order.address.fullName;
         const customerEmail = dto.customerEmail ?? order.user?.email ?? 'guest@deshimoslar.com';
         const customerPhone = dto.customerPhone ?? order.user?.phone ?? order.address.phone;
         const customerAddress = dto.customerAddress ?? order.address.fullAddress;
         const tran_id = `DMR-${order.orderNumber}-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`;
-        const storeId = this.config.get('SSLCOMMERZ_STORE_ID', 'testbox');
-        const storePass = this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty');
-        const isLive = this.config.get('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-        const { successUrl, failUrl, cancelUrl, ipnUrl } = this.getCallbackUrls();
-        this.logger.log(`SSLCommerz initiate: orderId=${order.id} ipnUrl=${ipnUrl}`);
+        this.logger.log(`SSLCommerz initiate: orderId=${order.id} mode=${cfg.isLive ? 'LIVE' : 'SANDBOX'} ` +
+            `ipnUrl=${cfg.ipnUrl}`);
         const params = new URLSearchParams({
-            store_id: storeId,
-            store_passwd: storePass,
+            store_id: cfg.storeId,
+            store_passwd: cfg.storePass,
             total_amount: Number(order.totalAmount).toFixed(2),
             currency: 'BDT',
             tran_id,
-            success_url: successUrl,
-            fail_url: failUrl,
-            cancel_url: cancelUrl,
-            ipn_url: ipnUrl,
+            success_url: cfg.successUrl,
+            fail_url: cfg.failUrl,
+            cancel_url: cfg.cancelUrl,
+            ipn_url: cfg.ipnUrl,
             cus_name: customerName,
             cus_email: customerEmail,
             cus_add1: customerAddress,
@@ -157,15 +131,14 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                 },
             });
         });
-        const endpoint = isLive ? SSL_LIVE : SSL_SANDBOX;
         try {
-            const response = await axios_1.default.post(endpoint, params.toString(), {
+            const response = await axios_1.default.post(cfg.endpoint, params.toString(), {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 timeout: 15000,
             });
             const sslData = response.data;
             if (sslData?.status === 'SUCCESS' && sslData?.GatewayPageURL) {
-                this.logger.log(`SSLCommerz initiated: tran_id=${tran_id}, order=${order.orderNumber}`);
+                this.logger.log(`SSLCommerz session created: tran_id=${tran_id}, order=${order.orderNumber}`);
                 return {
                     success: true,
                     gatewayUrl: sslData.GatewayPageURL,
@@ -180,7 +153,7 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             throw new common_1.BadRequestException(`Payment gateway error: ${sslData?.failedreason ?? 'Unknown error'}`);
         }
         catch (err) {
-            if (err instanceof common_1.BadRequestException || err instanceof common_1.InternalServerErrorException)
+            if (err instanceof common_1.BadRequestException)
                 throw err;
             await this.rollbackPaymentStatus(order.id);
             this.logger.error(`SSLCommerz init failed: ${err.message}`);
@@ -189,9 +162,9 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
     }
     async handleSSLCommerzIPN(body) {
         const { tran_id, val_id, status, value_a: orderId } = body;
-        this.logger.log(`IPN received: tran_id=${tran_id}, status=${status}, orderId=${orderId}`);
+        this.logger.log(`IPN: tran_id=${tran_id}, status=${status}, orderId=${orderId}`);
         if (!tran_id || !orderId) {
-            this.logger.warn('IPN missing tran_id or orderId');
+            this.logger.warn('IPN missing tran_id or orderId — ignored');
             return { received: true };
         }
         const payment = await this.prisma.payment.findFirst({
@@ -199,31 +172,33 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             include: { order: true },
         });
         if (!payment) {
-            this.logger.warn(`IPN: payment not found for tran_id=${tran_id}`);
+            this.logger.warn(`IPN: no payment found for tran_id=${tran_id}`);
             return { received: true };
         }
         if (['PAID', 'FAILED', 'CANCELLED'].includes(payment.paymentStatus)) {
-            this.logger.log(`IPN: already finalized (${payment.paymentStatus}), skipping`);
+            this.logger.log(`IPN: already finalized (${payment.paymentStatus}) — skipped`);
             return { received: true };
         }
-        const isLive = this.config.get('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-        const storeId = this.config.get('SSLCOMMERZ_STORE_ID', 'testbox');
-        const storePass = this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty');
-        const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
+        const cfg = this.paymentConfig.get();
         let verified = false;
         let rawVerification = null;
         if (status === 'VALID' || status === 'VALIDATED') {
             try {
-                const vRes = await axios_1.default.get(verifyEndpoint, {
-                    params: { val_id, store_id: storeId, store_passwd: storePass, format: 'json' },
+                const vRes = await axios_1.default.get(cfg.verifyEndpoint, {
+                    params: {
+                        val_id,
+                        store_id: cfg.storeId,
+                        store_passwd: cfg.storePass,
+                        format: 'json',
+                    },
                     timeout: 10000,
                 });
                 rawVerification = vRes.data;
                 verified = vRes.data?.status === 'VALID' || vRes.data?.status === 'VALIDATED';
-                this.logger.log(`IPN SSL verify: ${vRes.data?.status}`);
+                this.logger.log(`IPN verify: ${vRes.data?.status}`);
             }
             catch (e) {
-                this.logger.error(`IPN SSL verification failed: ${e.message}`);
+                this.logger.error(`IPN verify failed: ${e.message}`);
             }
         }
         const txnStatus = verified ? 'SUCCESS' : (status === 'FAILED' ? 'FAILED' : 'CANCELLED');
@@ -289,14 +264,13 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
         if (payment.paymentStatus === 'PAID') {
             return { success: true, orderId: payment.orderId };
         }
-        const isLive = this.config.get('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-        const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
+        const cfg = this.paymentConfig.get();
         try {
-            const vRes = await axios_1.default.get(verifyEndpoint, {
+            const vRes = await axios_1.default.get(cfg.verifyEndpoint, {
                 params: {
                     val_id,
-                    store_id: this.config.get('SSLCOMMERZ_STORE_ID', 'testbox'),
-                    store_passwd: this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty'),
+                    store_id: cfg.storeId,
+                    store_passwd: cfg.storePass,
                     format: 'json',
                 },
                 timeout: 10000,
@@ -396,11 +370,7 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                 },
             });
         });
-        return {
-            success: true,
-            message: 'Refund process started.',
-            refundAmount,
-        };
+        return { success: true, message: 'Refund process started.', refundAmount };
     }
     async getPaymentStatus(orderId, userId) {
         const payment = await this.prisma.payment.findFirst({
@@ -484,6 +454,6 @@ exports.PaymentsService = PaymentsService;
 exports.PaymentsService = PaymentsService = PaymentsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService])
+        payment_config_service_1.PaymentConfigService])
 ], PaymentsService);
 //# sourceMappingURL=payments.service.js.map

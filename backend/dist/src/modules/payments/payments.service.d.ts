@@ -1,14 +1,13 @@
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { PaymentConfigService } from './payment-config.service';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 declare const GUEST_SENTINEL = "__GUEST__";
+export { GUEST_SENTINEL };
 export declare class PaymentsService {
     private readonly prisma;
-    private readonly config;
+    private readonly paymentConfig;
     private readonly logger;
-    constructor(prisma: PrismaService, config: ConfigService);
-    private getCallbackUrls;
-    private stripTrailingSlash;
+    constructor(prisma: PrismaService, paymentConfig: PaymentConfigService);
     initiateSSLCommerzPayment(userId: string, dto: InitiatePaymentDto): Promise<{
         success: boolean;
         gatewayUrl: any;
@@ -81,4 +80,3 @@ export declare class PaymentsService {
     private markPaymentFailed;
     private markPaymentCancelled;
 }
-export { GUEST_SENTINEL };
