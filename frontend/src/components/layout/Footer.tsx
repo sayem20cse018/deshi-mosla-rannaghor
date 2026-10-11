@@ -7,6 +7,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useNavCategories } from '@/hooks/useCategories';
+import { useGlobalSettings } from '@/hooks/useGlobalSettings';
+import Image from 'next/image';
 
 const ABOUT_LINKS = [
   { href: '/about',          label: 'আমাদের সম্পর্কে'  },
@@ -62,6 +64,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 export function Footer() {
   const { data: navCats = [] } = useNavCategories();
+  const { data: s } = useGlobalSettings();
   return (
     <footer style={{ background: '#0b1d13', fontFamily: FONT_BN }}>
 
@@ -83,9 +86,9 @@ export function Footer() {
                 <div className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full bg-white/45" />
               </div>
               <div>
-                <p className="text-white font-black text-[15px] leading-snug" style={{ fontFamily: FONT_BN }}>দেশি মসলার রান্নাঘর</p>
+                <p className="text-white font-black text-[15px] leading-snug" style={{ fontFamily: FONT_BN }}>{s?.storeName || 'দেশি মসলার রান্নাঘর'}</p>
                 <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mt-0.5"
-                   style={{ color: '#fed7aa', fontFamily: FONT_EN }}>Deshi Moslar Rannaghar</p>
+                   style={{ color: '#fed7aa', fontFamily: FONT_EN }}>{s?.storeNameEn || 'Deshi Moslar Rannaghar'}</p>
               </div>
             </Link>
 
@@ -97,9 +100,9 @@ export function Footer() {
             {/* Contact */}
             <div className="space-y-2.5">
               {[
-                { Icon: MapPin, text: 'ঢাকা, বাংলাদেশ',          href: null },
-                { Icon: Phone,  text: '+880 1700-000000',          href: 'tel:+8801700000000' },
-                { Icon: Mail,   text: 'info@deshimoslar.com',       href: 'mailto:info@deshimoslar.com' },
+                { Icon: MapPin, text: s?.storeAddress || 'ঢাকা, বাংলাদেশ', href: null },
+                { Icon: Phone,  text: s?.storePhone    || '+880 1700-000000', href: 'tel:' + (s?.storePhone?.replace(/\D/g,'') || '8801700000000') },
+                { Icon: Mail,   text: s?.storeEmail    || 'info@deshimoslar.com', href: 'mailto:' + (s?.storeEmail || 'info@deshimoslar.com') },
                 { Icon: Clock,  text: 'সকাল ১০টা – রাত ১০টা',     href: null },
               ].map(({ Icon, text, href }) => {
                 const el = (
@@ -120,10 +123,10 @@ export function Footer() {
             {/* Social */}
             <div className="flex items-center gap-2 pt-1">
               {[
-                { href: 'https://facebook.com',  Icon: Facebook,  label: 'Facebook'  },
-                { href: 'https://instagram.com', Icon: Instagram, label: 'Instagram' },
-                { href: 'https://youtube.com',   Icon: Youtube,   label: 'YouTube'   },
-                { href: 'https://twitter.com',   Icon: Twitter,   label: 'Twitter'   },
+                { href: s?.facebook  || 'https://facebook.com',  Icon: Facebook,  label: 'Facebook'  },
+                { href: s?.instagram || 'https://instagram.com', Icon: Instagram, label: 'Instagram' },
+                { href: s?.youtube   || 'https://youtube.com',   Icon: Youtube,   label: 'YouTube'   },
+                ...(s?.twitter ? [{ href: s.twitter, Icon: Twitter, label: 'Twitter' }] : []),
               ].map(({ href, Icon, label }) => (
                 <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"
                    className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-white/10 hover:scale-110 transition-all duration-200"

@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Inject } from '@nestjs/common';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import { ApiTags } from '@nestjs/swagger';
 import { BannersService } from './banners.service';
 import { Public } from '../../common/decorators/public.decorator';
@@ -6,7 +7,10 @@ import { Public } from '../../common/decorators/public.decorator';
 @ApiTags('Banners')
 @Controller('banners')
 export class BannersController {
-  constructor(private readonly bannersService: BannersService) {}
+  constructor(
+    private readonly bannersService: BannersService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Public()
   @Get('hero-slides')
@@ -30,5 +34,14 @@ export class BannersController {
   @Get()
   findAll() {
     return this.bannersService.findAll();
+  }
+
+  @Public()
+  @Get('announcements')
+  getAnnouncements() {
+    return this.prisma.announcement.findMany({
+      where: { isActive: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+    }).then(data => ({ success: true, data }));
   }
 }

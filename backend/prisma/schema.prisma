@@ -1023,3 +1023,19 @@ model FAQ {
   @@index([isPublished, sortOrder])
   @@map("faqs")
 }
+
+model Announcement {
+  id         String   @id @default(uuid())
+  text       String   @db.VarChar(300)
+  textEn     String?  @db.VarChar(300)
+  link       String?  @db.VarChar(300)
+  bgColor    String   @db.VarChar(30)
+  textColor  String   @db.VarChar(30)
+  icon       String   @db.VarChar(30)
+  isActive   Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@index([isActive, sortOrder])
+  @@map("announcements")
+}

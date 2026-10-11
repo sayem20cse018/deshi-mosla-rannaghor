@@ -711,4 +711,32 @@ export class AdminController {
     return this.adminService.adminGetSystemHealth();
   }
 
+
+  // ─── ANNOUNCEMENTS ────────────────────────────────────────────────────────
+
+  @Get('announcements')
+  adminGetAnnouncements() {
+    return this.adminService.adminGetAnnouncements();
+  }
+
+  @Post('announcements')
+  adminCreateAnnouncement(@Body() dto: Record<string, unknown>) {
+    return this.adminService.adminCreateAnnouncement(dto as any);
+  }
+
+  @Patch('announcements/reorder')
+  adminReorderAnnouncements(@Body() body: { items: { id: string; sortOrder: number }[] }) {
+    return this.adminService.adminReorderAnnouncements(body.items);
+  }
+
+  @Patch('announcements/:id')
+  adminUpdateAnnouncement(@Param('id') id: string, @Body() dto: Record<string, unknown>) {
+    return this.adminService.adminUpdateAnnouncement(id, dto);
+  }
+
+  @Delete('announcements/:id')
+  adminDeleteAnnouncement(@Param('id') id: string) {
+    return this.adminService.adminDeleteAnnouncement(id);
+  }
+
 }

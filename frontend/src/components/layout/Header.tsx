@@ -15,6 +15,7 @@ import { useLanguageStore, type Lang } from '@/store/language.store';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { useNavCategories } from '@/hooks/useCategories';
+import { useGlobalSettings } from '@/hooks/useGlobalSettings';
 import { SearchBar } from './SearchBar';
 import { useWishlistStore } from '@/store/wishlist.store';
 import { AnnouncementBar } from '@/components/home/AnnouncementBar';
@@ -29,6 +30,7 @@ export function Header() {
   const { getItemCount, getTotals, openCart }          = useCartStore();
   const { user, isAuthenticated, logout }              = useAuthStore();
   const { data: navCats = [], isLoading: catsLoading } = useNavCategories();
+  const { data: gs } = useGlobalSettings();
   const wishCount = useWishlistStore((s) => s.items.length);
 
   const [drawerOpen,   setDrawerOpen]   = useState(false);

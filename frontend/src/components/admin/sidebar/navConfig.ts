@@ -10,7 +10,7 @@ import {
   CreditCard, Banknote, Smartphone, Wallet,
   Bell, MessageCircle,
   BarChart3, PieChart, TrendingUp, UserCheck, Archive,
-  Cog, Store, Search, ReceiptText,
+  Cog, Store, Search, ReceiptText, Palette,
   UserCog, Lock, Activity, Cpu,
   type LucideIcon,
 } from 'lucide-react';
@@ -141,6 +141,7 @@ export const ADMIN_NAV: NavSection[] = [
     title: 'Settings',
     items: [
       { label: 'General',       href: '/admin/settings',                  icon: Cog },
+      { label: 'Appearance',    href: '/admin/settings/appearance',       icon: Palette },
       { label: 'Store',         href: '/admin/settings/store',            icon: Store },
       { label: 'SEO',           href: '/admin/settings/seo',              icon: Search },
       { label: 'Tax',           href: '/admin/settings/tax',              icon: ReceiptText },

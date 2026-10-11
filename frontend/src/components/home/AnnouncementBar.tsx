@@ -1,100 +1,91 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Truck, Tag, Gift, Zap } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { Truck, Tag, Gift, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 
-const MESSAGES = [
-  { icon: Truck, text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি',  link: '/shop'     },
-  { icon: Tag,   text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',  link: '/shop'     },
-  { icon: Gift,  text: 'ক্যাশ অন ডেলিভারি | bKash | Nagad সুবিধা', link: '/checkout' },
-  { icon: Zap,   text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে',  link: '/shop'     },
+const ICON_MAP: Record<string, React.ElementType> = {
+  truck: Truck, tag: Tag, gift: Gift, zap: Zap,
+};
+
+const STATIC_FALLBACK = [
+  { id: 'f1', text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি', link: '/shop', icon: 'truck', bgColor: '#ea580c', textColor: '#ffffff' },
+  { id: 'f2', text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',  link: '/shop', icon: 'tag',   bgColor: '#c2410c', textColor: '#ffffff' },
 ];
 
-const INTERVAL = 3800; // ms between slides
+function useAnnouncements() {
+  return useQuery({
+    queryKey: ['announcements-public'],
+    queryFn: async () => {
+      const { data } = await api.get('/banners/announcements');
+      return (data?.data ?? []) as any[];
+    },
+    staleTime: 300_000,
+    placeholderData: STATIC_FALLBACK,
+  });
+}
+
+const INTERVAL = 4000;
 
 export function AnnouncementBar() {
-  const [current,   setCurrent]   = useState(0);
-  const [isVisible, setIsVisible] = useState(true);   // true = visible, false = sliding out
-  const [dismissed, setDismissed] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { data: rawItems = [] } = useAnnouncements();
+  const items = rawItems.length > 0 ? rawItems : STATIC_FALLBACK;
+  const [idx, setIdx] = useState(0);
 
-  const advance = useCallback(() => {
-    // 1. slide out
-    setIsVisible(false);
-    // 2. after slide-out duration (250ms), change message and slide in
-    setTimeout(() => {
-      setCurrent(c => (c + 1) % MESSAGES.length);
-      setIsVisible(true);
-    }, 270);
-  }, []);
+  const next = useCallback(() => setIdx(i => (i + 1) % items.length), [items.length]);
+  const prev = useCallback(() => setIdx(i => (i - 1 + items.length) % items.length), [items.length]);
 
   useEffect(() => {
-    timerRef.current = setInterval(advance, INTERVAL);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [advance]);
+    if (items.length <= 1) return;
+    const t = setInterval(next, INTERVAL);
+    return () => clearInterval(t);
+  }, [next, items.length]);
 
-  if (dismissed) return null;
+  if (!items.length) return null;
 
-  const { icon: Icon, text, link } = MESSAGES[current];
+  const current = items[idx] ?? items[0];
+  const Icon = ICON_MAP[current.icon ?? 'truck'] ?? Truck;
 
   return (
     <div
-      className="relative bg-[#111827] text-white select-none overflow-hidden"
-      style={{ height: '34px' }}
+      className="w-full py-2 px-4 flex items-center justify-center gap-3 text-sm font-semibold relative overflow-hidden"
+      style={{ background: current.bgColor || '#ea580c', color: current.textColor || '#fff' }}
     >
-      {/* Subtle top shimmer */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+      {items.length > 1 && (
+        <button onClick={prev} className="opacity-60 hover:opacity-100 transition-opacity flex-shrink-0" aria-label="Previous">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+      )}
 
-      <div className="container mx-auto px-4 h-full flex items-center gap-2 overflow-hidden">
-
-        {/* Sliding message area */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden min-w-0">
-          <Link
-            href={link}
-            className={`flex items-center gap-2 group transition-all duration-250 ${
-              isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 -translate-y-2'
-            }`}
-            style={{ transition: 'opacity 250ms ease, transform 250ms ease' }}
-          >
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/15 flex items-center justify-center">
-              <Icon className="w-3 h-3 text-white" />
-            </span>
-            <p
-              className="text-[12px] font-semibold tracking-wide text-white truncate group-hover:text-yellow-100 transition-colors"
-              style={{ fontFamily: 'Noto Sans Bengali, Manrope, sans-serif' }}
-            >
-              {text}
-            </p>
-            <span className="hidden sm:inline text-white/40 text-[11px] group-hover:text-white/70 transition-colors flex-shrink-0">›</span>
+      <div className="flex items-center gap-2 min-w-0 flex-1 justify-center">
+        <Icon className="w-4 h-4 flex-shrink-0" />
+        {current.link ? (
+          <Link href={current.link} className="truncate hover:underline">
+            {current.text}
           </Link>
-        </div>
+        ) : (
+          <span className="truncate">{current.text}</span>
+        )}
+      </div>
 
-        {/* Dot indicators */}
-        <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
-          {MESSAGES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { setCurrent(i); setIsVisible(true); }}
-              aria-label={`Message ${i + 1}`}
-              className={`rounded-full transition-all duration-300 ${
-                i === current ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/55'
-              }`}
+      {items.length > 1 && (
+        <button onClick={next} className="opacity-60 hover:opacity-100 transition-opacity flex-shrink-0" aria-label="Next">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
+
+      {items.length > 1 && (
+        <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-1">
+          {items.map((_: unknown, i: number) => (
+            <button key={i} onClick={() => setIdx(i)}
+              className="w-1 h-1 rounded-full transition-all"
+              style={{ background: i === idx ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)' }}
             />
           ))}
         </div>
-
-        {/* Dismiss */}
-        <button
-          onClick={() => setDismissed(true)}
-          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-white/35 hover:text-white hover:bg-white/10 transition-all"
-          aria-label="বন্ধ করুন"
-        >
-          <X className="w-3 h-3" />
-        </button>
-      </div>
+      )}
     </div>
   );
 }

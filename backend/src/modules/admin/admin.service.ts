@@ -2098,4 +2098,49 @@ export class AdminService {
     };
   }
 
+
+  // ---------------------------------------------------------------------------
+  // ANNOUNCEMENT BAR MANAGEMENT
+  // ---------------------------------------------------------------------------
+
+  async adminGetAnnouncements() {
+    const items = await this.prisma.announcement.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+    });
+    return { success: true, data: items };
+  }
+
+  async adminCreateAnnouncement(dto: {
+    text: string; textEn?: string; link?: string;
+    bgColor?: string; textColor?: string; icon?: string;
+    isActive?: boolean; sortOrder?: number;
+  }) {
+    const item = await this.prisma.announcement.create({
+      data: {
+        bgColor:   '#ea580c',
+        textColor: '#ffffff',
+        icon:      'truck',
+        ...dto,
+      } as any,
+    });
+    return { success: true, data: item };
+  }
+
+  async adminUpdateAnnouncement(id: string, dto: Record<string, unknown>) {
+    const item = await this.prisma.announcement.update({ where: { id }, data: dto as any });
+    return { success: true, data: item };
+  }
+
+  async adminDeleteAnnouncement(id: string) {
+    await this.prisma.announcement.delete({ where: { id } });
+    return { success: true, message: 'Announcement deleted.' };
+  }
+
+  async adminReorderAnnouncements(items: { id: string; sortOrder: number }[]) {
+    await Promise.all(items.map(({ id, sortOrder }) =>
+      this.prisma.announcement.update({ where: { id }, data: { sortOrder } })
+    ));
+    return { success: true, message: 'Reordered.' };
+  }
+
 }

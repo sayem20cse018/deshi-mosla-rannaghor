@@ -11,6 +11,18 @@ const DEFAULTS: Record<string, { value: string; description: string; group: stri
   'store.currency':     { value: 'BDT', description: 'Currency code', group: 'store' },
   'store.currency_symbol': { value: '৳', description: 'Currency symbol', group: 'store' },
   'store.whatsapp':     { value: '+880 1700-000000', description: 'WhatsApp support number', group: 'store' },
+  // Brand
+  'brand.logo':         { value: '', description: 'Desktop logo URL (Cloudinary)', group: 'brand' },
+  'brand.logo_mobile':  { value: '', description: 'Mobile logo URL (Cloudinary)', group: 'brand' },
+  'brand.favicon':      { value: '', description: 'Favicon URL (Cloudinary)', group: 'brand' },
+  'brand.logo_text':    { value: 'দেশি মসলার রান্নাঘর', description: 'Logo text (fallback)', group: 'brand' },
+  'brand.logo_text_en': { value: 'Deshi Moslar', description: 'Logo text English', group: 'brand' },
+  'brand.tagline':      { value: '100% authentic deshi products', description: 'Brand tagline', group: 'brand' },
+  // Social
+  'social.facebook':    { value: 'https://facebook.com/deshimoslar', description: 'Facebook URL', group: 'social' },
+  'social.instagram':   { value: 'https://instagram.com/deshimoslar', description: 'Instagram URL', group: 'social' },
+  'social.youtube':     { value: 'https://youtube.com/deshimoslar', description: 'YouTube URL', group: 'social' },
+  'social.twitter':     { value: '', description: 'Twitter/X URL', group: 'social' },
   'seo.meta_title':     { value: 'দেশি মসলার রান্নাঘর | Deshi Moslar Rannaghar', description: 'Default SEO title', group: 'seo' },
   'seo.meta_desc':      { value: 'বাংলাদেশের বিশ্বস্ত অনলাইন মসলা ও গ্রোসারি শপ।', description: 'Default meta description', group: 'seo' },
   'seo.keywords':       { value: 'মসলা, grocery, online shop, Bangladesh', description: 'SEO keywords', group: 'seo' },
