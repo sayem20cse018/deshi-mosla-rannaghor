@@ -506,18 +506,18 @@ export function Header() {
 }
 
 // ── Announcement Bar ───────────────────────────────────────
-// Separate component so it can be tested independently
 import { Truck, Tag, Gift, Zap } from 'lucide-react';
+import { t as translate } from '@/lib/translations';
 
 function AnnouncementBar({ lang }: { lang: Lang }) {
   const [idx,       setIdx]       = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
-  const MESSAGES: { icon: React.ElementType; bn: string; en: string }[] = [
-    { icon: Truck, bn: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি',     en: 'Free delivery on orders over ৳1000 nationwide'        },
-    { icon: Tag,   bn: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',   en: 'Code WELCOME10 — 10% off for new customers'           },
-    { icon: Gift,  bn: 'ক্যাশ অন ডেলিভারি সুবিধা উপলব্ধ',           en: 'Cash on Delivery available'                           },
-    { icon: Zap,   bn: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে', en: 'Same-day delivery in Dhaka — order before 11 AM'       },
+  const MESSAGES: { icon: React.ElementType; key: 'ann1' | 'ann2' | 'ann3' | 'ann4' }[] = [
+    { icon: Truck, key: 'ann1' },
+    { icon: Tag,   key: 'ann2' },
+    { icon: Gift,  key: 'ann3' },
+    { icon: Zap,   key: 'ann4' },
   ];
 
   useEffect(() => {
@@ -527,8 +527,8 @@ function AnnouncementBar({ lang }: { lang: Lang }) {
 
   if (dismissed) return null;
 
-  const { icon: Icon, bn, en } = MESSAGES[idx];
-  const text = lang === 'en' ? en : bn;
+  const { icon: Icon, key } = MESSAGES[idx];
+  const text = translate(key, lang);
 
   return (
     <div className="bg-spice-600 text-white text-xs relative overflow-hidden">
