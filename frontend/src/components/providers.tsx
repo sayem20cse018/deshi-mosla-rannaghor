@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { useCartStore } from '@/store/cart.store';
 
@@ -11,27 +11,33 @@ export function Providers({ children }: { children: React.ReactNode }) {
     () =>
       new QueryClient({
         defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000, // 1 min
-            retry: 1,
-            refetchOnWindowFocus: false,
-          },
+          queries: { staleTime: 60_000, retry: 1, refetchOnWindowFocus: false },
         },
       }),
   );
 
   const { fetchUser, isAuthenticated } = useAuthStore();
-  const { fetchFromServer, syncToServer } = useCartStore();
+  const { fetchFromServer, syncToServer, items } = useCartStore();
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  // Rehydrate user on first mount
+  useEffect(() => { fetchUser(); }, []);            // eslint-disable-line
 
+  // When authentication changes → sync cart
+  const prevAuth = useRef<boolean | null>(null);
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchFromServer();
+    if (prevAuth.current === null) {
+      prevAuth.current = isAuthenticated;
+      return;
     }
-  }, [isAuthenticated, fetchFromServer]);
+    if (isAuthenticated && prevAuth.current === false) {
+      // Just logged in: push guest items then pull merged cart
+      (async () => {
+        if (items.length > 0) await syncToServer();
+        await fetchFromServer();
+      })();
+    }
+    prevAuth.current = isAuthenticated;
+  }, [isAuthenticated]);                            // eslint-disable-line
 
   return (
     <QueryClientProvider client={queryClient}>

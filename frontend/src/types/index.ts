@@ -18,8 +18,11 @@ export interface Category {
   nameEn?: string;
   slug: string;
   image?: string;
-  _count?: { products: number };
+  icon?: string;
+  parentId?: string;
+  parent?: { id: string; name: string; slug: string } | null;
   children?: Category[];
+  _count?: { products: number };
 }
 
 export interface Brand {

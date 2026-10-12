@@ -26,6 +26,17 @@ export function useCategoriesFlat() {
   });
 }
 
+export function useNavCategories() {
+  return useQuery({
+    queryKey: ['categories-nav'],
+    queryFn: async () => {
+      const res = await api.get('/categories/nav');
+      return res.data.data as (Category & { navOrder: number })[];
+    },
+    staleTime: 600_000,
+  });
+}
+
 export function useCategory(slug: string) {
   return useQuery({
     queryKey: ['category', slug],

@@ -86,7 +86,7 @@ export function ProductCard({ product, className, variant = 'default' }: Product
   }
 
   return (
-    <Link href={`/product/${product.slug}`} className={cn('product-card block', className)}>
+    <Link href={`/product/${product.slug}`} className={cn('product-card block group', className)}>
       {/* Image container */}
       <div className="relative overflow-hidden bg-gray-50">
         <div className={cn('relative w-full', variant === 'compact' ? 'aspect-square' : 'aspect-[4/3]')}>

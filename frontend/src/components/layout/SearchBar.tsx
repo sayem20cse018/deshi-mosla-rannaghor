@@ -6,18 +6,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-const TRENDING = ['সরিষার তেল', 'হলুদ গুঁড়া', 'মিনিকেট চাল', 'সুন্দরবনের মধু', 'বিরিয়ানি মসলা'];
+const TRENDING_BN = ['সরিষার তেল', 'হলুদ গুঁড়া', 'মিনিকেট চাল', 'সুন্দরবনের মধু', 'বিরিয়ানি মসলা'];
+const TRENDING_EN = ['Mustard Oil', 'Turmeric Powder', 'Miniket Rice', 'Sundarban Honey', 'Biryani Spice'];
 
 interface SearchBarProps {
   className?: string;
   mobile?: boolean;
+  lang?: 'bn' | 'en';
 }
 
-export function SearchBar({ className, mobile = false }: SearchBarProps) {
+export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const router = useRouter();
+  const TRENDING = lang === 'en' ? TRENDING_EN : TRENDING_BN;
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,7 +67,7 @@ export function SearchBar({ className, mobile = false }: SearchBarProps) {
         <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <input
           type="text"
-          placeholder="পণ্য খুঁজুন... (মসলা, চাল, তেল)"
+          placeholder={lang === 'en' ? 'Search products… (spices, rice, oil)' : 'পণ্য খুঁজুন… (মসলা, চাল, তেল)'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
@@ -80,7 +83,7 @@ export function SearchBar({ className, mobile = false }: SearchBarProps) {
           onClick={() => handleSearch(query)}
           className="bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
         >
-          খুঁজুন
+          {lang === 'en' ? 'Search' : 'খুঁজুন'}
         </button>
       </div>
 
@@ -90,7 +93,7 @@ export function SearchBar({ className, mobile = false }: SearchBarProps) {
           {recent.length > 0 && (
             <div className="p-3">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                <Clock className="w-3 h-3" /> সম্প্রতি খোঁজা
+                <Clock className="w-3 h-3" /> {lang === 'en' ? 'Recent' : 'সম্প্রতি খোঁজা'}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {recent.map((r) => (
@@ -107,7 +110,7 @@ export function SearchBar({ className, mobile = false }: SearchBarProps) {
           )}
           <div className="p-3 border-t border-gray-50">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-              <TrendingUp className="w-3 h-3" /> ট্রেন্ডিং
+              <TrendingUp className="w-3 h-3" /> {lang === 'en' ? 'Trending' : 'ট্রেন্ডিং'}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {TRENDING.map((t) => (
@@ -127,7 +130,7 @@ export function SearchBar({ className, mobile = false }: SearchBarProps) {
               className="w-full text-left px-4 py-3 border-t border-gray-50 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
             >
               <Search className="w-4 h-4 text-brand-600" />
-              <span><strong>"{query}"</strong> খুঁজুন</span>
+              <span><strong>"{query}"</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}</span>
             </button>
           )}
         </div>

@@ -6,7 +6,7 @@ import { ActiveFilters } from './FilterSidebar';
 interface Props {
   filters: ActiveFilters;
   search?: string;
-  onRemove: (key: keyof ActiveFilters | 'search') => void;
+  onRemove: (key: keyof ActiveFilters | 'search' | 'price') => void;
   onClearAll: () => void;
 }
 

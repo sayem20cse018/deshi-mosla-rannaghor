@@ -1,8 +1,9 @@
+/* Google Fonts — MUST be first before @tailwind directives */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 
 /* ── CSS Variables ───────────────────────────────────────── */
 @layer base {
@@ -44,9 +45,13 @@
     --spice-600: #ea580c;
   }
 
-  * { @apply border-border box-border; }
+  * {
+    @apply border-border box-border;
+  }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+  }
 
   body {
     @apply bg-background text-foreground antialiased;
@@ -61,35 +66,30 @@
 
 /* ── Reusable Component Classes ─────────────────────────── */
 @layer components {
-
-  /* Section wrapper */
   .section-wrap {
     @apply py-10 md:py-14;
   }
 
-  /* Section header */
   .section-title {
     @apply text-2xl md:text-3xl font-bold text-gray-900 leading-snug;
   }
+
   .section-sub {
     @apply text-sm text-gray-500 mt-0.5;
   }
 
-  /* Product card */
   .product-card {
     @apply bg-white rounded-2xl border border-gray-100 overflow-hidden
            transition-all duration-300 hover:shadow-xl hover:border-brand-200
-           hover:-translate-y-0.5 cursor-pointer group;
+           hover:-translate-y-0.5 cursor-pointer;
   }
 
-  /* Prices */
   .price-main  { @apply text-brand-700 font-bold; }
   .price-old   { @apply text-gray-400 line-through text-xs; }
   .badge-disc  { @apply bg-spice-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md; }
   .badge-new   { @apply bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md; }
   .badge-hot   { @apply bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md; }
 
-  /* Button variants */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
            bg-brand-700 hover:bg-brand-800 active:bg-brand-900
@@ -99,6 +99,7 @@
            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
            disabled:opacity-50 disabled:pointer-events-none;
   }
+
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
            bg-white hover:bg-brand-50 border border-brand-300
@@ -106,6 +107,7 @@
            px-5 py-2.5 text-sm
            transition-colors duration-200;
   }
+
   .btn-spice {
     @apply inline-flex items-center justify-center gap-2
            bg-spice-500 hover:bg-spice-600
@@ -113,36 +115,34 @@
            px-5 py-2.5 text-sm
            transition-colors duration-200;
   }
+
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-1.5
            text-brand-700 hover:text-brand-800 hover:bg-brand-50
            font-medium text-sm rounded-lg px-3 py-1.5
            transition-colors duration-200;
   }
+
   .btn-icon {
     @apply flex items-center justify-center w-9 h-9 rounded-xl
            hover:bg-gray-100 transition-colors duration-200
            text-gray-600 hover:text-brand-700;
   }
 
-  /* Cart badge */
   .cart-badge {
     @apply absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full
            bg-spice-500 text-white text-[9px] font-bold
            flex items-center justify-center;
   }
 
-  /* Skeleton shimmer */
   .skeleton {
     @apply animate-pulse bg-gray-200 rounded-xl;
   }
 
-  /* Floating buttons */
   .floating-cart     { @apply fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden md:flex; }
   .floating-whatsapp { @apply fixed right-4 bottom-24 z-40; }
   .floating-backtop  { @apply fixed right-4 bottom-8 z-40; }
 
-  /* Input */
   .input-base {
     @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm
            placeholder:text-gray-400
@@ -150,13 +150,11 @@
            transition duration-200;
   }
 
-  /* Tag chip */
   .chip {
     @apply inline-flex items-center gap-1 bg-brand-50 text-brand-700
            border border-brand-100 text-xs font-medium px-2.5 py-1 rounded-full;
   }
 
-  /* Divider */
   .divider { @apply border-t border-gray-100 my-6; }
 }
 
@@ -170,20 +168,18 @@
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-  /* Gradient text */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-700 to-brand-500;
   }
+
   .text-gradient-spice {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-spice-600 to-spice-400;
   }
 
-  /* Card hover ring */
   .hover-ring {
     @apply transition-all duration-300 hover:ring-2 hover:ring-brand-300 hover:ring-offset-1;
   }
 
-  /* Safe area padding helpers */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
   .mb-safe  { margin-bottom:  env(safe-area-inset-bottom, 16px); }
 }
@@ -193,17 +189,20 @@
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
 @keyframes slide-left {
   from { opacity: 0; transform: translateX(24px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+
 @keyframes shimmer {
   0%   { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
 
-.animate-fade-up   { animation: fade-up 0.4s ease-out forwards; }
+.animate-fade-up    { animation: fade-up 0.4s ease-out forwards; }
 .animate-slide-left { animation: slide-left 0.35s ease-out forwards; }
+
 .shimmer-bg {
   background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 400px 100%;

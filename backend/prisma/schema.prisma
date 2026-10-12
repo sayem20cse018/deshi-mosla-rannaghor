@@ -266,6 +266,8 @@ model Category {
   parentId    String?
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
+  showInNav   Boolean  @default(false)
+  navOrder    Int      @default(0)
   metaTitle   String?  @db.VarChar(200)
   metaDesc    String?  @db.VarChar(500)
   createdAt   DateTime @default(now())
@@ -281,6 +283,7 @@ model Category {
   @@index([slug])
   @@index([parentId])
   @@index([isActive, sortOrder])
+  @@index([showInNav, navOrder])
   @@map("categories")
 }
 

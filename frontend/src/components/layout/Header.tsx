@@ -1,59 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   ShoppingCart, Heart, User, Menu, X,
-  ChevronDown, Globe, MapPin, LayoutDashboard,
-  Package,
+  ChevronDown, Globe, Package, LayoutDashboard,
+  Loader2,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { cn, formatPriceEn } from '@/lib/utils';
-import { SearchBar } from './SearchBar';
+import { t, catName } from '@/lib/translations';
+import { useLanguageStore, type Lang } from '@/store/language.store';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
+import { useNavCategories } from '@/hooks/useCategories';
+import { SearchBar } from './SearchBar';
+import toast from 'react-hot-toast';
 
-// ── Category nav items ─────────────────────────────────────
-const CAT_NAV = [
-  { href: '/shop',                     label: 'সব পণ্য',          emoji: '🛒'  },
-  { href: '/category/chatu',           label: 'আমাদের ছাতু',      emoji: '🌾'  },
-  { href: '/category/tel',             label: 'আমাদের তেল',       emoji: '🫙'  },
-  { href: '/category/ata-maida',       label: 'আমাদের আটা',       emoji: '🌾'  },
-  { href: '/category/chal',            label: 'আমাদের চাল',       emoji: '🍚'  },
-  { href: '/category/modhu',           label: 'আমাদের মধু',       emoji: '🍯'  },
-  { href: '/category/nuts-seeds',      label: 'Nuts & Seeds',     emoji: '🥜'  },
-  { href: '/category/super-food',      label: 'Super Food',       emoji: '⚡'  },
-  { href: '/category/mosla',           label: 'আমাদের মসলা',      emoji: '🌶️' },
-  { href: '/category/herbs',           label: 'আমাদের হার্বস',    emoji: '🌿'  },
-  { href: '/category/chini-gur',       label: 'আমাদের গুড়',       emoji: '🍬'  },
-];
+// ── How many categories fit in the desktop nav bar ─────────
+const NAV_VISIBLE = 10;
 
-const MORE_ITEMS = [
-  { href: '/category/dal',             label: '🫘 ডাল'              },
-  { href: '/category/lobon',           label: '🧂 লবণ'              },
-  { href: '/category/cha-kofi',        label: '☕ চা ও কফি'         },
-  { href: '/category/snacks',          label: '🍿 স্ন্যাকস'          },
-  { href: '/category/noodles',         label: '🍜 নুডলস'            },
-  { href: '/category/sauce-achar',     label: '🥫 সস ও আচার'       },
-  { href: '/category/cooking-items',   label: '🥘 রান্নার পণ্য'     },
-];
-
-// ── Top nav links (main header) ────────────────────────────
-const TOP_NAV = [
-  { href: '/',       label: 'হোম'  },
-  { href: '/blog',   label: 'Blog' },
+// ── Top nav links (bilingual) ──────────────────────────────
+const TOP_NAV: { href: string; bn: string; en: string }[] = [
+  { href: '/',     bn: 'হোম',  en: 'Home' },
+  { href: '/blog', bn: 'ব্লগ', en: 'Blog' },
 ];
 
 export function Header() {
-  const pathname = usePathname();
+  const pathname   = usePathname();
+  const router     = useRouter();
+  const { lang, setLang } = useLanguageStore();
   const { getItemCount, getTotals, openCart } = useCartStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, logout }     = useAuthStore();
 
-  const [mobileOpen, setMobileOpen]   = useState(false);
-  const [moreOpen,   setMoreOpen]     = useState(false);
-  const [langOpen,   setLangOpen]     = useState(false);
+  // Nav categories from API
+  const { data: navCats = [], isLoading: catsLoading } = useNavCategories();
+
+  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [moreOpen,    setMoreOpen]    = useState(false);
+  const [langOpen,    setLangOpen]    = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [scrolled,   setScrolled]     = useState(false);
+  const [scrolled,    setScrolled]    = useState(false);
 
   const moreRef    = useRef<HTMLDivElement>(null);
   const langRef    = useRef<HTMLDivElement>(null);
@@ -75,24 +62,33 @@ export function Header() {
   // Click-outside for dropdowns
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node))    setMoreOpen(false);
-      if (langRef.current && !langRef.current.contains(e.target as Node))    setLangOpen(false);
+      if (moreRef.current    && !moreRef.current.contains(e.target as Node))    setMoreOpen(false);
+      if (langRef.current    && !langRef.current.contains(e.target as Node))    setLangOpen(false);
       if (accountRef.current && !accountRef.current.contains(e.target as Node)) setAccountOpen(false);
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  async function handleLogout() {
+    setAccountOpen(false);
+    await logout();
+    toast.success(lang === 'bn' ? 'লগআউট হয়েছে' : 'Logged out');
+    router.push('/');
+  }
+
+  // Split nav into visible + overflow ("More")
+  const visibleCats   = navCats.slice(0, NAV_VISIBLE);
+  const overflowCats  = navCats.slice(NAV_VISIBLE);
+
+  const T = (key: Parameters<typeof t>[0]) => t(key, lang);
+
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 bg-white transition-shadow duration-300',
-        scrolled ? 'shadow-md' : 'shadow-sm',
-      )}
-    >
-      {/* ══════════════════════════════════════════════════
+    <header className={cn('sticky top-0 z-50 bg-white transition-shadow duration-300', scrolled ? 'shadow-md' : 'shadow-sm')}>
+
+      {/* ════════════════════════════════════════════════
           1. MAIN HEADER ROW
-          ══════════════════════════════════════════════════ */}
+          ════════════════════════════════════════════════ */}
       <div className="bg-white border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex items-center h-16 gap-2 md:gap-4">
@@ -108,7 +104,7 @@ export function Header() {
               </div>
             </Link>
 
-            {/* Top nav: Home + Blog (desktop only) */}
+            {/* Top nav: Home + Blog (desktop) */}
             <nav className="hidden lg:flex items-center gap-1 ml-1">
               {TOP_NAV.map((link) => (
                 <Link
@@ -121,20 +117,20 @@ export function Header() {
                       : 'text-gray-700 hover:text-brand-700 hover:bg-gray-50',
                   )}
                 >
-                  {link.label}
+                  {lang === 'bn' ? link.bn : link.en}
                 </Link>
               ))}
             </nav>
 
-            {/* Search — grows to fill space */}
+            {/* Search */}
             <div className="hidden md:flex flex-1 min-w-0 max-w-lg">
-              <SearchBar className="w-full" />
+              <SearchBar className="w-full" lang={lang} />
             </div>
 
-            {/* ── Right action cluster ── */}
+            {/* Right actions */}
             <div className="flex items-center gap-1 ml-auto md:ml-0">
 
-              {/* Language switcher (desktop) */}
+              {/* Language switcher */}
               <div ref={langRef} className="relative hidden lg:block">
                 <button
                   onClick={() => setLangOpen((o) => !o)}
@@ -142,37 +138,52 @@ export function Header() {
                     'flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors',
                     langOpen ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                   )}
-                  aria-label="ভাষা পরিবর্তন"
+                  aria-label={T('language')}
                 >
                   <Globe className="w-4 h-4" />
-                  <span>বাংলা</span>
+                  <span>{lang === 'bn' ? 'বাংলা' : 'English'}</span>
                   <ChevronDown className={cn('w-3 h-3 transition-transform', langOpen && 'rotate-180')} />
                 </button>
+
                 {langOpen && (
-                  <div className="absolute top-full right-0 mt-1.5 bg-white border border-gray-100 rounded-xl shadow-lg z-50 w-32 py-1 animate-fade-up">
-                    <button className="w-full text-left px-3 py-2 text-sm text-brand-700 bg-brand-50 font-semibold">বাংলা</button>
-                    <button className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">English</button>
+                  <div className="absolute top-full right-0 mt-1.5 bg-white border border-gray-100 rounded-xl shadow-lg z-50 w-36 py-1 animate-fade-up">
+                    {(['bn', 'en'] as Lang[]).map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => { setLang(l); setLangOpen(false); }}
+                        className={cn(
+                          'w-full text-left px-3 py-2.5 text-sm flex items-center gap-2 transition-colors',
+                          lang === l
+                            ? 'text-brand-700 bg-brand-50 font-semibold'
+                            : 'text-gray-600 hover:bg-gray-50',
+                        )}
+                      >
+                        <span className="text-base">{l === 'bn' ? '🇧🇩' : '🇬🇧'}</span>
+                        {l === 'bn' ? 'বাংলা' : 'English'}
+                        {lang === l && <span className="ml-auto text-brand-500 text-xs">✓</span>}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {/* Track Order (desktop) */}
+              {/* Track Order */}
               <Link
                 href="/order-tracking"
                 className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-brand-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <Package className="w-4 h-4" />
-                <span>ট্র্যাক অর্ডার</span>
+                <span>{T('trackOrder')}</span>
               </Link>
 
-              {/* My Account dropdown */}
+              {/* My Account */}
               <div ref={accountRef} className="relative">
                 {isAuthenticated ? (
                   <>
                     <button
                       onClick={() => setAccountOpen((o) => !o)}
                       className="btn-icon relative"
-                      aria-label="অ্যাকাউন্ট"
+                      aria-label={T('myAccount')}
                     >
                       {user?.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
@@ -184,22 +195,22 @@ export function Header() {
                     </button>
 
                     {accountOpen && (
-                      <div className="absolute top-full right-0 mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1.5 animate-fade-up">
+                      <div className="absolute top-full right-0 mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-52 py-1.5 animate-fade-up">
                         <div className="px-4 py-2 border-b border-gray-50">
                           <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
                           <p className="text-xs text-gray-400 truncate">{user?.email}</p>
                         </div>
                         {[
-                          { href: '/account',          label: 'আমার অ্যাকাউন্ট' },
-                          { href: '/account/orders',   label: 'আমার অর্ডার'      },
-                          { href: '/account/wishlist', label: 'উইশলিস্ট'          },
-                          { href: '/order-tracking',   label: 'অর্ডার ট্র্যাক'     },
+                          { href: '/account',          label: T('myAccount') },
+                          { href: '/account/orders',   label: T('myOrders')  },
+                          { href: '/account/wishlist', label: T('wishlist')  },
+                          { href: '/order-tracking',   label: T('trackOrder')},
                         ].map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
                             onClick={() => setAccountOpen(false)}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                            className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
                           >
                             {item.label}
                           </Link>
@@ -208,14 +219,17 @@ export function Header() {
                           <Link
                             href="/admin"
                             onClick={() => setAccountOpen(false)}
-                            className="flex items-center gap-1.5 px-4 py-2 text-sm text-spice-600 hover:bg-spice-50 transition-colors"
+                            className="flex items-center gap-1.5 px-4 py-2.5 text-sm text-spice-600 hover:bg-spice-50 transition-colors"
                           >
-                            <LayoutDashboard className="w-3.5 h-3.5" /> Admin Panel
+                            <LayoutDashboard className="w-3.5 h-3.5" /> {T('adminPanel')}
                           </Link>
                         )}
                         <div className="border-t border-gray-50 mt-1 pt-1">
-                          <button className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                            লগআউট
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                          >
+                            {T('logout')}
                           </button>
                         </div>
                       </div>
@@ -223,45 +237,30 @@ export function Header() {
                   </>
                 ) : (
                   <div className="hidden sm:flex items-center gap-1">
-                    <Link
-                      href="/login"
-                      className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors',
-                        'text-gray-700 hover:text-brand-700 hover:bg-gray-50',
-                      )}
-                    >
-                      <User className="w-3.5 h-3.5" />
-                      লগইন
+                    <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-700 hover:text-brand-700 hover:bg-gray-50 transition-colors">
+                      <User className="w-3.5 h-3.5" /> {T('login')}
                     </Link>
                     <span className="text-gray-200 text-sm">/</span>
-                    <Link
-                      href="/register"
-                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-brand-700 hover:bg-brand-800 transition-colors"
-                    >
-                      নিবন্ধন
+                    <Link href="/register" className="px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-brand-700 hover:bg-brand-800 transition-colors">
+                      {T('register')}
                     </Link>
                   </div>
                 )}
               </div>
 
               {/* Wishlist */}
-              <Link href="/account/wishlist" className="btn-icon relative" aria-label="উইশলিস্ট">
+              <Link href="/account/wishlist" className="btn-icon relative" aria-label={T('wishlist')}>
                 <Heart className="w-5 h-5" />
               </Link>
 
               {/* Cart */}
-              <button
-                onClick={openCart}
-                className="btn-icon relative"
-                aria-label="কার্ট"
-              >
+              <button onClick={openCart} className="btn-icon relative" aria-label={T('cart')}>
                 <ShoppingCart className="w-5 h-5" />
                 {itemCount > 0 && (
                   <span className="cart-badge">{itemCount > 9 ? '9+' : itemCount}</span>
                 )}
               </button>
 
-              {/* Cart total pill */}
               {itemCount > 0 && (
                 <button
                   onClick={openCart}
@@ -275,7 +274,7 @@ export function Header() {
               <button
                 className="btn-icon md:hidden"
                 onClick={() => setMobileOpen((o) => !o)}
-                aria-label="মেনু"
+                aria-label={T('menu')}
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -285,98 +284,128 @@ export function Header() {
 
         {/* Mobile search */}
         <div className="md:hidden border-t border-gray-100 bg-gray-50 px-4 py-2">
-          <SearchBar mobile className="w-full" />
+          <SearchBar mobile className="w-full" lang={lang} />
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════
-          2. CATEGORY NAVIGATION BAR
-          ══════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════
+          2. CATEGORY NAVIGATION BAR — dynamic from API
+          ════════════════════════════════════════════════ */}
       <div className="bg-brand-800 border-b border-brand-700">
         <div className="container mx-auto px-4">
+
           {/* Desktop */}
           <div className="hidden md:flex items-center h-10 gap-0.5 overflow-x-auto scrollbar-hide">
-            {CAT_NAV.map((item) => {
-              const active =
-                pathname === item.href ||
-                (item.href !== '/shop' && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
+
+            {/* "All Products" — always first */}
+            <Link
+              href="/shop"
+              className={cn(
+                'flex items-center gap-1.5 px-3 h-10 text-xs font-semibold whitespace-nowrap flex-shrink-0 rounded-lg transition-colors',
+                pathname === '/shop'
+                  ? 'text-white bg-brand-600'
+                  : 'text-brand-200 hover:text-white hover:bg-brand-700',
+              )}
+            >
+              <span className="text-sm leading-none">🛒</span>
+              {T('allProducts')}
+            </Link>
+
+            {/* API-driven categories */}
+            {catsLoading ? (
+              <div className="flex items-center gap-1 px-3 text-brand-300 text-xs">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              </div>
+            ) : (
+              visibleCats.map((cat) => {
+                const active = pathname === `/category/${cat.slug}` || pathname.startsWith(`/category/${cat.slug}/`);
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/category/${cat.slug}`}
+                    className={cn(
+                      'flex items-center gap-1.5 px-3 h-10 text-xs font-medium whitespace-nowrap flex-shrink-0 rounded-lg transition-colors',
+                      active
+                        ? 'text-white bg-brand-600'
+                        : 'text-brand-200 hover:text-white hover:bg-brand-700',
+                    )}
+                  >
+                    {cat.icon && <span className="text-sm leading-none">{cat.icon}</span>}
+                    {catName(cat, lang)}
+                  </Link>
+                );
+              })
+            )}
+
+            {/* "More" overflow dropdown */}
+            {overflowCats.length > 0 && (
+              <div ref={moreRef} className="relative flex-shrink-0">
+                <button
+                  onClick={() => setMoreOpen((o) => !o)}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 h-10 text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0',
-                    active
-                      ? 'text-white bg-brand-600 rounded-lg'
-                      : 'text-brand-200 hover:text-white hover:bg-brand-700 rounded-lg',
+                    'flex items-center gap-1 px-3 h-10 text-xs font-medium rounded-lg transition-colors',
+                    moreOpen ? 'text-white bg-brand-600' : 'text-brand-200 hover:text-white hover:bg-brand-700',
                   )}
                 >
-                  <span className="text-sm leading-none">{item.emoji}</span>
-                  {item.label}
-                </Link>
-              );
-            })}
+                  {T('more')}
+                  <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', moreOpen && 'rotate-180')} />
+                </button>
 
-            {/* More dropdown */}
-            <div ref={moreRef} className="relative flex-shrink-0">
-              <button
-                onClick={() => setMoreOpen((o) => !o)}
-                className={cn(
-                  'flex items-center gap-1 px-3 h-10 text-xs font-medium transition-colors rounded-lg',
-                  moreOpen
-                    ? 'text-white bg-brand-600'
-                    : 'text-brand-200 hover:text-white hover:bg-brand-700',
-                )}
-              >
-                আরও
-                <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', moreOpen && 'rotate-180')} />
-              </button>
-
-              {moreOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 w-44 animate-fade-up">
-                  {MORE_ITEMS.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <div className="border-t border-gray-50 mt-1 pt-1 mx-2">
-                    <Link
-                      href="/categories"
-                      onClick={() => setMoreOpen(false)}
-                      className="flex px-2 py-1.5 text-xs text-brand-600 hover:text-brand-800 font-medium"
-                    >
-                      সব ক্যাটাগরি দেখুন →
-                    </Link>
+                {moreOpen && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 w-52 animate-fade-up">
+                    {overflowCats.map((cat) => (
+                      <Link
+                        key={cat.slug}
+                        href={`/category/${cat.slug}`}
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                      >
+                        {cat.icon && <span className="text-base">{cat.icon}</span>}
+                        {catName(cat, lang)}
+                      </Link>
+                    ))}
+                    <div className="border-t border-gray-50 mt-1 pt-1 mx-3">
+                      <Link
+                        href="/categories"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex px-1 py-1.5 text-xs text-brand-600 hover:text-brand-800 font-medium"
+                      >
+                        {T('viewAllCats')}
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile — horizontally scrollable pills */}
-          <div className="md:hidden flex items-center gap-1.5 h-10 overflow-x-auto scrollbar-hide px-0.5">
-            {[...CAT_NAV, ...MORE_ITEMS.slice(0, 3)].map((item) => {
-              const emoji = 'emoji' in item ? item.emoji : item.label.split(' ')[0];
-              const label = 'emoji' in item ? item.label : item.label.split(' ').slice(1).join(' ');
-              const active = pathname === item.href || pathname.startsWith(item.href + '/');
+          <div className="md:hidden flex items-center gap-1.5 h-10 overflow-x-auto scrollbar-hide">
+            {/* All products */}
+            <Link
+              href="/shop"
+              className={cn(
+                'flex-shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full transition-colors whitespace-nowrap',
+                pathname === '/shop' ? 'bg-white text-brand-700' : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
+              )}
+            >
+              🛒 {T('allProducts')}
+            </Link>
+
+            {/* API categories */}
+            {navCats.map((cat) => {
+              const active = pathname === `/category/${cat.slug}` || pathname.startsWith(`/category/${cat.slug}/`);
               return (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={cat.slug}
+                  href={`/category/${cat.slug}`}
                   className={cn(
                     'flex-shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors whitespace-nowrap',
-                    active
-                      ? 'bg-white text-brand-700'
-                      : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
+                    active ? 'bg-white text-brand-700' : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
                   )}
                 >
-                  <span className="text-sm leading-none">{emoji}</span>
-                  <span className="hidden xs:inline">{label}</span>
+                  {cat.icon && <span className="text-sm leading-none">{cat.icon}</span>}
+                  {catName(cat, lang)}
                 </Link>
               );
             })}
@@ -384,62 +413,91 @@ export function Header() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════
-          3. ANNOUNCEMENT BAR  (below category nav)
-          ══════════════════════════════════════════════════ */}
-      <AnnouncementBarInline />
+      {/* ════════════════════════════════════════════════
+          3. ANNOUNCEMENT BAR — bilingual, rotating
+          ════════════════════════════════════════════════ */}
+      <AnnouncementBar lang={lang} />
 
-      {/* ══════════════════════════════════════════════════
+      {/* ════════════════════════════════════════════════
           MOBILE FULL MENU
-          ══════════════════════════════════════════════════ */}
+          ════════════════════════════════════════════════ */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg max-h-[70vh] overflow-y-auto">
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg max-h-[75vh] overflow-y-auto">
           <nav className="container mx-auto px-4 py-3">
+
+            {/* Language toggle at top */}
+            <div className="flex gap-2 mb-4 pb-3 border-b border-gray-100">
+              {(['bn', 'en'] as Lang[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={cn(
+                    'flex-1 py-2 text-sm font-semibold rounded-xl border transition-colors flex items-center justify-center gap-1.5',
+                    lang === l
+                      ? 'bg-brand-700 text-white border-brand-700'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300',
+                  )}
+                >
+                  {l === 'bn' ? <>🇧🇩 বাংলা</> : <>🇬🇧 English</>}
+                </button>
+              ))}
+            </div>
+
             {/* Top links */}
             {TOP_NAV.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn(
-                  'flex py-3 text-sm font-medium border-b border-gray-50 transition-colors',
-                  pathname === link.href ? 'text-brand-700' : 'text-gray-700',
-                )}
+                className={cn('flex py-2.5 text-sm font-medium border-b border-gray-50 transition-colors', pathname === link.href ? 'text-brand-700' : 'text-gray-700')}
               >
-                {link.label}
+                {lang === 'bn' ? link.bn : link.en}
               </Link>
             ))}
 
-            {/* Category items */}
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-3 mb-2">ক্যাটাগরি</p>
-            {[...CAT_NAV, ...MORE_ITEMS].map((item) => {
-              const emoji = 'emoji' in item ? item.emoji : item.label.split(' ')[0];
-              const label = 'emoji' in item ? item.label : item.label.split(' ').slice(1).join(' ');
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-2 py-2.5 text-sm text-gray-700 border-b border-gray-50 last:border-0"
-                >
-                  <span>{emoji}</span> {label}
-                </Link>
-              );
-            })}
+            <Link href="/order-tracking" className="flex items-center gap-2 py-2.5 text-sm text-gray-700 border-b border-gray-50">
+              <Package className="w-4 h-4 text-gray-400" /> {T('trackOrder')}
+            </Link>
 
-            {/* Auth links */}
+            {/* Categories */}
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-4 mb-2">
+              {lang === 'bn' ? 'ক্যাটাগরি' : 'Categories'}
+            </p>
+
+            <Link
+              href="/shop"
+              className="flex items-center gap-2 py-2.5 text-sm text-gray-700 border-b border-gray-50"
+            >
+              🛒 {T('allProducts')}
+            </Link>
+
+            {navCats.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/category/${cat.slug}`}
+                className="flex items-center gap-2.5 py-2.5 text-sm text-gray-700 border-b border-gray-50 last:border-0"
+              >
+                {cat.icon && <span className="text-base">{cat.icon}</span>}
+                {catName(cat, lang)}
+              </Link>
+            ))}
+
+            {/* Auth */}
             {!isAuthenticated && (
               <div className="pt-4 flex gap-2">
-                <Link href="/login" className="btn-primary flex-1 justify-center text-sm py-2.5">লগইন</Link>
-                <Link href="/register" className="btn-secondary flex-1 justify-center text-sm py-2.5">নিবন্ধন</Link>
+                <Link href="/login"    className="btn-primary  flex-1 justify-center text-sm py-2.5">{T('login')}</Link>
+                <Link href="/register" className="btn-secondary flex-1 justify-center text-sm py-2.5">{T('register')}</Link>
               </div>
             )}
-
-            {/* Track order */}
-            <Link
-              href="/order-tracking"
-              className="flex items-center gap-2 mt-3 py-2.5 text-sm text-gray-600 border-t border-gray-100"
-            >
-              <Package className="w-4 h-4" /> ট্র্যাক অর্ডার
-            </Link>
+            {isAuthenticated && (
+              <div className="pt-4 border-t border-gray-100 mt-2">
+                <Link href="/account" className="flex items-center gap-2 py-2.5 text-sm text-gray-700">
+                  <User className="w-4 h-4 text-gray-400" /> {T('myAccount')}
+                </Link>
+                <button onClick={handleLogout} className="flex items-center gap-2 py-2.5 text-sm text-red-500 w-full">
+                  {T('logout')}
+                </button>
+              </div>
+            )}
           </nav>
         </div>
       )}
@@ -447,48 +505,44 @@ export function Header() {
   );
 }
 
-// ── Inline Announcement Bar ────────────────────────────────
-// Kept separate from AnnouncementBar (home section) so it can
-// be placed precisely inside the sticky header stack.
-
+// ── Announcement Bar ───────────────────────────────────────
+// Separate component so it can be tested independently
 import { Truck, Tag, Gift, Zap } from 'lucide-react';
 
-const ANN_MESSAGES = [
-  { icon: Truck, text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি' },
-  { icon: Tag,   text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়' },
-  { icon: Gift,  text: 'ক্যাশ অন ডেলিভারি সুবিধা উপলব্ধ' },
-  { icon: Zap,   text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে অর্ডার করুন' },
-];
-
-function AnnouncementBarInline() {
-  const [current, setCurrent]   = useState(0);
+function AnnouncementBar({ lang }: { lang: Lang }) {
+  const [idx,       setIdx]       = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
+  const MESSAGES: { icon: React.ElementType; bn: string; en: string }[] = [
+    { icon: Truck, bn: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি',     en: 'Free delivery on orders over ৳1000 nationwide'        },
+    { icon: Tag,   bn: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',   en: 'Code WELCOME10 — 10% off for new customers'           },
+    { icon: Gift,  bn: 'ক্যাশ অন ডেলিভারি সুবিধা উপলব্ধ',           en: 'Cash on Delivery available'                           },
+    { icon: Zap,   bn: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে', en: 'Same-day delivery in Dhaka — order before 11 AM'       },
+  ];
+
   useEffect(() => {
-    const t = setInterval(() => setCurrent((c) => (c + 1) % ANN_MESSAGES.length), 3500);
-    return () => clearInterval(t);
-  }, []);
+    const timer = setInterval(() => setIdx((c) => (c + 1) % MESSAGES.length), 3500);
+    return () => clearInterval(timer);
+  }, []); // eslint-disable-line
 
   if (dismissed) return null;
 
-  const { icon: Icon, text } = ANN_MESSAGES[current];
+  const { icon: Icon, bn, en } = MESSAGES[idx];
+  const text = lang === 'en' ? en : bn;
 
   return (
     <div className="bg-spice-600 text-white text-xs relative overflow-hidden">
       <div className="container mx-auto px-4 h-8 flex items-center justify-between gap-4">
         <div className="flex items-center justify-center gap-2 flex-1 min-w-0">
           <Icon className="w-3.5 h-3.5 flex-shrink-0 opacity-90" />
-          <p
-            key={current}
-            className="font-medium tracking-wide truncate text-center animate-fade-up"
-          >
+          <p key={`${idx}-${lang}`} className="font-medium tracking-wide truncate text-center animate-fade-up">
             {text}
           </p>
         </div>
         <button
           onClick={() => setDismissed(true)}
           className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity ml-2"
-          aria-label="বন্ধ করুন"
+          aria-label={lang === 'en' ? 'Close' : 'বন্ধ করুন'}
         >
           <X className="w-3.5 h-3.5" />
         </button>

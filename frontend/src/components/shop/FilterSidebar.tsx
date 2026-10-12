@@ -14,6 +14,9 @@ export interface ActiveFilters {
   minRating?: number;
   stockStatus?: string;
   hasDiscount?: boolean;
+  isFeatured?: boolean;
+  isBestSeller?: boolean;
+  isNewArrival?: boolean;
 }
 
 interface FilterSidebarProps {

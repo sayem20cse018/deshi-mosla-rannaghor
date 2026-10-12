@@ -50,7 +50,7 @@ export default function ShopPage() {
     setPage(1);
   }, []);
 
-  function handleRemoveFilter(key: keyof ActiveFilters | 'search') {
+  function handleRemoveFilter(key: keyof ActiveFilters | 'search' | 'price') {
     if (key === 'search') {
       router.push('/shop');
       return;
