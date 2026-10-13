@@ -1,63 +1,35 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, Truck, Tag, Gift, Zap, Phone } from 'lucide-react';
+import { X, Truck, Tag, Gift, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 const MESSAGES = [
-  {
-    icon: Truck,
-    text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি',
-    en: 'Free delivery on orders over ৳1000',
-    color: 'text-emerald-300',
-    link: '/shop',
-  },
-  {
-    icon: Tag,
-    text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',
-    en: 'Code WELCOME10 — 10% off for new customers',
-    color: 'text-yellow-300',
-    link: '/shop',
-  },
-  {
-    icon: Gift,
-    text: 'ক্যাশ অন ডেলিভারি | bKash | Nagad সুবিধা উপলব্ধ',
-    en: 'COD | bKash | Nagad payment available',
-    color: 'text-pink-300',
-    link: '/checkout',
-  },
-  {
-    icon: Zap,
-    text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে অর্ডার করুন',
-    en: 'Same-day delivery in Dhaka — order before 11 AM',
-    color: 'text-orange-300',
-    link: '/shop',
-  },
+  { icon: Truck, text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি', link: '/shop' },
+  { icon: Tag,   text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়',  link: '/shop' },
+  { icon: Gift,  text: 'ক্যাশ অন ডেলিভারি | bKash | Nagad সুবিধা', link: '/checkout' },
+  { icon: Zap,   text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে',  link: '/shop' },
 ];
 
 const INTERVAL = 3800;
 
 export function AnnouncementBar() {
-  const [current, setCurrent]     = useState(0);
-  const [animating, setAnimating] = useState(false);
+  const [current,   setCurrent]   = useState(0);
+  const [exiting,   setExiting]   = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const [progress, setProgress]   = useState(0);
-  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
-  const rafRef     = useRef<number | null>(null);
-  const startRef   = useRef<number | null>(null);
+  const [progress,  setProgress]  = useState(0);
 
-  // Progress bar animation
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rafRef   = useRef<number | null>(null);
+  const startRef = useRef<number | null>(null);
+
   function startProgress() {
     setProgress(0);
     startRef.current = performance.now();
-
     function tick(now: number) {
-      const elapsed = now - (startRef.current ?? now);
-      const pct = Math.min((elapsed / INTERVAL) * 100, 100);
+      const pct = Math.min(((now - (startRef.current ?? now)) / INTERVAL) * 100, 100);
       setProgress(pct);
-      if (pct < 100) {
-        rafRef.current = requestAnimationFrame(tick);
-      }
+      if (pct < 100) rafRef.current = requestAnimationFrame(tick);
     }
     rafRef.current = requestAnimationFrame(tick);
   }
@@ -66,13 +38,25 @@ export function AnnouncementBar() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
   }
 
+  function goTo(i: number) {
+    stopProgress();
+    if (timerRef.current) clearInterval(timerRef.current);
+    setExiting(true);
+    setTimeout(() => {
+      setCurrent(i);
+      setExiting(false);
+      startProgress();
+      timerRef.current = setInterval(advance, INTERVAL);
+    }, 280);
+  }
+
   function advance() {
-    setAnimating(true);
+    setExiting(true);
     setTimeout(() => {
       setCurrent((c) => (c + 1) % MESSAGES.length);
-      setAnimating(false);
+      setExiting(false);
       startProgress();
-    }, 320);
+    }, 280);
   }
 
   useEffect(() => {
@@ -86,98 +70,62 @@ export function AnnouncementBar() {
 
   if (dismissed) return null;
 
-  const msg = MESSAGES[current];
-  const Icon = msg.icon;
+  const { icon: Icon, text, link } = MESSAGES[current];
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-r from-brand-900 via-brand-800 to-brand-900 text-white select-none">
-      {/* Decorative shimmer line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <div className="relative overflow-hidden bg-gradient-to-r from-spice-700 via-spice-600 to-spice-700 text-white select-none">
+      {/* Top shimmer */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
 
       <div className="container mx-auto px-4">
-        <div className="flex items-center h-9 gap-3">
+        <div className="flex items-center h-9 gap-2">
 
-          {/* Left: social / contact (desktop only) */}
-          <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
-            <a
-              href={`tel:+8801700000000`}
-              className="flex items-center gap-1.5 text-brand-300 hover:text-white transition-colors text-[11px] font-medium"
-            >
-              <Phone className="w-3 h-3" />
-              <span>+880 1700-000000</span>
-            </a>
-            <span className="text-brand-600 text-xs">|</span>
-            <div className="flex items-center gap-2 text-[11px]">
-              <button className="text-brand-300 hover:text-white transition-colors font-medium">বাংলা</button>
-              <span className="text-brand-600">•</span>
-              <button className="text-brand-400 hover:text-white transition-colors">EN</button>
-            </div>
-          </div>
-
-          {/* Center: sliding message */}
-          <div className="flex-1 flex items-center justify-center min-w-0 overflow-hidden">
-            <div
+          {/* Sliding message */}
+          <div className="flex-1 flex items-center justify-center overflow-hidden min-w-0">
+            <Link
+              href={link}
               key={current}
-              className={animating ? 'animate-ann-slide-out' : 'animate-ann-slide-in'}
+              className={`flex items-center gap-2 group ${exiting ? 'animate-ann-slide-out' : 'animate-ann-slide-in'}`}
             >
-              <Link
-                href={msg.link}
-                className="flex items-center gap-2 group cursor-pointer"
-              >
-                <span className={`flex-shrink-0 p-1 rounded-full bg-white/10 ${msg.color}`}>
-                  <Icon className="w-3 h-3" />
-                </span>
-                <p className="text-[12px] font-medium tracking-wide text-white/95 group-hover:text-white transition-colors truncate">
-                  {msg.text}
-                </p>
-                <span className="hidden sm:inline text-[10px] text-white/50 group-hover:text-white/70 transition-colors flex-shrink-0">
-                  →
-                </span>
-              </Link>
-            </div>
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/15 flex items-center justify-center">
+                <Icon className="w-3 h-3 text-white" />
+              </span>
+              <p className="text-[12px] font-semibold tracking-wide text-white truncate group-hover:text-yellow-100 transition-colors">
+                {text}
+              </p>
+              <span className="hidden sm:inline text-white/50 text-[11px] group-hover:text-white/80 transition-colors flex-shrink-0">›</span>
+            </Link>
           </div>
 
-          {/* Right: dots nav + dismiss */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Dot indicators */}
-            <div className="hidden sm:flex items-center gap-1">
-              {MESSAGES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    stopProgress();
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    setCurrent(i);
-                    setAnimating(false);
-                    startProgress();
-                    timerRef.current = setInterval(advance, INTERVAL);
-                  }}
-                  className={`transition-all duration-300 rounded-full ${
-                    i === current
-                      ? 'w-4 h-1.5 bg-white'
-                      : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/60'
-                  }`}
-                  aria-label={`Message ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Dismiss */}
-            <button
-              onClick={() => setDismissed(true)}
-              className="w-5 h-5 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all"
-              aria-label="বন্ধ করুন"
-            >
-              <X className="w-3 h-3" />
-            </button>
+          {/* Dot indicators */}
+          <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
+            {MESSAGES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Message ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === current ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/35 hover:bg-white/60'
+                }`}
+              />
+            ))}
           </div>
+
+          {/* Dismiss */}
+          <button
+            onClick={() => setDismissed(true)}
+            className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all"
+            aria-label="বন্ধ করুন"
+          >
+            <X className="w-3 h-3" />
+          </button>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10">
+      <div className="absolute bottom-0 inset-x-0 h-[2px] bg-black/20">
         <div
-          className="h-full bg-gradient-to-r from-spice-400 to-spice-300 transition-none rounded-full"
+          className="h-full bg-white/60 rounded-full transition-none"
           style={{ width: `${progress}%` }}
         />
       </div>
