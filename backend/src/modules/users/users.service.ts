@@ -64,8 +64,10 @@ export class UsersService {
   }
 
   // ── Orders (read-only for account page) ──────────────
-  async getMyOrders(userId: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
+  async getMyOrders(userId: string, page: any = 1, limit: any = 10) {
+    const safePage  = Math.max(1, parseInt(String(page),  10) || 1);
+    const safeLimit = Math.min(50, Math.max(1, parseInt(String(limit), 10) || 10));
+    const skip = (safePage - 1) * safeLimit;
     const [orders, total] = await Promise.all([
       this.prisma.order.findMany({
         where: { userId },
@@ -79,7 +81,7 @@ export class UsersService {
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit,
+        take: safeLimit,
       }),
       this.prisma.order.count({ where: { userId } }),
     ]);
@@ -95,10 +97,10 @@ export class UsersService {
         couponDiscount: Number(o.couponDiscount),
       })),
       meta: {
-        total, page, limit,
-        totalPages: Math.ceil(total / limit),
-        hasNext: page * limit < total,
-        hasPrev: page > 1,
+        total, page: safePage, limit: safeLimit,
+        totalPages: Math.ceil(total / safeLimit),
+        hasNext: safePage * safeLimit < total,
+        hasPrev: safePage > 1,
       },
     };
   }

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const PROTECTED = [
   '/account',
   '/checkout',
+  '/order',
 ];
 
 // Routes that redirect logged-in users away
@@ -43,6 +44,7 @@ export const config = {
   matcher: [
     '/account/:path*',
     '/checkout/:path*',
+    '/order/:path*',
     '/login',
     '/register',
     '/forgot-password',
