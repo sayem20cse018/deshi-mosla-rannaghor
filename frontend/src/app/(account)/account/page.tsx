@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ShoppingBag,
   Heart,
@@ -70,9 +71,11 @@ export default function AccountDashboard() {
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center flex-shrink-0">
             {user?.avatar ? (
-              <img
+              <Image
                 src={user.avatar}
-                alt={user.name}
+                alt={user.name ?? 'avatar'}
+                width={56}
+                height={56}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

@@ -113,7 +113,7 @@ export function TestimonialsSection() {
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <Quote className="w-6 h-6 text-spice-400 flex-shrink-0" />
-              <p className="text-white/85 text-sm leading-relaxed flex-1">"{t.comment}"</p>
+              <p className="text-white/85 text-sm leading-relaxed flex-1">&ldquo;{t.comment}&rdquo;</p>
               <div className="flex items-center gap-3">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${t.color}`}

@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Loader2, Package, MapPin, CreditCard, Truck, CheckCircle } from 'lucide-react';
 import api from '@/lib/api';
@@ -162,9 +163,11 @@ export default function OrderDetailPage() {
             >
               <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-xl flex-shrink-0">
                 {item.productImage ? (
-                  <img
+                  <Image
                     src={item.productImage}
                     alt={item.productName}
+                    width={48}
+                    height={48}
                     className="w-full h-full rounded-xl object-cover"
                   />
                 ) : (

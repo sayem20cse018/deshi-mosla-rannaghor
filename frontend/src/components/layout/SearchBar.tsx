@@ -149,7 +149,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
             >
               <Search className="w-4 h-4 text-brand-600" />
               <span>
-                <strong>"{query}"</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}
+                <strong>&ldquo;{query}&rdquo;</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}
               </span>
             </button>
           )}
