@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { Star, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
@@ -59,9 +60,11 @@ export default function ReviewsPage() {
                   className="w-14 h-14 rounded-xl overflow-hidden bg-brand-50 flex items-center justify-center flex-shrink-0 border border-gray-100 hover:border-brand-200 transition-colors"
                 >
                   {review.product?.images?.[0]?.url ? (
-                    <img
+                    <Image
                       src={review.product.images[0].url}
                       alt={review.product.name}
+                      width={56}
+                      height={56}
                       className="w-full h-full object-cover"
                     />
                   ) : (

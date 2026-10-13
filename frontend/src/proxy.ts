@@ -6,7 +6,7 @@ const PROTECTED = ['/account', '/checkout', '/order'];
 // Routes that redirect logged-in users away
 const AUTH_ONLY = ['/login', '/register', '/forgot-password', '/reset-password'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('access_token')?.value;
 

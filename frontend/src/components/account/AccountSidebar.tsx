@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -54,9 +55,11 @@ export function AccountSidebar({ onClose }: AccountSidebarProps) {
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center flex-shrink-0">
             {user?.avatar ? (
-              <img
+              <Image
                 src={user.avatar}
                 alt={user.name}
+                width={44}
+                height={44}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

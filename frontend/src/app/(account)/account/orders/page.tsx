@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Package, ChevronRight, Loader2, ShoppingBag } from 'lucide-react';
@@ -119,9 +120,11 @@ export default function OrdersPage() {
                         className="w-8 h-8 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-lg overflow-hidden"
                       >
                         {item.productImage ? (
-                          <img
+                          <Image
                             src={item.productImage}
                             alt={item.productName}
+                            width={32}
+                            height={32}
                             className="w-full h-full object-cover"
                           />
                         ) : (

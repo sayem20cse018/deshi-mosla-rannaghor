@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   ShoppingCart,
@@ -205,9 +206,11 @@ export function Header() {
                       aria-label={T('myAccount')}
                     >
                       {user?.avatar ? (
-                        <img
+                        <Image
                           src={user.avatar}
-                          alt={user.name}
+                          alt={user.name ?? 'avatar'}
+                          width={28}
+                          height={28}
                           className="w-7 h-7 rounded-full object-cover"
                         />
                       ) : (

@@ -5,6 +5,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'via.placeholder.com' },
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: '**.onrender.com' },
     ],
   },
   env: {

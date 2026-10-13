@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   CheckCircle,
   Package,
@@ -160,9 +161,11 @@ export default function OrderConfirmationPage() {
               >
                 <div className="w-11 h-11 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-xl flex-shrink-0 overflow-hidden">
                   {item.productImage ? (
-                    <img
+                    <Image
                       src={item.productImage}
                       alt={item.productName}
+                      width={44}
+                      height={44}
                       className="w-full h-full object-cover"
                     />
                   ) : (

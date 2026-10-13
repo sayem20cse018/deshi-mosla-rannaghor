@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Save, Camera, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
@@ -104,9 +105,11 @@ export default function ProfilePage() {
           <div className="relative">
             <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center border-2 border-brand-200">
               {user?.avatar ? (
-                <img
+                <Image
                   src={user.avatar}
-                  alt={user.name}
+                  alt={user.name ?? 'avatar'}
+                  width={64}
+                  height={64}
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (

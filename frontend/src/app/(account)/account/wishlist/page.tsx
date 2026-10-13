@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/store/cart.store';
 import toast from 'react-hot-toast';
@@ -62,9 +63,11 @@ export default function WishlistPage() {
                 <Link href={`/product/${item.slug}`} className="block">
                   <div className="aspect-square bg-brand-50 flex items-center justify-center text-5xl">
                     {item.primaryImage ? (
-                      <img
+                      <Image
                         src={item.primaryImage}
                         alt={item.name}
+                        width={200}
+                        height={200}
                         className="w-full h-full object-cover"
                       />
                     ) : (

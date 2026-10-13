@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Star, ThumbsUp, Camera } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { StarRating } from '@/components/ui/StarRating';
@@ -78,9 +79,11 @@ export function ReviewSection({
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2.5">
                     {review.user.avatar ? (
-                      <img
+                      <Image
                         src={review.user.avatar}
                         alt={review.user.name}
+                        width={36}
+                        height={36}
                         className="w-9 h-9 rounded-full object-cover"
                       />
                     ) : (
@@ -119,9 +122,11 @@ export function ReviewSection({
                         key={i}
                         className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100"
                       >
-                        <img
+                        <Image
                           src={img}
                           alt={`Review image ${i + 1}`}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-cover"
                         />
                       </div>

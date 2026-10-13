@@ -56,11 +56,15 @@ export function AnnouncementBar() {
         </button>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar — duration via inline style to avoid Tailwind ambiguous-class warning */}
       <div className="absolute bottom-0 left-0 h-0.5 bg-spice-500/40 w-full">
         <div
-          className="h-full bg-spice-500 transition-all duration-[3500ms] ease-linear"
-          style={{ width: '100%', animation: 'progress-bar 3.5s linear infinite' }}
+          className="h-full bg-spice-500 ease-linear"
+          style={{
+            width: '100%',
+            animation: 'progress-bar 3.5s linear infinite',
+            transitionDuration: '3500ms',
+          }}
         />
       </div>
     </div>
