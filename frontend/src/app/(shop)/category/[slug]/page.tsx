@@ -27,7 +27,11 @@ export default function CategoryPage() {
   const [filters, setFilters] = useState<ActiveFilters>({});
 
   const { data, isLoading, isFetching } = useProducts({
-    page, limit: LIMIT, sortBy, category: slug, ...filters,
+    page,
+    limit: LIMIT,
+    sortBy,
+    category: slug,
+    ...filters,
   });
 
   const products = data?.data ?? [];
@@ -45,9 +49,13 @@ export default function CategoryPage() {
         <div className="container mx-auto px-4 py-6">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
-            <Link href="/" className="hover:text-brand-600">হোম</Link>
+            <Link href="/" className="hover:text-brand-600">
+              হোম
+            </Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/categories" className="hover:text-brand-600">ক্যাটাগরি</Link>
+            <Link href="/categories" className="hover:text-brand-600">
+              ক্যাটাগরি
+            </Link>
             {category?.parent && (
               <>
                 <ChevronRight className="w-3 h-3" />
@@ -90,17 +98,16 @@ export default function CategoryPage() {
         <div className="flex gap-6">
           {/* Sidebar */}
           <aside className="hidden md:block w-64 flex-shrink-0">
-            <FilterSidebar
-              filters={filters}
-              onChange={handleFilterChange}
-              currentCategory={slug}
-            />
+            <FilterSidebar filters={filters} onChange={handleFilterChange} currentCategory={slug} />
           </aside>
 
           {/* Mobile filter */}
           {mobileFilterOpen && (
             <div className="fixed inset-0 z-50 md:hidden">
-              <div className="absolute inset-0 bg-black/50" onClick={() => setMobileFilterOpen(false)} />
+              <div
+                className="absolute inset-0 bg-black/50"
+                onClick={() => setMobileFilterOpen(false)}
+              />
               <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white overflow-y-auto p-4">
                 <FilterSidebar
                   filters={filters}
@@ -117,7 +124,10 @@ export default function CategoryPage() {
             <SortBar
               total={meta?.total ?? 0}
               sortBy={sortBy}
-              onSortChange={(v) => { setSortBy(v); setPage(1); }}
+              onSortChange={(v) => {
+                setSortBy(v);
+                setPage(1);
+              }}
               view={view}
               onViewChange={setView}
               onFilterToggle={() => setMobileFilterOpen(true)}
@@ -126,8 +136,14 @@ export default function CategoryPage() {
             />
             <ActiveFilterTags
               filters={filters}
-              onRemove={(k) => { setFilters((f) => ({ ...f, [k]: undefined })); setPage(1); }}
-              onClearAll={() => { setFilters({}); setPage(1); }}
+              onRemove={(k) => {
+                setFilters((f) => ({ ...f, [k]: undefined }));
+                setPage(1);
+              }}
+              onClearAll={() => {
+                setFilters({});
+                setPage(1);
+              }}
             />
             <div className={cn(isFetching && !isLoading && 'opacity-70')}>
               <ProductGrid products={products} loading={isLoading || catLoading} view={view} />
@@ -136,7 +152,10 @@ export default function CategoryPage() {
               <Pagination
                 page={page}
                 totalPages={meta.totalPages}
-                onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                onPageChange={(p) => {
+                  setPage(p);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             )}
           </div>

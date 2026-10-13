@@ -6,10 +6,11 @@ export function SpecialOfferBanner() {
     <section className="py-6">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-4">
-
           {/* Banner 1 — Main offer */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-spice-600 via-spice-500 to-amber-500 p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
-            <div className="absolute right-4 top-0 text-8xl opacity-15 select-none leading-none">🌶️</div>
+            <div className="absolute right-4 top-0 text-8xl opacity-15 select-none leading-none">
+              🌶️
+            </div>
             <div>
               <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">
                 <Timer className="w-3 h-3" /> সীমিত সময়
@@ -19,7 +20,9 @@ export function SpecialOfferBanner() {
                 <br />
                 <span className="text-yellow-200">২৫% পর্যন্ত ছাড়!</span>
               </h3>
-              <p className="text-white/80 text-sm mt-1">নির্বাচিত মসলা ও মিক্স কালেকশনে বিশেষ ছাড়</p>
+              <p className="text-white/80 text-sm mt-1">
+                নির্বাচিত মসলা ও মিক্স কালেকশনে বিশেষ ছাড়
+              </p>
             </div>
             <Link
               href="/shop?category=mosla&discount=true"
@@ -31,7 +34,9 @@ export function SpecialOfferBanner() {
 
           {/* Banner 2 — Free delivery */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
-            <div className="absolute right-4 top-0 text-8xl opacity-15 select-none leading-none">🚚</div>
+            <div className="absolute right-4 top-0 text-8xl opacity-15 select-none leading-none">
+              🚚
+            </div>
             <div>
               <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">
                 🎁 বিশেষ অফার
@@ -41,7 +46,9 @@ export function SpecialOfferBanner() {
                 <br />
                 <span className="text-brand-200">ফ্রি ডেলিভারি!</span>
               </h3>
-              <p className="text-white/80 text-sm mt-1">কোড: <strong>FREEDEL</strong> — সারাদেশে প্রযোজ্য</p>
+              <p className="text-white/80 text-sm mt-1">
+                কোড: <strong>FREEDEL</strong> — সারাদেশে প্রযোজ্য
+              </p>
             </div>
             <Link
               href="/shop"

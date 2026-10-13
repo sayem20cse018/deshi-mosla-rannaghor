@@ -1,10 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  ShoppingBag, ArrowLeft, Trash2,
-  ArrowRight, RefreshCw,
-} from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Trash2, ArrowRight, RefreshCw } from 'lucide-react';
 import { useCartStore } from '@/store/cart.store';
 import { CartItemRow } from '@/components/cart/CartItem';
 import { CartSummary } from '@/components/cart/CartSummary';
@@ -12,12 +9,12 @@ import { cn } from '@/lib/utils';
 
 // Popular categories to show in empty state
 const QUICK_CATEGORIES = [
-  { slug: 'mosla',     label: '🌶️ মসলা'         },
-  { slug: 'tel',       label: '🫙 তেল'           },
-  { slug: 'chal',      label: '🍚 চাল'           },
-  { slug: 'dal',       label: '🫘 ডাল'           },
-  { slug: 'modhu',     label: '🍯 মধু'           },
-  { slug: 'cha-kofi',  label: '☕ চা ও কফি'     },
+  { slug: 'mosla', label: '🌶️ মসলা' },
+  { slug: 'tel', label: '🫙 তেল' },
+  { slug: 'chal', label: '🍚 চাল' },
+  { slug: 'dal', label: '🫘 ডাল' },
+  { slug: 'modhu', label: '🍯 মধু' },
+  { slug: 'cha-kofi', label: '☕ চা ও কফি' },
 ];
 
 export default function CartPage() {
@@ -31,7 +28,9 @@ export default function CartPage() {
         <div className="container mx-auto px-4 py-12">
           {/* Breadcrumb */}
           <nav className="text-xs text-gray-400 mb-8 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-brand-600">হোম</Link>
+            <Link href="/" className="hover:text-brand-600">
+              হোম
+            </Link>
             <span>/</span>
             <span className="text-gray-600 font-medium">কার্ট</span>
           </nav>
@@ -43,7 +42,8 @@ export default function CartPage() {
 
             <h1 className="text-2xl font-bold text-gray-900 mb-2">কার্ট খালি আছে</h1>
             <p className="text-gray-500 text-sm mb-8">
-              পণ্য যোগ করুন এবং আপনার পছন্দের পণ্য অর্ডার করুন।<br />
+              পণ্য যোগ করুন এবং আপনার পছন্দের পণ্য অর্ডার করুন।
+              <br />
               দেশীয় মসলা, তেল, চাল ও আরও অনেক পণ্য পাচ্ছেন।
             </p>
 
@@ -83,16 +83,16 @@ export default function CartPage() {
       <div className="bg-white border-b border-gray-100">
         <div className="container mx-auto px-4 py-5">
           <nav className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-brand-600">হোম</Link>
+            <Link href="/" className="hover:text-brand-600">
+              হোম
+            </Link>
             <span>/</span>
             <span className="text-gray-600 font-medium">কার্ট</span>
           </nav>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">আমার কার্ট</h1>
-              <p className="text-gray-400 text-sm mt-0.5">
-                {totals.itemCount} টি পণ্য
-              </p>
+              <p className="text-gray-400 text-sm mt-0.5">{totals.itemCount} টি পণ্য</p>
             </div>
             <div className="flex items-center gap-3">
               <Link
@@ -116,10 +116,8 @@ export default function CartPage() {
 
       <div className="container mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-3 gap-6 items-start">
-
           {/* ── Cart items list (left 2/3) ── */}
           <div className="lg:col-span-2 space-y-3">
-
             {/* Column headers (desktop only) */}
             <div className="hidden md:grid grid-cols-[1fr_auto_auto] gap-4 text-xs font-semibold text-gray-400 uppercase tracking-wider px-4">
               <span>পণ্য</span>

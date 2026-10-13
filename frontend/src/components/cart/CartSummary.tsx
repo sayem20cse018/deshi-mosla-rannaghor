@@ -3,9 +3,17 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Tag, Check, X, Truck, ArrowRight,
-  ShieldCheck, RotateCcw, Loader2, AlertCircle,
-  ChevronDown, ChevronUp,
+  Tag,
+  Check,
+  X,
+  Truck,
+  ArrowRight,
+  ShieldCheck,
+  RotateCcw,
+  Loader2,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
@@ -18,11 +26,8 @@ interface CartSummaryProps {
 const SUGGESTED_COUPONS = ['WELCOME10', 'FREEDEL', 'SAVE50'];
 
 export function CartSummary({ className, sticky = true }: CartSummaryProps) {
-  const {
-    appliedCoupon, couponError,
-    applyCoupon, removeCoupon,
-    getTotals, items,
-  } = useCartStore();
+  const { appliedCoupon, couponError, applyCoupon, removeCoupon, getTotals, items } =
+    useCartStore();
 
   const totals = getTotals();
   const [couponInput, setCouponInput] = useState(appliedCoupon?.code ?? '');
@@ -63,7 +68,6 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
   return (
     <div className={cn(sticky && 'sticky top-24', className)}>
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-
         {/* Header */}
         <div className="bg-brand-700 px-5 py-4">
           <h2 className="text-white font-bold text-base">অর্ডার সামারি</h2>
@@ -71,7 +75,6 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
         </div>
 
         <div className="p-5 space-y-4">
-
           {/* Free delivery progress */}
           <div className="bg-brand-50 rounded-xl p-3 border border-brand-100">
             {totals.isFreeDelivery ? (
@@ -110,7 +113,9 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
             {totals.itemDiscount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-green-600">পণ্যে ছাড়</span>
-                <span className="font-semibold text-green-600">−{formatPriceEn(totals.itemDiscount)}</span>
+                <span className="font-semibold text-green-600">
+                  −{formatPriceEn(totals.itemDiscount)}
+                </span>
               </div>
             )}
 
@@ -120,7 +125,9 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                   <Tag className="w-3 h-3" />
                   কুপন ({appliedCoupon.code})
                 </span>
-                <span className="font-semibold text-brand-600">−{formatPriceEn(totals.couponDiscount)}</span>
+                <span className="font-semibold text-brand-600">
+                  −{formatPriceEn(totals.couponDiscount)}
+                </span>
               </div>
             )}
 
@@ -129,14 +136,21 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                 <Truck className="w-3 h-3" />
                 ডেলিভারি
               </span>
-              <span className={cn('font-semibold', totals.isFreeDelivery ? 'text-brand-600' : 'text-gray-800')}>
+              <span
+                className={cn(
+                  'font-semibold',
+                  totals.isFreeDelivery ? 'text-brand-600' : 'text-gray-800',
+                )}
+              >
                 {totals.isFreeDelivery ? 'ফ্রি' : formatPriceEn(totals.deliveryCharge)}
               </span>
             </div>
 
             <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
               <span className="font-bold text-gray-900">সর্বমোট</span>
-              <span className="text-2xl font-black text-brand-700">{formatPriceEn(totals.grandTotal)}</span>
+              <span className="text-2xl font-black text-brand-700">
+                {formatPriceEn(totals.grandTotal)}
+              </span>
             </div>
 
             {totalSavings > 0 && (
@@ -178,7 +192,10 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                       ref={inputRef}
                       type="text"
                       value={couponInput}
-                      onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setShowSuggestions(true); }}
+                      onChange={(e) => {
+                        setCouponInput(e.target.value.toUpperCase());
+                        setShowSuggestions(true);
+                      }}
                       onFocus={() => setShowSuggestions(true)}
                       onKeyDown={(e) => e.key === 'Enter' && handleApply()}
                       placeholder="কুপন কোড লিখুন..."
@@ -186,7 +203,10 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                     />
                     {couponInput && (
                       <button
-                        onClick={() => { setCouponInput(''); inputRef.current?.focus(); }}
+                        onClick={() => {
+                          setCouponInput('');
+                          inputRef.current?.focus();
+                        }}
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -210,7 +230,10 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                       {SUGGESTED_COUPONS.map((c) => (
                         <button
                           key={c}
-                          onClick={() => { setCouponInput(c); setShowSuggestions(false); }}
+                          onClick={() => {
+                            setCouponInput(c);
+                            setShowSuggestions(false);
+                          }}
                           className="text-[11px] font-mono font-bold text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-1 rounded-lg hover:bg-brand-100 transition-colors"
                         >
                           {c}
@@ -227,7 +250,10 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                 )}
 
                 <button
-                  onClick={() => { setShowCoupon(false); setCouponInput(''); }}
+                  onClick={() => {
+                    setShowCoupon(false);
+                    setCouponInput('');
+                  }}
                   className="text-xs text-gray-400 hover:text-gray-600"
                 >
                   বাতিল
@@ -260,7 +286,7 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
           <div className="grid grid-cols-2 gap-2 pt-1">
             {[
               { icon: ShieldCheck, label: 'নিরাপদ পেমেন্ট' },
-              { icon: RotateCcw,   label: '৭ দিনে রিটার্ন'  },
+              { icon: RotateCcw, label: '৭ দিনে রিটার্ন' },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex items-center gap-1.5 text-gray-500 text-xs">
                 <Icon className="w-3.5 h-3.5 text-brand-600 flex-shrink-0" />

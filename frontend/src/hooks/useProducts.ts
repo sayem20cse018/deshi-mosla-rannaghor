@@ -79,7 +79,9 @@ export function useFeaturedProducts(limit = 10) {
   return useQuery({
     queryKey: ['products-featured', limit],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<Product[]>>('/products/featured', { params: { limit } });
+      const res = await api.get<ApiResponse<Product[]>>('/products/featured', {
+        params: { limit },
+      });
       return res.data;
     },
     staleTime: 120_000,
@@ -90,7 +92,9 @@ export function useBestSellers(limit = 10) {
   return useQuery({
     queryKey: ['products-bestsellers', limit],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<Product[]>>('/products/best-sellers', { params: { limit } });
+      const res = await api.get<ApiResponse<Product[]>>('/products/best-sellers', {
+        params: { limit },
+      });
       return res.data;
     },
     staleTime: 120_000,
@@ -101,7 +105,9 @@ export function useNewArrivals(limit = 10) {
   return useQuery({
     queryKey: ['products-newarrivals', limit],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<Product[]>>('/products/new-arrivals', { params: { limit } });
+      const res = await api.get<ApiResponse<Product[]>>('/products/new-arrivals', {
+        params: { limit },
+      });
       return res.data;
     },
     staleTime: 120_000,

@@ -13,9 +13,9 @@ export default function SettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [notifSettings, setNotifSettings] = useState({
-    orderUpdates:    true,
-    promotions:      true,
-    smsAlerts:       false,
+    orderUpdates: true,
+    promotions: true,
+    smsAlerts: false,
   });
 
   async function handleLogout() {
@@ -29,7 +29,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-
       {/* Notifications */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-5">
@@ -38,9 +37,13 @@ export default function SettingsPage() {
         </div>
         <div className="space-y-4">
           {[
-            { key: 'orderUpdates', label: 'অর্ডার আপডেট',       sub: 'অর্ডার স্ট্যাটাস পরিবর্তনের নোটিফিকেশন' },
-            { key: 'promotions',   label: 'অফার ও ছাড়',          sub: 'বিশেষ অফার ও প্রমোশনাল নোটিফিকেশন'       },
-            { key: 'smsAlerts',    label: 'SMS নোটিফিকেশন',      sub: 'ফোনে SMS আলার্ট পেতে চান?'               },
+            {
+              key: 'orderUpdates',
+              label: 'অর্ডার আপডেট',
+              sub: 'অর্ডার স্ট্যাটাস পরিবর্তনের নোটিফিকেশন',
+            },
+            { key: 'promotions', label: 'অফার ও ছাড়', sub: 'বিশেষ অফার ও প্রমোশনাল নোটিফিকেশন' },
+            { key: 'smsAlerts', label: 'SMS নোটিফিকেশন', sub: 'ফোনে SMS আলার্ট পেতে চান?' },
           ].map(({ key, label, sub }) => (
             <div key={key} className="flex items-center justify-between py-2">
               <div>
@@ -56,10 +59,14 @@ export default function SettingsPage() {
                 role="switch"
                 aria-checked={notifSettings[key as keyof typeof notifSettings]}
               >
-                <span className={cn(
-                  'absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200',
-                  notifSettings[key as keyof typeof notifSettings] ? 'translate-x-5' : 'translate-x-0',
-                )} />
+                <span
+                  className={cn(
+                    'absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200',
+                    notifSettings[key as keyof typeof notifSettings]
+                      ? 'translate-x-5'
+                      : 'translate-x-0',
+                  )}
+                />
               </button>
             </div>
           ))}
@@ -73,9 +80,14 @@ export default function SettingsPage() {
           <h2 className="text-base font-bold text-gray-900">নিরাপত্তা</h2>
         </div>
         <div className="space-y-3">
-          <a href="/account/profile" className="flex items-center justify-between py-3 border-b border-gray-50 group">
+          <a
+            href="/account/profile"
+            className="flex items-center justify-between py-3 border-b border-gray-50 group"
+          >
             <div>
-              <p className="text-sm font-semibold text-gray-800 group-hover:text-brand-700 transition-colors">পাসওয়ার্ড পরিবর্তন</p>
+              <p className="text-sm font-semibold text-gray-800 group-hover:text-brand-700 transition-colors">
+                পাসওয়ার্ড পরিবর্তন
+              </p>
               <p className="text-xs text-gray-400 mt-0.5">নিরাপদ পাসওয়ার্ড ব্যবহার করুন</p>
             </div>
             <span className="text-xs text-brand-600 font-medium">পরিবর্তন করুন →</span>
@@ -118,10 +130,15 @@ export default function SettingsPage() {
         ) : (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 space-y-3">
             <p className="text-sm font-semibold text-red-700">⚠️ আপনি কি নিশ্চিত?</p>
-            <p className="text-xs text-red-600">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না। সমস্ত ডেটা মুছে যাবে।</p>
+            <p className="text-xs text-red-600">
+              এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না। সমস্ত ডেটা মুছে যাবে।
+            </p>
             <div className="flex gap-2">
               <button
-                onClick={() => { toast.error('অ্যাকাউন্ট মুছতে সাপোর্টে যোগাযোগ করুন'); setShowDeleteConfirm(false); }}
+                onClick={() => {
+                  toast.error('অ্যাকাউন্ট মুছতে সাপোর্টে যোগাযোগ করুন');
+                  setShowDeleteConfirm(false);
+                }}
                 className="text-xs bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
               >
                 হ্যাঁ, মুছে ফেলুন

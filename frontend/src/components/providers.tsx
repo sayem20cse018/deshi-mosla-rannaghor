@@ -20,7 +20,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const { fetchFromServer, syncToServer, items } = useCartStore();
 
   // Rehydrate user on first mount
-  useEffect(() => { fetchUser(); }, []);            // eslint-disable-line
+  useEffect(() => {
+    fetchUser();
+  }, []); // eslint-disable-line
 
   // When authentication changes → sync cart
   const prevAuth = useRef<boolean | null>(null);
@@ -37,14 +39,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })();
     }
     prevAuth.current = isAuthenticated;
-  }, [isAuthenticated]);                            // eslint-disable-line
+  }, [isAuthenticated]); // eslint-disable-line
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 }

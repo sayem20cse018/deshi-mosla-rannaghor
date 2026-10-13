@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 // ── Types ──────────────────────────────────────────────────
 
 export interface GuestCartItem {
-  id: string;           // local uuid
+  id: string; // local uuid
   productId: string;
   quantity: number;
   product: {
@@ -32,12 +32,12 @@ export interface CouponResult {
   discountValue: number;
   minOrderAmount: number | null;
   maxDiscount: number | null;
-  discountAmount: number;  // calculated
+  discountAmount: number; // calculated
 }
 
 export interface CartTotals {
   subtotal: number;
-  itemDiscount: number;       // sum of all item-level discounts
+  itemDiscount: number; // sum of all item-level discounts
   couponDiscount: number;
   deliveryCharge: number;
   grandTotal: number;
@@ -83,18 +83,19 @@ export interface CartStore {
 const FREE_DELIVERY_THRESHOLD = 1000;
 const DEFAULT_DELIVERY_CHARGE = 60;
 
-function calcDelivery(subtotal: number, coupon: CouponResult | null): {
-  charge: number; isFree: boolean;
+function calcDelivery(
+  subtotal: number,
+  coupon: CouponResult | null,
+): {
+  charge: number;
+  isFree: boolean;
 } {
   if (subtotal >= FREE_DELIVERY_THRESHOLD) return { charge: 0, isFree: true };
   if (coupon?.discountType === 'FREE_DELIVERY') return { charge: 0, isFree: true };
   return { charge: DEFAULT_DELIVERY_CHARGE, isFree: false };
 }
 
-function calcTotals(
-  items: GuestCartItem[],
-  coupon: CouponResult | null,
-): CartTotals {
+function calcTotals(items: GuestCartItem[], coupon: CouponResult | null): CartTotals {
   const itemCount = items.reduce((s, i) => s + i.quantity, 0);
 
   let subtotal = 0;
@@ -158,9 +159,7 @@ export const useCartStore = create<CartStore>()(
         if (existing) {
           const newQty = existing.quantity + quantity;
           set({
-            items: items.map((i) =>
-              i.productId === product.id ? { ...i, quantity: newQty } : i,
-            ),
+            items: items.map((i) => (i.productId === product.id ? { ...i, quantity: newQty } : i)),
           });
         } else {
           const newItem: GuestCartItem = {
@@ -190,9 +189,7 @@ export const useCartStore = create<CartStore>()(
           return;
         }
         set((s) => ({
-          items: s.items.map((i) =>
-            i.productId === productId ? { ...i, quantity } : i,
-          ),
+          items: s.items.map((i) => (i.productId === productId ? { ...i, quantity } : i)),
         }));
 
         const token = Cookies.get('access_token');
@@ -232,14 +229,18 @@ export const useCartStore = create<CartStore>()(
         set({ isLoading: true, couponError: null });
         try {
           const { subtotal } = get().getTotals();
-          const res = await api.post('/coupons/validate', { code: code.trim().toUpperCase(), orderAmount: subtotal });
+          const res = await api.post('/coupons/validate', {
+            code: code.trim().toUpperCase(),
+            orderAmount: subtotal,
+          });
           const couponData = res.data.data as CouponResult;
 
           // Recalculate discount amount
           let discountAmount = 0;
           if (couponData.discountType === 'PERCENTAGE') {
             discountAmount = (subtotal * couponData.discountValue) / 100;
-            if (couponData.maxDiscount) discountAmount = Math.min(discountAmount, couponData.maxDiscount);
+            if (couponData.maxDiscount)
+              discountAmount = Math.min(discountAmount, couponData.maxDiscount);
           } else if (couponData.discountType === 'FIXED_AMOUNT') {
             discountAmount = Math.min(couponData.discountValue, subtotal);
           } else if (couponData.discountType === 'FREE_DELIVERY') {

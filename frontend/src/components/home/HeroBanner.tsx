@@ -41,10 +41,10 @@ const SLIDES = [
 ];
 
 const TRUST = [
-  { icon: Star,        label: '৪.৮★ রেটিং',   sub: '১০,০০০+ রিভিউ' },
-  { icon: Truck,       label: 'দ্রুত ডেলিভারি', sub: 'সারাদেশে' },
-  { icon: Shield,      label: '১০০% খাঁটি',    sub: 'গ্যারান্টিড' },
-  { icon: RefreshCcw,  label: 'সহজ রিটার্ন',   sub: '৭ দিনের মধ্যে' },
+  { icon: Star, label: '৪.৮★ রেটিং', sub: '১০,০০০+ রিভিউ' },
+  { icon: Truck, label: 'দ্রুত ডেলিভারি', sub: 'সারাদেশে' },
+  { icon: Shield, label: '১০০% খাঁটি', sub: 'গ্যারান্টিড' },
+  { icon: RefreshCcw, label: 'সহজ রিটার্ন', sub: '৭ দিনের মধ্যে' },
 ];
 
 export function HeroBanner() {
@@ -63,7 +63,6 @@ export function HeroBanner() {
       <div className={`bg-gradient-to-br ${slide.bg} transition-all duration-700`}>
         <div className="container mx-auto px-4 py-12 md:py-20">
           <div className="grid md:grid-cols-2 gap-8 items-center">
-
             {/* Left — text */}
             <div className="text-white space-y-5 animate-fade-up" key={idx}>
               {/* Top badge */}

@@ -39,7 +39,10 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
 
       {pages().map((p, i) =>
         p === '...' ? (
-          <span key={`dot-${i}`} className="w-9 h-9 flex items-center justify-center text-gray-400 text-sm">
+          <span
+            key={`dot-${i}`}
+            className="w-9 h-9 flex items-center justify-center text-gray-400 text-sm"
+          >
             …
           </span>
         ) : (

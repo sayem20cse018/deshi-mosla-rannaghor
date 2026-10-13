@@ -23,19 +23,21 @@ interface AuthStore {
   isLoading: boolean;
 
   // Core auth
-  login:    (identifier: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   register: (name: string, email: string, phone: string, password: string) => Promise<void>;
-  logout:   () => Promise<void>;
+  logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
 
   // Password reset flow
-  forgotPassword:  (identifier: string) => Promise<{ dev_otp?: string }>;
-  verifyOtp:       (identifier: string, otp: string) => Promise<void>;
-  resetPassword:   (identifier: string, otp: string, newPassword: string) => Promise<void>;
+  forgotPassword: (identifier: string) => Promise<{ dev_otp?: string }>;
+  verifyOtp: (identifier: string, otp: string) => Promise<void>;
+  resetPassword: (identifier: string, otp: string, newPassword: string) => Promise<void>;
 
   // Profile
-  updateProfile:   (data: Partial<{ name: string; gender: string; dateOfBirth: string; avatar: string }>) => Promise<void>;
-  changePassword:  (currentPassword: string, newPassword: string) => Promise<void>;
+  updateProfile: (
+    data: Partial<{ name: string; gender: string; dateOfBirth: string; avatar: string }>,
+  ) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -82,7 +84,11 @@ export const useAuthStore = create<AuthStore>()(
 
       // ── Logout ────────────────────────────────────────
       logout: async () => {
-        try { await api.post('/auth/logout'); } catch { /* silent */ }
+        try {
+          await api.post('/auth/logout');
+        } catch {
+          /* silent */
+        }
         Cookies.remove('access_token');
         set({ user: null, isAuthenticated: false });
       },

@@ -3,8 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  X, ShoppingCart, ShoppingBag, ArrowRight,
-  Tag, Check, AlertCircle, Truck, Loader2,
+  X,
+  ShoppingCart,
+  ShoppingBag,
+  ArrowRight,
+  Tag,
+  Check,
+  AlertCircle,
+  Truck,
+  Loader2,
 } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
@@ -14,10 +21,15 @@ const FREE_DELIVERY_THRESHOLD = 1000;
 
 export function CartDrawer() {
   const {
-    items, isOpen, isLoading,
-    closeCart, clearCart,
-    appliedCoupon, couponError,
-    applyCoupon, removeCoupon,
+    items,
+    isOpen,
+    isLoading,
+    closeCart,
+    clearCart,
+    appliedCoupon,
+    couponError,
+    applyCoupon,
+    removeCoupon,
     getTotals,
   } = useCartStore();
 
@@ -31,7 +43,9 @@ export function CartDrawer() {
 
   // ESC key close
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeCart(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeCart();
+    };
     if (isOpen) document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [isOpen, closeCart]);
@@ -39,7 +53,9 @@ export function CartDrawer() {
   // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   // Focus coupon input when box opens
@@ -171,10 +187,7 @@ export function CartDrawer() {
                   পণ্য যোগ করুন এবং আপনার পছন্দের পণ্য অর্ডার করুন
                 </p>
               </div>
-              <button
-                onClick={closeCart}
-                className="btn-primary px-8 py-2.5"
-              >
+              <button onClick={closeCart} className="btn-primary px-8 py-2.5">
                 কেনাকাটা শুরু করুন
               </button>
 
@@ -195,12 +208,7 @@ export function CartDrawer() {
           ) : (
             <ul className="px-5 py-4 space-y-2.5">
               {items.map((item) => (
-                <CartItemRow
-                  key={item.id}
-                  item={item}
-                  compact
-                  onLinkClick={closeCart}
-                />
+                <CartItemRow key={item.id} item={item} compact onLinkClick={closeCart} />
               ))}
             </ul>
           )}
@@ -209,7 +217,6 @@ export function CartDrawer() {
         {/* ── Footer (only when items exist) ── */}
         {items.length > 0 && (
           <div className="border-t border-gray-100 bg-white">
-
             {/* ── Coupon section ── */}
             <div className="px-5 pt-4 pb-2">
               {appliedCoupon ? (
@@ -252,11 +259,7 @@ export function CartDrawer() {
                       disabled={applying || !couponInput.trim()}
                       className="btn-primary px-4 py-2 text-sm flex-shrink-0 disabled:opacity-60"
                     >
-                      {applying ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        'প্রয়োগ'
-                      )}
+                      {applying ? <Loader2 className="w-4 h-4 animate-spin" /> : 'প্রয়োগ'}
                     </button>
                   </div>
                   {couponError && (
@@ -265,7 +268,10 @@ export function CartDrawer() {
                     </p>
                   )}
                   <button
-                    onClick={() => { setShowCouponBox(false); setCouponInput(''); }}
+                    onClick={() => {
+                      setShowCouponBox(false);
+                      setCouponInput('');
+                    }}
                     className="text-xs text-gray-400 hover:text-gray-600"
                   >
                     বাতিল করুন
@@ -328,7 +334,7 @@ export function CartDrawer() {
               </div>
 
               {/* Total savings */}
-              {(totals.itemDiscount + totals.couponDiscount) > 0 && (
+              {totals.itemDiscount + totals.couponDiscount > 0 && (
                 <p className="text-xs text-center text-green-600 font-semibold bg-green-50 rounded-lg py-1.5">
                   🎉 মোট সাশ্রয়: {formatPriceEn(totals.itemDiscount + totals.couponDiscount)}
                 </p>

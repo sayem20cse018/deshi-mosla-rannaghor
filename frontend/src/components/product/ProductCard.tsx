@@ -34,9 +34,18 @@ interface ProductCardProps {
 }
 
 const PLACEHOLDER_EMOJIS: Record<string, string> = {
-  mosla: '🌶️', tel: '🫙', chal: '🍚', dal: '🫘',
-  ata: '🌾', lobon: '🧂', chini: '🍯', cha: '☕',
-  snacks: '🍿', noodles: '🍜', sauce: '🥫', modhu: '🍯',
+  mosla: '🌶️',
+  tel: '🫙',
+  chal: '🍚',
+  dal: '🫘',
+  ata: '🌾',
+  lobon: '🧂',
+  chini: '🍯',
+  cha: '☕',
+  snacks: '🍿',
+  noodles: '🍜',
+  sauce: '🥫',
+  modhu: '🍯',
   cooking: '🥘',
 };
 
@@ -89,7 +98,12 @@ export function ProductCard({ product, className, variant = 'default' }: Product
     <Link href={`/product/${product.slug}`} className={cn('product-card block group', className)}>
       {/* Image container */}
       <div className="relative overflow-hidden bg-gray-50">
-        <div className={cn('relative w-full', variant === 'compact' ? 'aspect-square' : 'aspect-[4/3]')}>
+        <div
+          className={cn(
+            'relative w-full',
+            variant === 'compact' ? 'aspect-square' : 'aspect-[4/3]',
+          )}
+        >
           {product.primaryImage ? (
             <Image
               src={product.primaryImage}
@@ -163,27 +177,17 @@ export function ProductCard({ product, className, variant = 'default' }: Product
         </h3>
 
         {/* Weight */}
-        {product.weight && (
-          <p className="text-gray-400 text-xs">{product.weight}</p>
-        )}
+        {product.weight && <p className="text-gray-400 text-xs">{product.weight}</p>}
 
         {/* Rating */}
-        {(product.avgRating !== undefined && product.avgRating > 0) && (
-          <StarRating
-            rating={product.avgRating}
-            count={product.reviewCount}
-            size="sm"
-          />
+        {product.avgRating !== undefined && product.avgRating > 0 && (
+          <StarRating rating={product.avgRating} count={product.reviewCount} size="sm" />
         )}
 
         {/* Price row */}
         <div className="flex items-baseline gap-2">
-          <span className="price-main text-base">
-            {formatPriceEn(effectivePrice)}
-          </span>
-          {hasDiscount && (
-            <span className="price-old">{formatPriceEn(product.price)}</span>
-          )}
+          <span className="price-main text-base">{formatPriceEn(effectivePrice)}</span>
+          {hasDiscount && <span className="price-old">{formatPriceEn(product.price)}</span>}
         </div>
 
         {/* Add to Cart */}

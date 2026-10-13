@@ -5,9 +5,9 @@ import { X, Truck, Tag, Gift, Zap } from 'lucide-react';
 
 const MESSAGES = [
   { icon: Truck, text: '৳১০০০+ অর্ডারে সারাদেশে ফ্রি ডেলিভারি' },
-  { icon: Tag,   text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়' },
-  { icon: Gift,  text: 'ক্যাশ অন ডেলিভারি সুবিধা উপলব্ধ' },
-  { icon: Zap,   text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে অর্ডার করুন' },
+  { icon: Tag, text: 'কোড WELCOME10 — নতুন গ্রাহকদের ১০% ছাড়' },
+  { icon: Gift, text: 'ক্যাশ অন ডেলিভারি সুবিধা উপলব্ধ' },
+  { icon: Zap, text: 'ঢাকায় একইদিন ডেলিভারি — সকাল ১১টার আগে অর্ডার করুন' },
 ];
 
 export function AnnouncementBar() {
@@ -38,7 +38,10 @@ export function AnnouncementBar() {
         {/* Center: rotating message */}
         <div className="flex items-center justify-center gap-2 flex-1 min-w-0">
           <Icon className="w-3.5 h-3.5 text-spice-400 flex-shrink-0" />
-          <p className="font-medium tracking-wide truncate text-center animate-fade-up" key={current}>
+          <p
+            className="font-medium tracking-wide truncate text-center animate-fade-up"
+            key={current}
+          >
             {text}
           </p>
         </div>

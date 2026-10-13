@@ -52,10 +52,7 @@ export function FloatingCart() {
         {/* Cart icon + badge */}
         <div className="relative">
           <ShoppingCart
-            className={cn(
-              'w-5 h-5 transition-transform duration-200',
-              'group-hover:scale-110',
-            )}
+            className={cn('w-5 h-5 transition-transform duration-200', 'group-hover:scale-110')}
           />
           {/* Item count badge */}
           <span
@@ -99,7 +96,10 @@ export function FloatingCart() {
 
       {/* Dismiss button — tiny × above the tab */}
       <button
-        onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setDismissed(true);
+        }}
         className={cn(
           'absolute -top-2 right-0',
           'w-5 h-5 bg-gray-600 hover:bg-red-500 text-white',

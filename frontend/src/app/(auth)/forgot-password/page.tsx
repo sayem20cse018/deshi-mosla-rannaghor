@@ -13,43 +13,54 @@ export default function ForgotPasswordPage() {
   const router = useRouter();
   const { forgotPassword, verifyOtp } = useAuthStore();
 
-  const [step, setStep]               = useState<Step>('request');
-  const [identifier, setIdentifier]   = useState('');
-  const [otp, setOtp]                 = useState('');
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState('');
-  const [devOtp, setDevOtp]           = useState('');
+  const [step, setStep] = useState<Step>('request');
+  const [identifier, setIdentifier] = useState('');
+  const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [devOtp, setDevOtp] = useState('');
 
   async function handleRequest(e: React.FormEvent) {
     e.preventDefault();
-    if (!identifier.trim()) { setError('ইমেইল বা ফোন নম্বর দিন'); return; }
-    setError(''); setLoading(true);
+    if (!identifier.trim()) {
+      setError('ইমেইল বা ফোন নম্বর দিন');
+      return;
+    }
+    setError('');
+    setLoading(true);
     try {
       const res = await forgotPassword(identifier.trim());
       if ((res as any)?.dev_otp) setDevOtp((res as any).dev_otp);
       setStep('verify');
     } catch (err: any) {
       setError(err.response?.data?.message || 'অনুরোধ ব্যর্থ হয়েছে');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-    if (otp.length !== 6) { setError('৬ সংখ্যার OTP দিন'); return; }
-    setError(''); setLoading(true);
+    if (otp.length !== 6) {
+      setError('৬ সংখ্যার OTP দিন');
+      return;
+    }
+    setError('');
+    setLoading(true);
     try {
       await verifyOtp(identifier.trim(), otp.trim());
       // Pass to reset-password page via query
       router.push(`/reset-password?id=${encodeURIComponent(identifier.trim())}&otp=${otp.trim()}`);
     } catch (err: any) {
       setError(err.response?.data?.message || 'OTP ভুল হয়েছে');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-emerald-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
@@ -60,7 +71,6 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-
           {/* Step: request */}
           {step === 'request' && (
             <>
@@ -82,10 +92,16 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleRequest} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">ইমেইল বা ফোন নম্বর</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    ইমেইল বা ফোন নম্বর
+                  </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                      {identifier.includes('@') ? <Mail className="w-4 h-4" /> : <Phone className="w-4 h-4" />}
+                      {identifier.includes('@') ? (
+                        <Mail className="w-4 h-4" />
+                      ) : (
+                        <Phone className="w-4 h-4" />
+                      )}
                     </div>
                     <input
                       type="text"
@@ -103,7 +119,13 @@ export default function ForgotPasswordPage() {
                   disabled={loading}
                   className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl transition-all"
                 >
-                  {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> পাঠানো হচ্ছে...</> : 'OTP পাঠান'}
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> পাঠানো হচ্ছে...
+                    </>
+                  ) : (
+                    'OTP পাঠান'
+                  )}
                 </button>
               </form>
             </>
@@ -135,7 +157,9 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleVerify} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">OTP কোড</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    OTP কোড
+                  </label>
                   <input
                     type="text"
                     value={otp}
@@ -154,12 +178,22 @@ export default function ForgotPasswordPage() {
                   disabled={loading || otp.length !== 6}
                   className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl transition-all"
                 >
-                  {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> যাচাই হচ্ছে...</> : 'OTP যাচাই করুন'}
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> যাচাই হচ্ছে...
+                    </>
+                  ) : (
+                    'OTP যাচাই করুন'
+                  )}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => { setStep('request'); setOtp(''); setError(''); }}
+                  onClick={() => {
+                    setStep('request');
+                    setOtp('');
+                    setError('');
+                  }}
                   className="w-full text-sm text-gray-500 hover:text-gray-700 py-1"
                 >
                   আবার পাঠান / পরিবর্তন করুন
@@ -170,7 +204,10 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="text-center mt-5">
-          <Link href="/login" className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-brand-700">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-brand-700"
+          >
             <ArrowLeft className="w-4 h-4" /> লগইনে ফিরুন
           </Link>
         </div>

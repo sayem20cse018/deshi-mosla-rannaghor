@@ -31,7 +31,11 @@ export function ActiveFilterTags({ filters, search, onRemove, onClearAll }: Prop
     });
   }
   if (filters.minRating) tags.push({ key: 'minRating', label: `${filters.minRating}★+` });
-  if (filters.stockStatus) tags.push({ key: 'stockStatus', label: filters.stockStatus === 'IN_STOCK' ? 'স্টকে আছে' : 'সীমিত স্টক' });
+  if (filters.stockStatus)
+    tags.push({
+      key: 'stockStatus',
+      label: filters.stockStatus === 'IN_STOCK' ? 'স্টকে আছে' : 'সীমিত স্টক',
+    });
   if (filters.hasDiscount) tags.push({ key: 'hasDiscount', label: 'ছাড়ের পণ্য' });
 
   if (!tags.length) return null;

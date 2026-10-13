@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 
 const SORT_OPTIONS = [
-  { value: 'newest',        label: 'সবচেয়ে নতুন'         },
-  { value: 'best_selling',  label: 'সেরা বিক্রিত'          },
-  { value: 'price_asc',     label: 'মূল্য: কম থেকে বেশি'   },
-  { value: 'price_desc',    label: 'মূল্য: বেশি থেকে কম'   },
-  { value: 'highest_rated', label: 'সর্বোচ্চ রেটিং'         },
+  { value: 'newest', label: 'সবচেয়ে নতুন' },
+  { value: 'best_selling', label: 'সেরা বিক্রিত' },
+  { value: 'price_asc', label: 'মূল্য: কম থেকে বেশি' },
+  { value: 'price_desc', label: 'মূল্য: বেশি থেকে কম' },
+  { value: 'highest_rated', label: 'সর্বোচ্চ রেটিং' },
 ];
 
 interface SortBarProps {
@@ -23,7 +23,16 @@ interface SortBarProps {
   limit: number;
 }
 
-export function SortBar({ total, sortBy, onSortChange, view, onViewChange, onFilterToggle, page, limit }: SortBarProps) {
+export function SortBar({
+  total,
+  sortBy,
+  onSortChange,
+  view,
+  onViewChange,
+  onFilterToggle,
+  page,
+  limit,
+}: SortBarProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -50,12 +59,12 @@ export function SortBar({ total, sortBy, onSortChange, view, onViewChange, onFil
           <SlidersHorizontal className="w-4 h-4" /> ফিল্টার
         </button>
         <p className="text-gray-500 text-sm hidden sm:block">
-          <span className="font-semibold text-gray-800">{from}–{to}</span> দেখানো হচ্ছে{' '}
-          <span className="font-semibold text-gray-800">{total}</span> পণ্যের মধ্যে
+          <span className="font-semibold text-gray-800">
+            {from}–{to}
+          </span>{' '}
+          দেখানো হচ্ছে <span className="font-semibold text-gray-800">{total}</span> পণ্যের মধ্যে
         </p>
-        <p className="text-gray-500 text-sm sm:hidden">
-          {total} পণ্য
-        </p>
+        <p className="text-gray-500 text-sm sm:hidden">{total} পণ্য</p>
       </div>
 
       {/* Right: sort + view */}
@@ -68,7 +77,9 @@ export function SortBar({ total, sortBy, onSortChange, view, onViewChange, onFil
           >
             <span className="hidden sm:inline">{currentLabel}</span>
             <span className="sm:hidden">সাজান</span>
-            <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', open && 'rotate-180')} />
+            <ChevronDown
+              className={cn('w-4 h-4 text-gray-400 transition-transform', open && 'rotate-180')}
+            />
           </button>
 
           {open && (
@@ -76,7 +87,10 @@ export function SortBar({ total, sortBy, onSortChange, view, onViewChange, onFil
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => { onSortChange(opt.value); setOpen(false); }}
+                  onClick={() => {
+                    onSortChange(opt.value);
+                    setOpen(false);
+                  }}
                   className={cn(
                     'w-full text-left px-4 py-2.5 text-sm transition-colors',
                     sortBy === opt.value
@@ -95,14 +109,24 @@ export function SortBar({ total, sortBy, onSortChange, view, onViewChange, onFil
         <div className="hidden sm:flex items-center border border-gray-200 rounded-xl overflow-hidden">
           <button
             onClick={() => onViewChange('grid')}
-            className={cn('p-2 transition-colors', view === 'grid' ? 'bg-brand-700 text-white' : 'bg-white text-gray-500 hover:bg-gray-50')}
+            className={cn(
+              'p-2 transition-colors',
+              view === 'grid'
+                ? 'bg-brand-700 text-white'
+                : 'bg-white text-gray-500 hover:bg-gray-50',
+            )}
             aria-label="গ্রিড ভিউ"
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
           <button
             onClick={() => onViewChange('list')}
-            className={cn('p-2 transition-colors', view === 'list' ? 'bg-brand-700 text-white' : 'bg-white text-gray-500 hover:bg-gray-50')}
+            className={cn(
+              'p-2 transition-colors',
+              view === 'list'
+                ? 'bg-brand-700 text-white'
+                : 'bg-white text-gray-500 hover:bg-gray-50',
+            )}
             aria-label="লিস্ট ভিউ"
           >
             <List className="w-4 h-4" />

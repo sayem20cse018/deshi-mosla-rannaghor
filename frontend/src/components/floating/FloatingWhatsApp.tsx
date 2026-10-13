@@ -24,7 +24,6 @@ export function FloatingWhatsApp() {
   return (
     /* Bottom-right, above BackToTop, hidden on xs (below md MobileNav would overlap) */
     <div className="fixed right-4 bottom-20 z-40 flex flex-col items-end gap-2">
-
       {/* ── Popup card ── */}
       <div
         className={cn(
@@ -94,9 +93,7 @@ export function FloatingWhatsApp() {
           'relative w-13 h-13 rounded-full shadow-xl flex items-center justify-center',
           'transition-all duration-300 hover:scale-110 active:scale-95',
           'focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300',
-          open
-            ? 'bg-gray-600 hover:bg-gray-700'
-            : 'bg-[#25D366] hover:bg-[#1ebe5d]',
+          open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-[#25D366] hover:bg-[#1ebe5d]',
         )}
         style={{ width: 52, height: 52 }}
         aria-label="WhatsApp সাপোর্ট"

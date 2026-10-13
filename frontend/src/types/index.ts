@@ -162,20 +162,34 @@ export interface Coupon {
 }
 
 export type OrderStatus =
-  | 'PENDING' | 'CONFIRMED' | 'PROCESSING'
-  | 'PACKED' | 'SHIPPED' | 'DELIVERED'
-  | 'CANCELLED' | 'RETURNED' | 'REFUNDED';
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PROCESSING'
+  | 'PACKED'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'RETURNED'
+  | 'REFUNDED';
 
 export type PaymentMethod =
-  | 'CASH_ON_DELIVERY' | 'BKASH' | 'NAGAD'
-  | 'ROCKET' | 'UPAY' | 'MOBILE_BANKING'
-  | 'INTERNET_BANKING' | 'BANK_TRANSFER'
-  | 'VISA' | 'MASTERCARD' | 'AMEX'
-  | 'DEBIT_CARD' | 'CREDIT_CARD' | 'SSLCOMMERZ';
+  | 'CASH_ON_DELIVERY'
+  | 'BKASH'
+  | 'NAGAD'
+  | 'ROCKET'
+  | 'UPAY'
+  | 'MOBILE_BANKING'
+  | 'INTERNET_BANKING'
+  | 'BANK_TRANSFER'
+  | 'VISA'
+  | 'MASTERCARD'
+  | 'AMEX'
+  | 'DEBIT_CARD'
+  | 'CREDIT_CARD'
+  | 'SSLCOMMERZ';
 
 export type PaymentStatus =
-  | 'PENDING' | 'PROCESSING' | 'PAID'
-  | 'FAILED' | 'CANCELLED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
+  'PENDING' | 'PROCESSING' | 'PAID' | 'FAILED' | 'CANCELLED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
 
 export interface ApiResponse<T> {
   success: boolean;

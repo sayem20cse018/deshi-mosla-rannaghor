@@ -40,9 +40,7 @@ export function BackToTop() {
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
         // Mobile: sit above mobile nav bar
         'mb-safe',
-        visible
-          ? 'opacity-100 translate-y-0'
-          : 'opacity-0 translate-y-6 pointer-events-none',
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none',
       )}
     >
       {/* SVG circular progress ring */}
@@ -52,15 +50,12 @@ export function BackToTop() {
         aria-hidden="true"
       >
         {/* Track */}
-        <circle
-          cx="19" cy="19" r={radius}
-          fill="none"
-          stroke="#e5e7eb"
-          strokeWidth="2"
-        />
+        <circle cx="19" cy="19" r={radius} fill="none" stroke="#e5e7eb" strokeWidth="2" />
         {/* Progress */}
         <circle
-          cx="19" cy="19" r={radius}
+          cx="19"
+          cy="19"
+          r={radius}
           fill="none"
           stroke="#15803d"
           strokeWidth="2.5"

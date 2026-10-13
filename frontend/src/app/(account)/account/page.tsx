@@ -2,14 +2,31 @@
 
 import Link from 'next/link';
 import {
-  ShoppingBag, Heart, MapPin, CreditCard,
-  Star, Tag, ChevronRight, Package, User,
+  ShoppingBag,
+  Heart,
+  MapPin,
+  CreditCard,
+  Star,
+  Tag,
+  ChevronRight,
+  Package,
+  User,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 
-function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: any; color: string }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
+  icon: any;
+  label: string;
+  value: any;
+  color: string;
+}) {
   return (
     <div className={`rounded-2xl p-4 border ${color} flex items-center gap-4`}>
       <div className={`w-11 h-11 rounded-xl flex items-center justify-center bg-white/60`}>
@@ -24,12 +41,12 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any; label: strin
 }
 
 const QUICK_LINKS = [
-  { href: '/account/orders',          icon: ShoppingBag,  label: 'আমার অর্ডার',      sub: 'সব অর্ডার দেখুন'         },
-  { href: '/account/wishlist',        icon: Heart,        label: 'উইশলিস্ট',          sub: 'পছন্দের পণ্য'            },
-  { href: '/account/addresses',       icon: MapPin,       label: 'ঠিকানা',            sub: 'সংরক্ষিত ঠিকানা'         },
-  { href: '/account/payment-history', icon: CreditCard,   label: 'পেমেন্ট',           sub: 'পেমেন্ট ইতিহাস'         },
-  { href: '/account/reviews',         icon: Star,         label: 'রিভিউ',             sub: 'আমার রিভিউ'              },
-  { href: '/account/coupons',         icon: Tag,          label: 'কুপন',              sub: 'ব্যবহৃত কুপন'            },
+  { href: '/account/orders', icon: ShoppingBag, label: 'আমার অর্ডার', sub: 'সব অর্ডার দেখুন' },
+  { href: '/account/wishlist', icon: Heart, label: 'উইশলিস্ট', sub: 'পছন্দের পণ্য' },
+  { href: '/account/addresses', icon: MapPin, label: 'ঠিকানা', sub: 'সংরক্ষিত ঠিকানা' },
+  { href: '/account/payment-history', icon: CreditCard, label: 'পেমেন্ট', sub: 'পেমেন্ট ইতিহাস' },
+  { href: '/account/reviews', icon: Star, label: 'রিভিউ', sub: 'আমার রিভিউ' },
+  { href: '/account/coupons', icon: Tag, label: 'কুপন', sub: 'ব্যবহৃত কুপন' },
 ];
 
 export default function AccountDashboard() {
@@ -53,7 +70,11 @@ export default function AccountDashboard() {
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center flex-shrink-0">
             {user?.avatar ? (
-              <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-full h-full rounded-full object-cover"
+              />
             ) : (
               <span className="text-2xl font-bold">{user?.name?.charAt(0) ?? 'গ'}</span>
             )}
@@ -63,7 +84,10 @@ export default function AccountDashboard() {
             <h2 className="text-xl font-bold">{user?.name}</h2>
             <p className="text-brand-300 text-xs mt-0.5">{user?.email}</p>
           </div>
-          <Link href="/account/profile" className="ml-auto bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+          <Link
+            href="/account/profile"
+            className="ml-auto bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+          >
             <User className="w-3.5 h-3.5" /> প্রোফাইল সম্পাদনা
           </Link>
         </div>
@@ -71,14 +95,31 @@ export default function AccountDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <StatCard icon={ShoppingBag} label="মোট অর্ডার"   value={counts?.orders    ?? 0} color="bg-blue-50 border-blue-100 text-blue-700"   />
-        <StatCard icon={Star}        label="মোট রিভিউ"    value={counts?.reviews   ?? 0} color="bg-amber-50 border-amber-100 text-amber-700"  />
-        <StatCard icon={MapPin}      label="সংরক্ষিত ঠিকানা" value={counts?.addresses ?? 0} color="bg-green-50 border-green-100 text-green-700"  />
+        <StatCard
+          icon={ShoppingBag}
+          label="মোট অর্ডার"
+          value={counts?.orders ?? 0}
+          color="bg-blue-50 border-blue-100 text-blue-700"
+        />
+        <StatCard
+          icon={Star}
+          label="মোট রিভিউ"
+          value={counts?.reviews ?? 0}
+          color="bg-amber-50 border-amber-100 text-amber-700"
+        />
+        <StatCard
+          icon={MapPin}
+          label="সংরক্ষিত ঠিকানা"
+          value={counts?.addresses ?? 0}
+          color="bg-green-50 border-green-100 text-green-700"
+        />
       </div>
 
       {/* Quick links */}
       <div>
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">দ্রুত অ্যাক্সেস</h3>
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">
+          দ্রুত অ্যাক্সেস
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {QUICK_LINKS.map(({ href, icon: Icon, label, sub }) => (
             <Link

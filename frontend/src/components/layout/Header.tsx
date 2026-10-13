@@ -3,8 +3,15 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  ShoppingCart, Heart, User, Menu, X,
-  ChevronDown, Globe, Package, LayoutDashboard,
+  ShoppingCart,
+  Heart,
+  User,
+  Menu,
+  X,
+  ChevronDown,
+  Globe,
+  Package,
+  LayoutDashboard,
   Loader2,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -22,28 +29,28 @@ const NAV_VISIBLE = 10;
 
 // ── Top nav links (bilingual) ──────────────────────────────
 const TOP_NAV: { href: string; bn: string; en: string }[] = [
-  { href: '/',     bn: 'হোম',  en: 'Home' },
+  { href: '/', bn: 'হোম', en: 'Home' },
   { href: '/blog', bn: 'ব্লগ', en: 'Blog' },
 ];
 
 export function Header() {
-  const pathname   = usePathname();
-  const router     = useRouter();
+  const pathname = usePathname();
+  const router = useRouter();
   const { lang, setLang } = useLanguageStore();
   const { getItemCount, getTotals, openCart } = useCartStore();
-  const { user, isAuthenticated, logout }     = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   // Nav categories from API
   const { data: navCats = [], isLoading: catsLoading } = useNavCategories();
 
-  const [mobileOpen,  setMobileOpen]  = useState(false);
-  const [moreOpen,    setMoreOpen]    = useState(false);
-  const [langOpen,    setLangOpen]    = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [scrolled,    setScrolled]    = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const moreRef    = useRef<HTMLDivElement>(null);
-  const langRef    = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
 
   const itemCount = getItemCount();
@@ -57,14 +64,17 @@ export function Header() {
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   // Click-outside for dropdowns
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (moreRef.current    && !moreRef.current.contains(e.target as Node))    setMoreOpen(false);
-      if (langRef.current    && !langRef.current.contains(e.target as Node))    setLangOpen(false);
-      if (accountRef.current && !accountRef.current.contains(e.target as Node)) setAccountOpen(false);
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+      if (accountRef.current && !accountRef.current.contains(e.target as Node))
+        setAccountOpen(false);
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -78,21 +88,24 @@ export function Header() {
   }
 
   // Split nav into visible + overflow ("More")
-  const visibleCats   = navCats.slice(0, NAV_VISIBLE);
-  const overflowCats  = navCats.slice(NAV_VISIBLE);
+  const visibleCats = navCats.slice(0, NAV_VISIBLE);
+  const overflowCats = navCats.slice(NAV_VISIBLE);
 
   const T = (key: Parameters<typeof t>[0]) => t(key, lang);
 
   return (
-    <header className={cn('sticky top-0 z-50 bg-white transition-shadow duration-300', scrolled ? 'shadow-md' : 'shadow-sm')}>
-
+    <header
+      className={cn(
+        'sticky top-0 z-50 bg-white transition-shadow duration-300',
+        scrolled ? 'shadow-md' : 'shadow-sm',
+      )}
+    >
       {/* ════════════════════════════════════════════════
           1. MAIN HEADER ROW
           ════════════════════════════════════════════════ */}
       <div className="bg-white border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex items-center h-16 gap-2 md:gap-4">
-
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
               <div className="w-9 h-9 rounded-xl bg-brand-700 flex items-center justify-center shadow-sm">
@@ -129,20 +142,23 @@ export function Header() {
 
             {/* Right actions */}
             <div className="flex items-center gap-1 ml-auto md:ml-0">
-
               {/* Language switcher */}
               <div ref={langRef} className="relative hidden lg:block">
                 <button
                   onClick={() => setLangOpen((o) => !o)}
                   className={cn(
                     'flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors',
-                    langOpen ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                    langOpen
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                   )}
                   aria-label={T('language')}
                 >
                   <Globe className="w-4 h-4" />
                   <span>{lang === 'bn' ? 'বাংলা' : 'English'}</span>
-                  <ChevronDown className={cn('w-3 h-3 transition-transform', langOpen && 'rotate-180')} />
+                  <ChevronDown
+                    className={cn('w-3 h-3 transition-transform', langOpen && 'rotate-180')}
+                  />
                 </button>
 
                 {langOpen && (
@@ -150,7 +166,10 @@ export function Header() {
                     {(['bn', 'en'] as Lang[]).map((l) => (
                       <button
                         key={l}
-                        onClick={() => { setLang(l); setLangOpen(false); }}
+                        onClick={() => {
+                          setLang(l);
+                          setLangOpen(false);
+                        }}
                         className={cn(
                           'w-full text-left px-3 py-2.5 text-sm flex items-center gap-2 transition-colors',
                           lang === l
@@ -186,10 +205,16 @@ export function Header() {
                       aria-label={T('myAccount')}
                     >
                       {user?.avatar ? (
-                        <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="w-7 h-7 rounded-full object-cover"
+                        />
                       ) : (
                         <div className="w-7 h-7 rounded-full bg-brand-100 flex items-center justify-center">
-                          <span className="text-brand-700 text-xs font-bold">{user?.name?.charAt(0) ?? 'গ'}</span>
+                          <span className="text-brand-700 text-xs font-bold">
+                            {user?.name?.charAt(0) ?? 'গ'}
+                          </span>
                         </div>
                       )}
                     </button>
@@ -201,10 +226,10 @@ export function Header() {
                           <p className="text-xs text-gray-400 truncate">{user?.email}</p>
                         </div>
                         {[
-                          { href: '/account',          label: T('myAccount') },
-                          { href: '/account/orders',   label: T('myOrders')  },
-                          { href: '/account/wishlist', label: T('wishlist')  },
-                          { href: '/order-tracking',   label: T('trackOrder')},
+                          { href: '/account', label: T('myAccount') },
+                          { href: '/account/orders', label: T('myOrders') },
+                          { href: '/account/wishlist', label: T('wishlist') },
+                          { href: '/order-tracking', label: T('trackOrder') },
                         ].map((item) => (
                           <Link
                             key={item.href}
@@ -237,11 +262,17 @@ export function Header() {
                   </>
                 ) : (
                   <div className="hidden sm:flex items-center gap-1">
-                    <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-700 hover:text-brand-700 hover:bg-gray-50 transition-colors">
+                    <Link
+                      href="/login"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-700 hover:text-brand-700 hover:bg-gray-50 transition-colors"
+                    >
                       <User className="w-3.5 h-3.5" /> {T('login')}
                     </Link>
                     <span className="text-gray-200 text-sm">/</span>
-                    <Link href="/register" className="px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-brand-700 hover:bg-brand-800 transition-colors">
+                    <Link
+                      href="/register"
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-brand-700 hover:bg-brand-800 transition-colors"
+                    >
                       {T('register')}
                     </Link>
                   </div>
@@ -249,7 +280,11 @@ export function Header() {
               </div>
 
               {/* Wishlist */}
-              <Link href="/account/wishlist" className="btn-icon relative" aria-label={T('wishlist')}>
+              <Link
+                href="/account/wishlist"
+                className="btn-icon relative"
+                aria-label={T('wishlist')}
+              >
                 <Heart className="w-5 h-5" />
               </Link>
 
@@ -293,10 +328,8 @@ export function Header() {
           ════════════════════════════════════════════════ */}
       <div className="bg-brand-800 border-b border-brand-700">
         <div className="container mx-auto px-4">
-
           {/* Desktop */}
           <div className="hidden md:flex items-center h-10 gap-0.5 overflow-x-auto scrollbar-hide">
-
             {/* "All Products" — always first */}
             <Link
               href="/shop"
@@ -318,7 +351,9 @@ export function Header() {
               </div>
             ) : (
               visibleCats.map((cat) => {
-                const active = pathname === `/category/${cat.slug}` || pathname.startsWith(`/category/${cat.slug}/`);
+                const active =
+                  pathname === `/category/${cat.slug}` ||
+                  pathname.startsWith(`/category/${cat.slug}/`);
                 return (
                   <Link
                     key={cat.slug}
@@ -344,11 +379,15 @@ export function Header() {
                   onClick={() => setMoreOpen((o) => !o)}
                   className={cn(
                     'flex items-center gap-1 px-3 h-10 text-xs font-medium rounded-lg transition-colors',
-                    moreOpen ? 'text-white bg-brand-600' : 'text-brand-200 hover:text-white hover:bg-brand-700',
+                    moreOpen
+                      ? 'text-white bg-brand-600'
+                      : 'text-brand-200 hover:text-white hover:bg-brand-700',
                   )}
                 >
                   {T('more')}
-                  <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', moreOpen && 'rotate-180')} />
+                  <ChevronDown
+                    className={cn('w-3.5 h-3.5 transition-transform', moreOpen && 'rotate-180')}
+                  />
                 </button>
 
                 {moreOpen && (
@@ -386,7 +425,9 @@ export function Header() {
               href="/shop"
               className={cn(
                 'flex-shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full transition-colors whitespace-nowrap',
-                pathname === '/shop' ? 'bg-white text-brand-700' : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
+                pathname === '/shop'
+                  ? 'bg-white text-brand-700'
+                  : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
               )}
             >
               🛒 {T('allProducts')}
@@ -394,14 +435,18 @@ export function Header() {
 
             {/* API categories */}
             {navCats.map((cat) => {
-              const active = pathname === `/category/${cat.slug}` || pathname.startsWith(`/category/${cat.slug}/`);
+              const active =
+                pathname === `/category/${cat.slug}` ||
+                pathname.startsWith(`/category/${cat.slug}/`);
               return (
                 <Link
                   key={cat.slug}
                   href={`/category/${cat.slug}`}
                   className={cn(
                     'flex-shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors whitespace-nowrap',
-                    active ? 'bg-white text-brand-700' : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
+                    active
+                      ? 'bg-white text-brand-700'
+                      : 'text-brand-200 bg-brand-700/40 hover:bg-brand-700',
                   )}
                 >
                   {cat.icon && <span className="text-sm leading-none">{cat.icon}</span>}
@@ -424,7 +469,6 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 shadow-lg max-h-[75vh] overflow-y-auto">
           <nav className="container mx-auto px-4 py-3">
-
             {/* Language toggle at top */}
             <div className="flex gap-2 mb-4 pb-3 border-b border-gray-100">
               {(['bn', 'en'] as Lang[]).map((l) => (
@@ -448,13 +492,19 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn('flex py-2.5 text-sm font-medium border-b border-gray-50 transition-colors', pathname === link.href ? 'text-brand-700' : 'text-gray-700')}
+                className={cn(
+                  'flex py-2.5 text-sm font-medium border-b border-gray-50 transition-colors',
+                  pathname === link.href ? 'text-brand-700' : 'text-gray-700',
+                )}
               >
                 {lang === 'bn' ? link.bn : link.en}
               </Link>
             ))}
 
-            <Link href="/order-tracking" className="flex items-center gap-2 py-2.5 text-sm text-gray-700 border-b border-gray-50">
+            <Link
+              href="/order-tracking"
+              className="flex items-center gap-2 py-2.5 text-sm text-gray-700 border-b border-gray-50"
+            >
               <Package className="w-4 h-4 text-gray-400" /> {T('trackOrder')}
             </Link>
 
@@ -484,16 +534,29 @@ export function Header() {
             {/* Auth */}
             {!isAuthenticated && (
               <div className="pt-4 flex gap-2">
-                <Link href="/login"    className="btn-primary  flex-1 justify-center text-sm py-2.5">{T('login')}</Link>
-                <Link href="/register" className="btn-secondary flex-1 justify-center text-sm py-2.5">{T('register')}</Link>
+                <Link href="/login" className="btn-primary  flex-1 justify-center text-sm py-2.5">
+                  {T('login')}
+                </Link>
+                <Link
+                  href="/register"
+                  className="btn-secondary flex-1 justify-center text-sm py-2.5"
+                >
+                  {T('register')}
+                </Link>
               </div>
             )}
             {isAuthenticated && (
               <div className="pt-4 border-t border-gray-100 mt-2">
-                <Link href="/account" className="flex items-center gap-2 py-2.5 text-sm text-gray-700">
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 py-2.5 text-sm text-gray-700"
+                >
                   <User className="w-4 h-4 text-gray-400" /> {T('myAccount')}
                 </Link>
-                <button onClick={handleLogout} className="flex items-center gap-2 py-2.5 text-sm text-red-500 w-full">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 py-2.5 text-sm text-red-500 w-full"
+                >
                   {T('logout')}
                 </button>
               </div>
@@ -510,14 +573,14 @@ import { Truck, Tag, Gift, Zap } from 'lucide-react';
 import { t as translate } from '@/lib/translations';
 
 function AnnouncementBar({ lang }: { lang: Lang }) {
-  const [idx,       setIdx]       = useState(0);
+  const [idx, setIdx] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
   const MESSAGES: { icon: React.ElementType; key: 'ann1' | 'ann2' | 'ann3' | 'ann4' }[] = [
     { icon: Truck, key: 'ann1' },
-    { icon: Tag,   key: 'ann2' },
-    { icon: Gift,  key: 'ann3' },
-    { icon: Zap,   key: 'ann4' },
+    { icon: Tag, key: 'ann2' },
+    { icon: Gift, key: 'ann3' },
+    { icon: Zap, key: 'ann4' },
   ];
 
   useEffect(() => {
@@ -535,7 +598,10 @@ function AnnouncementBar({ lang }: { lang: Lang }) {
       <div className="container mx-auto px-4 h-8 flex items-center justify-between gap-4">
         <div className="flex items-center justify-center gap-2 flex-1 min-w-0">
           <Icon className="w-3.5 h-3.5 flex-shrink-0 opacity-90" />
-          <p key={`${idx}-${lang}`} className="font-medium tracking-wide truncate text-center animate-fade-up">
+          <p
+            key={`${idx}-${lang}`}
+            className="font-medium tracking-wide truncate text-center animate-fade-up"
+          >
             {text}
           </p>
         </div>

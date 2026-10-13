@@ -5,7 +5,10 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface GalleryImage { url: string; altText?: string | null; }
+interface GalleryImage {
+  url: string;
+  altText?: string | null;
+}
 
 interface ProductGalleryProps {
   images: GalleryImage[];
@@ -21,8 +24,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const hasImages = images.length > 0;
   const current = images[active];
 
-  function prev() { setActive((i) => (i === 0 ? images.length - 1 : i - 1)); }
-  function next() { setActive((i) => (i === images.length - 1 ? 0 : i + 1)); }
+  function prev() {
+    setActive((i) => (i === 0 ? images.length - 1 : i - 1));
+  }
+  function next() {
+    setActive((i) => (i === images.length - 1 ? 0 : i + 1));
+  }
 
   return (
     <div className="space-y-3">
@@ -88,7 +95,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               onClick={() => setActive(i)}
               className={cn(
                 'flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all',
-                i === active ? 'border-brand-600 shadow-sm' : 'border-gray-100 hover:border-gray-300',
+                i === active
+                  ? 'border-brand-600 shadow-sm'
+                  : 'border-gray-100 hover:border-gray-300',
               )}
             >
               <Image
@@ -109,13 +118,11 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setLightbox(false)}
         >
-          <div className="relative max-w-2xl w-full aspect-square" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={images[active].url}
-              alt={productName}
-              fill
-              className="object-contain"
-            />
+          <div
+            className="relative max-w-2xl w-full aspect-square"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image src={images[active].url} alt={productName} fill className="object-contain" />
             <button
               onClick={() => setLightbox(false)}
               className="absolute top-2 right-2 w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white"

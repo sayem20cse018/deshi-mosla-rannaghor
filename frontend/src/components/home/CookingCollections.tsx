@@ -72,7 +72,9 @@ export function CookingCollections() {
               className="group relative overflow-hidden rounded-2xl"
             >
               {/* Background gradient */}
-              <div className={`bg-gradient-to-br ${col.bg} p-5 h-full min-h-[140px] flex flex-col justify-between`}>
+              <div
+                className={`bg-gradient-to-br ${col.bg} p-5 h-full min-h-[140px] flex flex-col justify-between`}
+              >
                 {/* Emoji */}
                 <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                   {col.emoji}
@@ -85,7 +87,10 @@ export function CookingCollections() {
                   {/* Ingredient chips */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {col.items.map((item) => (
-                      <span key={item} className="bg-black/20 text-white text-[10px] px-2 py-0.5 rounded-full">
+                      <span
+                        key={item}
+                        className="bg-black/20 text-white text-[10px] px-2 py-0.5 rounded-full"
+                      >
                         {item}
                       </span>
                     ))}
@@ -94,7 +99,8 @@ export function CookingCollections() {
 
                 {/* CTA */}
                 <div className="mt-3 flex items-center gap-1 text-white/80 text-xs font-medium group-hover:text-white transition-colors">
-                  উপকরণ দেখুন <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  উপকরণ দেখুন{' '}
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Link>

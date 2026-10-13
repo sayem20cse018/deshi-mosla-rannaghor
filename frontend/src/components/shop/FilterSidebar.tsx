@@ -27,7 +27,15 @@ interface FilterSidebarProps {
   className?: string;
 }
 
-function Accordion({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+function Accordion({
+  title,
+  children,
+  defaultOpen = true,
+}: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0">
@@ -36,16 +44,36 @@ function Accordion({ title, children, defaultOpen = true }: { title: string; chi
         className="flex items-center justify-between w-full text-sm font-semibold text-gray-800 py-1"
       >
         {title}
-        <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform duration-200', open && 'rotate-180')} />
+        <ChevronDown
+          className={cn(
+            'w-4 h-4 text-gray-400 transition-transform duration-200',
+            open && 'rotate-180',
+          )}
+        />
       </button>
       {open && <div className="mt-3">{children}</div>}
     </div>
   );
 }
 
-const WEIGHT_OPTIONS = ['৫০ গ্রাম', '১০০ গ্রাম', '২০০ গ্রাম', '২৫০ গ্রাম', '৫০০ গ্রাম', '১ কেজি', '২ কেজি', '৫ কেজি'];
+const WEIGHT_OPTIONS = [
+  '৫০ গ্রাম',
+  '১০০ গ্রাম',
+  '২০০ গ্রাম',
+  '২৫০ গ্রাম',
+  '৫০০ গ্রাম',
+  '১ কেজি',
+  '২ কেজি',
+  '৫ কেজি',
+];
 
-export function FilterSidebar({ filters, onChange, currentCategory, onClose, className }: FilterSidebarProps) {
+export function FilterSidebar({
+  filters,
+  onChange,
+  currentCategory,
+  onClose,
+  className,
+}: FilterSidebarProps) {
   const { data: meta } = useFilterMeta(currentCategory);
   const { data: categories = [] } = useCategoriesFlat();
 
@@ -58,11 +86,14 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
   );
 
   const clear = () => {
-    setLocalMin(''); setLocalMax('');
+    setLocalMin('');
+    setLocalMax('');
     onChange({});
   };
 
-  const activeCount = Object.values(filters).filter((v) => v !== undefined && v !== false && v !== '').length;
+  const activeCount = Object.values(filters).filter(
+    (v) => v !== undefined && v !== false && v !== '',
+  ).length;
 
   const priceMin = meta?.priceRange?.min ?? 0;
   const priceMax = meta?.priceRange?.max ?? 10000;
@@ -88,7 +119,10 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
         </div>
         <div className="flex items-center gap-2">
           {activeCount > 0 && (
-            <button onClick={clear} className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-0.5">
+            <button
+              onClick={clear}
+              className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-0.5"
+            >
               <X className="w-3 h-3" /> সাফ
             </button>
           )}
@@ -107,7 +141,9 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
             onClick={() => update({ category: undefined })}
             className={cn(
               'w-full text-left text-sm px-3 py-2 rounded-xl transition-colors',
-              !filters.category ? 'bg-brand-50 text-brand-700 font-semibold' : 'hover:bg-gray-50 text-gray-700',
+              !filters.category
+                ? 'bg-brand-50 text-brand-700 font-semibold'
+                : 'hover:bg-gray-50 text-gray-700',
             )}
           >
             সব ক্যাটাগরি
@@ -167,13 +203,24 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
           </button>
           {/* Quick price presets */}
           <div className="flex flex-wrap gap-1.5">
-            {[[0,200],[200,500],[500,1000],[1000,99999]].map(([mn, mx]) => (
+            {[
+              [0, 200],
+              [200, 500],
+              [500, 1000],
+              [1000, 99999],
+            ].map(([mn, mx]) => (
               <button
                 key={`${mn}-${mx}`}
-                onClick={() => { setLocalMin(mn.toString()); setLocalMax(mx === 99999 ? '' : mx.toString()); update({ minPrice: mn, maxPrice: mx === 99999 ? undefined : mx }); }}
+                onClick={() => {
+                  setLocalMin(mn.toString());
+                  setLocalMax(mx === 99999 ? '' : mx.toString());
+                  update({ minPrice: mn, maxPrice: mx === 99999 ? undefined : mx });
+                }}
                 className={cn(
                   'text-[11px] px-2.5 py-1 rounded-lg border transition-colors',
-                  filters.minPrice === mn ? 'bg-brand-50 border-brand-300 text-brand-700 font-semibold' : 'border-gray-200 text-gray-600 hover:border-brand-200',
+                  filters.minPrice === mn
+                    ? 'bg-brand-50 border-brand-300 text-brand-700 font-semibold'
+                    : 'border-gray-200 text-gray-600 hover:border-brand-200',
                 )}
               >
                 {mn === 0 ? `৳০–৳${mx}` : mx === 99999 ? `৳${mn}+` : `৳${mn}–৳${mx}`}
@@ -192,10 +239,17 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
                 <input
                   type="checkbox"
                   checked={filters.brand === brand.slug}
-                  onChange={() => update({ brand: filters.brand === brand.slug ? undefined : brand.slug })}
+                  onChange={() =>
+                    update({ brand: filters.brand === brand.slug ? undefined : brand.slug })
+                  }
                   className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 />
-                <span className={cn('text-sm group-hover:text-brand-700 transition-colors', filters.brand === brand.slug ? 'text-brand-700 font-medium' : 'text-gray-700')}>
+                <span
+                  className={cn(
+                    'text-sm group-hover:text-brand-700 transition-colors',
+                    filters.brand === brand.slug ? 'text-brand-700 font-medium' : 'text-gray-700',
+                  )}
+                >
                   {brand.name}
                 </span>
               </label>
@@ -213,12 +267,20 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
               onClick={() => update({ minRating: filters.minRating === r ? undefined : r })}
               className={cn(
                 'w-full flex items-center gap-2 px-3 py-2 rounded-xl transition-colors text-sm',
-                filters.minRating === r ? 'bg-amber-50 text-amber-700' : 'hover:bg-gray-50 text-gray-700',
+                filters.minRating === r
+                  ? 'bg-amber-50 text-amber-700'
+                  : 'hover:bg-gray-50 text-gray-700',
               )}
             >
               <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={cn('w-3.5 h-3.5', i < r ? 'fill-amber-400 text-amber-400' : 'text-gray-300')} />
+                  <Star
+                    key={i}
+                    className={cn(
+                      'w-3.5 h-3.5',
+                      i < r ? 'fill-amber-400 text-amber-400' : 'text-gray-300',
+                    )}
+                  />
                 ))}
               </div>
               <span className="text-xs">ও তার বেশি</span>
@@ -238,7 +300,9 @@ export function FilterSidebar({ filters, onChange, currentCategory, onClose, cla
               <input
                 type="checkbox"
                 checked={filters.stockStatus === value}
-                onChange={() => update({ stockStatus: filters.stockStatus === value ? undefined : value })}
+                onChange={() =>
+                  update({ stockStatus: filters.stockStatus === value ? undefined : value })
+                }
                 className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
               />
               <span className={cn('text-sm', color)}>{label}</span>

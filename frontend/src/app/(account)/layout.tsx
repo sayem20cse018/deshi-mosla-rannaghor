@@ -11,7 +11,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [checked, setChecked]       = useState(false);
+  const [checked, setChecked] = useState(false);
 
   // Client-side auth guard
   useEffect(() => {
@@ -43,7 +43,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <div className="flex items-center justify-between mb-6">
           <div>
             <nav className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-              <a href="/" className="hover:text-brand-600">হোম</a>
+              <a href="/" className="hover:text-brand-600">
+                হোম
+              </a>
               <span>/</span>
               <span className="text-gray-600 font-medium">আমার অ্যাকাউন্ট</span>
             </nav>
@@ -72,7 +74,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <div className="absolute left-0 top-0 bottom-0 w-72 bg-white p-4 overflow-y-auto shadow-xl">
                 <div className="flex items-center justify-between mb-4">
                   <p className="font-bold text-gray-900">অ্যাকাউন্ট মেনু</p>
-                  <button onClick={() => setMobileOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  <button
+                    onClick={() => setMobileOpen(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
                     <X className="w-5 h-5" />
                   </button>
                 </div>

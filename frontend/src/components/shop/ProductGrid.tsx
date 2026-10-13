@@ -13,13 +13,15 @@ interface ProductGridProps {
 export function ProductGrid({ products, loading, view = 'grid', emptyMessage }: ProductGridProps) {
   if (loading) {
     return (
-      <div className={cn(
-        'grid gap-3 md:gap-4',
-        view === 'grid'
-          ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4'
-          : 'grid-cols-1',
-      )}>
-        {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)}
+      <div
+        className={cn(
+          'grid gap-3 md:gap-4',
+          view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1',
+        )}
+      >
+        {Array.from({ length: 12 }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
       </div>
     );
   }

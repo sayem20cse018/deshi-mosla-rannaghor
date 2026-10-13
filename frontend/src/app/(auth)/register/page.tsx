@@ -14,23 +14,42 @@ const BD_PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 function PasswordStrength({ password }: { password: string }) {
   const checks = [
     { label: 'ন্যূনতম ৮ অক্ষর', ok: password.length >= 8 },
-    { label: 'সংখ্যা আছে',       ok: /\d/.test(password) },
-    { label: 'বড় হাতের অক্ষর',   ok: /[A-Z]/.test(password) },
-    { label: 'ছোট হাতের অক্ষর',  ok: /[a-z]/.test(password) },
+    { label: 'সংখ্যা আছে', ok: /\d/.test(password) },
+    { label: 'বড় হাতের অক্ষর', ok: /[A-Z]/.test(password) },
+    { label: 'ছোট হাতের অক্ষর', ok: /[a-z]/.test(password) },
   ];
   const score = checks.filter((c) => c.ok).length;
-  const color = score <= 1 ? 'bg-red-400' : score === 2 ? 'bg-amber-400' : score === 3 ? 'bg-yellow-400' : 'bg-brand-500';
+  const color =
+    score <= 1
+      ? 'bg-red-400'
+      : score === 2
+        ? 'bg-amber-400'
+        : score === 3
+          ? 'bg-yellow-400'
+          : 'bg-brand-500';
   if (!password) return null;
   return (
     <div className="mt-2 space-y-1.5">
       <div className="flex gap-1">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className={cn('h-1 flex-1 rounded-full transition-all', i <= score ? color : 'bg-gray-200')} />
+          <div
+            key={i}
+            className={cn(
+              'h-1 flex-1 rounded-full transition-all',
+              i <= score ? color : 'bg-gray-200',
+            )}
+          />
         ))}
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
         {checks.map(({ label, ok }) => (
-          <span key={label} className={cn('flex items-center gap-1 text-[11px]', ok ? 'text-brand-600' : 'text-gray-400')}>
+          <span
+            key={label}
+            className={cn(
+              'flex items-center gap-1 text-[11px]',
+              ok ? 'text-brand-600' : 'text-gray-400',
+            )}
+          >
             {ok ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} {label}
           </span>
         ))}
@@ -45,20 +64,23 @@ export default function RegisterPage() {
   const { syncToServer, fetchFromServer, items: guestItems } = useCartStore();
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' });
-  const [showPw, setShowPw]     = useState(false);
-  const [showCf, setShowCf]     = useState(false);
-  const [errors, setErrors]     = useState<Record<string, string>>({});
-  const [agreed, setAgreed]     = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [showCf, setShowCf] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [agreed, setAgreed] = useState(false);
 
   function set_(k: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    return (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
   }
 
   function validate() {
     const e: Record<string, string> = {};
     if (!form.name.trim() || form.name.trim().length < 2) e.name = 'নাম কমপক্ষে ২ অক্ষর';
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'সঠিক ইমেইল দিন';
-    if (!BD_PHONE.test(form.phone.trim())) e.phone = 'সঠিক বাংলাদেশি ফোন নম্বর দিন (যেমন: 01700000000)';
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      e.email = 'সঠিক ইমেইল দিন';
+    if (!BD_PHONE.test(form.phone.trim()))
+      e.phone = 'সঠিক বাংলাদেশি ফোন নম্বর দিন (যেমন: 01700000000)';
     if (form.password.length < 8) e.password = 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষর';
     if (form.password !== form.confirm) e.confirm = 'পাসওয়ার্ড মিলছে না';
     if (!agreed) e.agreed = 'শর্তাবলীতে সম্মত হন';
@@ -87,7 +109,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-emerald-50 flex items-center justify-center p-4 py-10">
       <div className="w-full max-w-md">
-
         {/* Logo */}
         <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
@@ -103,7 +124,6 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-7">
-
           {errors.form && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
               <span>⚠️</span> {errors.form}
@@ -111,10 +131,11 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
-
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">পূর্ণ নাম *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                পূর্ণ নাম *
+              </label>
               <input
                 type="text"
                 value={form.name}
@@ -128,7 +149,9 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">ইমেইল ঠিকানা *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                ইমেইল ঠিকানা *
+              </label>
               <input
                 type="email"
                 value={form.email}
@@ -143,7 +166,9 @@ export default function RegisterPage() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">ফোন নম্বর *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                ফোন নম্বর *
+              </label>
               <input
                 type="tel"
                 value={form.phone}
@@ -158,7 +183,9 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">পাসওয়ার্ড *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                পাসওয়ার্ড *
+              </label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -168,7 +195,12 @@ export default function RegisterPage() {
                   className={cn('input-base pr-10', errors.password && 'border-red-400')}
                   autoComplete="new-password"
                 />
-                <button type="button" onClick={() => setShowPw((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" tabIndex={-1}>
+                <button
+                  type="button"
+                  onClick={() => setShowPw((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -178,7 +210,9 @@ export default function RegisterPage() {
 
             {/* Confirm */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">পাসওয়ার্ড নিশ্চিত করুন *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                পাসওয়ার্ড নিশ্চিত করুন *
+              </label>
               <div className="relative">
                 <input
                   type={showCf ? 'text' : 'password'}
@@ -188,7 +222,12 @@ export default function RegisterPage() {
                   className={cn('input-base pr-10', errors.confirm && 'border-red-400')}
                   autoComplete="new-password"
                 />
-                <button type="button" onClick={() => setShowCf((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" tabIndex={-1}>
+                <button
+                  type="button"
+                  onClick={() => setShowCf((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
                   {showCf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -205,10 +244,14 @@ export default function RegisterPage() {
               />
               <span className="text-xs text-gray-600 leading-relaxed">
                 আমি{' '}
-                <Link href="/terms" className="text-brand-600 hover:underline">শর্তাবলী</Link>
-                {' '}এবং{' '}
-                <Link href="/privacy-policy" className="text-brand-600 hover:underline">গোপনীয়তা নীতি</Link>
-                {' '}পড়েছি এবং সম্মত আছি
+                <Link href="/terms" className="text-brand-600 hover:underline">
+                  শর্তাবলী
+                </Link>{' '}
+                এবং{' '}
+                <Link href="/privacy-policy" className="text-brand-600 hover:underline">
+                  গোপনীয়তা নীতি
+                </Link>{' '}
+                পড়েছি এবং সম্মত আছি
               </span>
             </label>
             {errors.agreed && <p className="text-red-500 text-xs -mt-2">{errors.agreed}</p>}
@@ -220,9 +263,13 @@ export default function RegisterPage() {
               className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-brand-700/20 text-base mt-1"
             >
               {isLoading ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> নিবন্ধন হচ্ছে...</>
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> নিবন্ধন হচ্ছে...
+                </>
               ) : (
-                <><UserPlus className="w-5 h-5" /> নিবন্ধন করুন</>
+                <>
+                  <UserPlus className="w-5 h-5" /> নিবন্ধন করুন
+                </>
               )}
             </button>
           </form>
@@ -230,7 +277,10 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-600 mt-5">
           ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
-          <Link href="/login" className="text-brand-700 font-semibold hover:text-brand-800 underline underline-offset-2">
+          <Link
+            href="/login"
+            className="text-brand-700 font-semibold hover:text-brand-800 underline underline-offset-2"
+          >
             লগইন করুন
           </Link>
         </p>

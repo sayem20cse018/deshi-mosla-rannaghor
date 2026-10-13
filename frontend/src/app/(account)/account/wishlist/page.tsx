@@ -17,7 +17,11 @@ export default function WishlistPage() {
     // Wishlist is stored locally until server wishlist is implemented (Step 8+)
     const saved = localStorage.getItem('dmr-wishlist');
     if (saved) {
-      try { setItems(JSON.parse(saved)); } catch { /* ignore */ }
+      try {
+        setItems(JSON.parse(saved));
+      } catch {
+        /* ignore */
+      }
     }
   }, []);
 
@@ -39,28 +43,48 @@ export default function WishlistPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
           <Heart className="w-16 h-16 text-gray-200 mx-auto mb-4" />
           <p className="text-gray-700 font-semibold text-lg mb-2">উইশলিস্ট খালি</p>
-          <p className="text-gray-400 text-sm mb-6">পছন্দের পণ্যে হার্ট আইকন ক্লিক করে উইশলিস্টে যোগ করুন।</p>
-          <Link href="/shop" className="btn-primary px-6">পণ্য দেখুন</Link>
+          <p className="text-gray-400 text-sm mb-6">
+            পছন্দের পণ্যে হার্ট আইকন ক্লিক করে উইশলিস্টে যোগ করুন।
+          </p>
+          <Link href="/shop" className="btn-primary px-6">
+            পণ্য দেখুন
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {items.map((item) => {
             const effectivePrice = item.discountPrice ?? item.price;
             return (
-              <div key={item.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-200 hover:shadow-sm transition-all group">
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-200 hover:shadow-sm transition-all group"
+              >
                 <Link href={`/product/${item.slug}`} className="block">
                   <div className="aspect-square bg-brand-50 flex items-center justify-center text-5xl">
                     {item.primaryImage ? (
-                      <img src={item.primaryImage} alt={item.name} className="w-full h-full object-cover" />
-                    ) : '🌶️'}
+                      <img
+                        src={item.primaryImage}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      '🌶️'
+                    )}
                   </div>
                 </Link>
                 <div className="p-3">
-                  <Link href={`/product/${item.slug}`} className="font-semibold text-sm text-gray-800 hover:text-brand-700 line-clamp-2 leading-snug block">{item.name}</Link>
+                  <Link
+                    href={`/product/${item.slug}`}
+                    className="font-semibold text-sm text-gray-800 hover:text-brand-700 line-clamp-2 leading-snug block"
+                  >
+                    {item.name}
+                  </Link>
                   <p className="text-brand-700 font-bold mt-1.5">{formatPriceEn(effectivePrice)}</p>
                   <div className="flex gap-1.5 mt-2">
                     <button
-                      onClick={() => { addItem(item, 1); }}
+                      onClick={() => {
+                        addItem(item, 1);
+                      }}
                       className="flex-1 flex items-center justify-center gap-1 bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold py-1.5 rounded-lg transition-colors"
                     >
                       <ShoppingCart className="w-3 h-3" /> কার্ট

@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
 
 const NAV = [
-  { href: '/',          icon: Home,       label: 'হোম'        },
-  { href: '/shop',      icon: ShoppingBag,label: 'শপ'         },
-  { href: '/categories',icon: Grid2X2,    label: 'ক্যাটাগরি'  },
+  { href: '/', icon: Home, label: 'হোম' },
+  { href: '/shop', icon: ShoppingBag, label: 'শপ' },
+  { href: '/categories', icon: Grid2X2, label: 'ক্যাটাগরি' },
   { href: '/account/wishlist', icon: Heart, label: 'উইশলিস্ট' },
-  { href: '/account',   icon: User,       label: 'অ্যাকাউন্ট' },
+  { href: '/account', icon: User, label: 'অ্যাকাউন্ট' },
 ];
 
 export function MobileNav() {

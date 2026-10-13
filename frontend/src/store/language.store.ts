@@ -16,7 +16,7 @@ export const useLanguageStore = create<LanguageStore>()(
     (set, get) => ({
       lang: 'bn',
       setLang: (lang) => set({ lang }),
-      toggle:  () => set({ lang: get().lang === 'bn' ? 'en' : 'bn' }),
+      toggle: () => set({ lang: get().lang === 'bn' ? 'en' : 'bn' }),
     }),
     { name: 'dmr-lang' },
   ),

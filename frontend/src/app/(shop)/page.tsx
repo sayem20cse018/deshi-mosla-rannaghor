@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import { HeroBanner }           from '@/components/home/HeroBanner';
-import { TrustBadges }          from '@/components/home/TrustBadges';
-import { CategorySection }      from '@/components/home/CategorySection';
-import { BestSellingSection }   from '@/components/home/BestSellingSection';
-import { SpecialOfferBanner }   from '@/components/home/SpecialOfferBanner';
-import { FeaturedSection }      from '@/components/home/FeaturedSection';
-import { CookingCollections }   from '@/components/home/CookingCollections';
-import { RecipeSection }        from '@/components/home/RecipeSection';
-import { NewArrivalsSection }   from '@/components/home/NewArrivalsSection';
-import { BrandStorySection }    from '@/components/home/BrandStorySection';
-import { TestimonialsSection }  from '@/components/home/TestimonialsSection';
-import { NewsletterSection }    from '@/components/home/NewsletterSection';
+import { HeroBanner } from '@/components/home/HeroBanner';
+import { TrustBadges } from '@/components/home/TrustBadges';
+import { CategorySection } from '@/components/home/CategorySection';
+import { BestSellingSection } from '@/components/home/BestSellingSection';
+import { SpecialOfferBanner } from '@/components/home/SpecialOfferBanner';
+import { FeaturedSection } from '@/components/home/FeaturedSection';
+import { CookingCollections } from '@/components/home/CookingCollections';
+import { RecipeSection } from '@/components/home/RecipeSection';
+import { NewArrivalsSection } from '@/components/home/NewArrivalsSection';
+import { BrandStorySection } from '@/components/home/BrandStorySection';
+import { TestimonialsSection } from '@/components/home/TestimonialsSection';
+import { NewsletterSection } from '@/components/home/NewsletterSection';
 
 export const metadata: Metadata = {
   title: 'দেশি মসলার রান্নাঘর | অনলাইন গ্রোসারি শপ',

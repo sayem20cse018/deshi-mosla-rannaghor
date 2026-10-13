@@ -6,8 +6,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-const TRENDING_BN = ['সরিষার তেল', 'হলুদ গুঁড়া', 'মিনিকেট চাল', 'সুন্দরবনের মধু', 'বিরিয়ানি মসলা'];
-const TRENDING_EN = ['Mustard Oil', 'Turmeric Powder', 'Miniket Rice', 'Sundarban Honey', 'Biryani Spice'];
+const TRENDING_BN = [
+  'সরিষার তেল',
+  'হলুদ গুঁড়া',
+  'মিনিকেট চাল',
+  'সুন্দরবনের মধু',
+  'বিরিয়ানি মসলা',
+];
+const TRENDING_EN = [
+  'Mustard Oil',
+  'Turmeric Powder',
+  'Miniket Rice',
+  'Sundarban Honey',
+  'Biryani Spice',
+];
 
 interface SearchBarProps {
   className?: string;
@@ -59,15 +71,21 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
 
   return (
     <div ref={ref} className={cn('relative', className)}>
-      <div className={cn(
-        'flex items-center gap-2 bg-gray-50 border rounded-xl transition-all duration-200',
-        open ? 'border-brand-500 ring-2 ring-brand-100 bg-white' : 'border-gray-200 hover:border-gray-300',
-        mobile ? 'px-3 py-2' : 'px-3 py-2.5',
-      )}>
+      <div
+        className={cn(
+          'flex items-center gap-2 bg-gray-50 border rounded-xl transition-all duration-200',
+          open
+            ? 'border-brand-500 ring-2 ring-brand-100 bg-white'
+            : 'border-gray-200 hover:border-gray-300',
+          mobile ? 'px-3 py-2' : 'px-3 py-2.5',
+        )}
+      >
         <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <input
           type="text"
-          placeholder={lang === 'en' ? 'Search products… (spices, rice, oil)' : 'পণ্য খুঁজুন… (মসলা, চাল, তেল)'}
+          placeholder={
+            lang === 'en' ? 'Search products… (spices, rice, oil)' : 'পণ্য খুঁজুন… (মসলা, চাল, তেল)'
+          }
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
@@ -130,7 +148,9 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
               className="w-full text-left px-4 py-3 border-t border-gray-50 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
             >
               <Search className="w-4 h-4 text-brand-600" />
-              <span><strong>"{query}"</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}</span>
+              <span>
+                <strong>"{query}"</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}
+              </span>
             </button>
           )}
         </div>

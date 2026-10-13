@@ -5,12 +5,60 @@ import { Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { StarRating } from '@/components/ui/StarRating';
 
 const TESTIMONIALS = [
-  { name: 'তানজিলা আক্তার',    role: 'গৃহিণী, ঢাকা',         rating: 5, comment: 'অসাধারণ মানের মসলা! রান্নায় সত্যিকারের দেশীয় স্বাদ পাচ্ছি। বিশেষ করে সরিষার তেলের ঘ্রাণ ও স্বাদটা অনন্য। পরিবারের সবাই পছন্দ করেছে।', initial: 'ত', color: 'bg-pink-100 text-pink-700'   },
-  { name: 'মোঃ রফিকুল ইসলাম', role: 'ব্যবসায়ী, চট্টগ্রাম',  rating: 5, comment: 'দ্রুত ডেলিভারি এবং পণ্যের গুণমান চমৎকার। অনলাইনে এত ভালো মান আশা করিনি। নিয়মিত অর্ডার করি এখন।',                                           initial: 'র', color: 'bg-blue-100 text-blue-700'   },
-  { name: 'নাফিসা খানম',       role: 'শিক্ষার্থী, রাজশাহী', rating: 4, comment: 'অনলাইনে মসলা কিনতে প্রথমে দ্বিধা ছিল, কিন্তু প্যাকেজিং ও মান দেখে মুগ্ধ হয়েছি। বিশেষ করে খেজুরের গুড় অসাধারণ।',                           initial: 'ন', color: 'bg-purple-100 text-purple-700'},
-  { name: 'আব্দুল কাদের',      role: 'প্রবাসী, মালয়েশিয়া', rating: 5, comment: 'পরিবারের জন্য দেশি মসলা পাঠাই। মানের কোনো আপোস নেই। বিদেশে থেকেও দেশের স্বাদ পাওয়া যাচ্ছে।',                                                  initial: 'আ', color: 'bg-green-100 text-green-700'  },
-  { name: 'শামীমা বেগম',       role: 'গৃহিণী, সিলেট',        rating: 5, comment: 'সুন্দরবনের মধু নিলাম। সম্পূর্ণ খাঁটি। আর দেশি হলুদ গুঁড়া সত্যিই কৃত্রিম রং ছাড়া। এরকম বিশ্বস্ত ব্র্যান্ড দরকার ছিল।',                   initial: 'শ', color: 'bg-amber-100 text-amber-700'  },
-  { name: 'হাসান মাহমুদ',      role: 'উদ্যোক্তা, খুলনা',    rating: 5, comment: 'বন্ধুর পরামর্শে প্রথমবার অর্ডার করেছিলাম। এখন আর অন্য কোথাও যাই না। রেসিপি শপিং ফিচারটা দারুণ কাজে আসে।',                                   initial: 'হ', color: 'bg-teal-100 text-teal-700'    },
+  {
+    name: 'তানজিলা আক্তার',
+    role: 'গৃহিণী, ঢাকা',
+    rating: 5,
+    comment:
+      'অসাধারণ মানের মসলা! রান্নায় সত্যিকারের দেশীয় স্বাদ পাচ্ছি। বিশেষ করে সরিষার তেলের ঘ্রাণ ও স্বাদটা অনন্য। পরিবারের সবাই পছন্দ করেছে।',
+    initial: 'ত',
+    color: 'bg-pink-100 text-pink-700',
+  },
+  {
+    name: 'মোঃ রফিকুল ইসলাম',
+    role: 'ব্যবসায়ী, চট্টগ্রাম',
+    rating: 5,
+    comment:
+      'দ্রুত ডেলিভারি এবং পণ্যের গুণমান চমৎকার। অনলাইনে এত ভালো মান আশা করিনি। নিয়মিত অর্ডার করি এখন।',
+    initial: 'র',
+    color: 'bg-blue-100 text-blue-700',
+  },
+  {
+    name: 'নাফিসা খানম',
+    role: 'শিক্ষার্থী, রাজশাহী',
+    rating: 4,
+    comment:
+      'অনলাইনে মসলা কিনতে প্রথমে দ্বিধা ছিল, কিন্তু প্যাকেজিং ও মান দেখে মুগ্ধ হয়েছি। বিশেষ করে খেজুরের গুড় অসাধারণ।',
+    initial: 'ন',
+    color: 'bg-purple-100 text-purple-700',
+  },
+  {
+    name: 'আব্দুল কাদের',
+    role: 'প্রবাসী, মালয়েশিয়া',
+    rating: 5,
+    comment:
+      'পরিবারের জন্য দেশি মসলা পাঠাই। মানের কোনো আপোস নেই। বিদেশে থেকেও দেশের স্বাদ পাওয়া যাচ্ছে।',
+    initial: 'আ',
+    color: 'bg-green-100 text-green-700',
+  },
+  {
+    name: 'শামীমা বেগম',
+    role: 'গৃহিণী, সিলেট',
+    rating: 5,
+    comment:
+      'সুন্দরবনের মধু নিলাম। সম্পূর্ণ খাঁটি। আর দেশি হলুদ গুঁড়া সত্যিই কৃত্রিম রং ছাড়া। এরকম বিশ্বস্ত ব্র্যান্ড দরকার ছিল।',
+    initial: 'শ',
+    color: 'bg-amber-100 text-amber-700',
+  },
+  {
+    name: 'হাসান মাহমুদ',
+    role: 'উদ্যোক্তা, খুলনা',
+    rating: 5,
+    comment:
+      'বন্ধুর পরামর্শে প্রথমবার অর্ডার করেছিলাম। এখন আর অন্য কোথাও যাই না। রেসিপি শপিং ফিচারটা দারুণ কাজে আসে।',
+    initial: 'হ',
+    color: 'bg-teal-100 text-teal-700',
+  },
 ];
 
 export function TestimonialsSection() {
@@ -30,9 +78,13 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="flex items-end justify-between mb-8">
           <div>
-            <span className="text-brand-300 text-xs font-semibold uppercase tracking-widest">রিভিউ</span>
+            <span className="text-brand-300 text-xs font-semibold uppercase tracking-widest">
+              রিভিউ
+            </span>
             <h2 className="section-title text-white mt-1">আমাদের গ্রাহকদের কথা</h2>
-            <p className="text-brand-300 text-sm mt-1">১০,০০০+ সন্তুষ্ট গ্রাহকের মধ্য থেকে কিছু অভিজ্ঞতা</p>
+            <p className="text-brand-300 text-sm mt-1">
+              ১০,০০০+ সন্তুষ্ট গ্রাহকের মধ্য থেকে কিছু অভিজ্ঞতা
+            </p>
           </div>
           <div className="flex gap-2">
             <button
@@ -63,7 +115,9 @@ export function TestimonialsSection() {
               <Quote className="w-6 h-6 text-spice-400 flex-shrink-0" />
               <p className="text-white/85 text-sm leading-relaxed flex-1">"{t.comment}"</p>
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${t.color}`}>
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${t.color}`}
+                >
                   {t.initial}
                 </div>
                 <div>

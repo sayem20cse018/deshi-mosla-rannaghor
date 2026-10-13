@@ -15,8 +15,23 @@ export function formatPriceEn(amount: number | string | null | undefined): strin
 
 /** Format price in Bengali numerals */
 export function formatPriceBn(amount: number): string {
-  const map: Record<string, string> = { '0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯' };
-  return `৳${amount.toFixed(0).split('').map((c) => map[c] ?? c).join('')}`;
+  const map: Record<string, string> = {
+    '0': '০',
+    '1': '১',
+    '2': '২',
+    '3': '৩',
+    '4': '৪',
+    '5': '৫',
+    '6': '৬',
+    '7': '৭',
+    '8': '৮',
+    '9': '৯',
+  };
+  return `৳${amount
+    .toFixed(0)
+    .split('')
+    .map((c) => map[c] ?? c)
+    .join('')}`;
 }
 
 /** Discount percentage */
@@ -42,8 +57,8 @@ export function getWhatsAppUrl(phone: string, message?: string): string {
 /** Rating stars breakdown */
 export function ratingBreakdown(rating: number) {
   const filled = Math.floor(rating);
-  const half   = rating % 1 >= 0.4;
-  const empty  = 5 - filled - (half ? 1 : 0);
+  const half = rating % 1 >= 0.4;
+  const empty = 5 - filled - (half ? 1 : 0);
   return { filled, half, empty };
 }
 

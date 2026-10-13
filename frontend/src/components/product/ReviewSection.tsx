@@ -6,7 +6,10 @@ import { cn, formatPriceEn } from '@/lib/utils';
 import { StarRating } from '@/components/ui/StarRating';
 import { Review } from '@/types';
 
-interface RatingDist { star: number; count: number; }
+interface RatingDist {
+  star: number;
+  count: number;
+}
 
 interface ReviewSectionProps {
   reviews: Review[];
@@ -40,7 +43,12 @@ export function ReviewSection({
           {/* Rating summary */}
           <div className="bg-gray-50 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
             <div className="text-5xl font-black text-gray-900 leading-none">{avgRating}</div>
-            <StarRating rating={avgRating} showCount={false} size="md" className="my-2 justify-center" />
+            <StarRating
+              rating={avgRating}
+              showCount={false}
+              size="md"
+              className="my-2 justify-center"
+            />
             <p className="text-gray-500 text-sm">{reviewCount} টি রিভিউ</p>
 
             <div className="w-full mt-4 space-y-1.5">
@@ -70,17 +78,25 @@ export function ReviewSection({
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2.5">
                     {review.user.avatar ? (
-                      <img src={review.user.avatar} alt={review.user.name} className="w-9 h-9 rounded-full object-cover" />
+                      <img
+                        src={review.user.avatar}
+                        alt={review.user.name}
+                        className="w-9 h-9 rounded-full object-cover"
+                      />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center">
-                        <span className="text-brand-700 font-bold text-sm">{review.user.name.charAt(0)}</span>
+                        <span className="text-brand-700 font-bold text-sm">
+                          {review.user.name.charAt(0)}
+                        </span>
                       </div>
                     )}
                     <div>
                       <p className="font-semibold text-gray-900 text-sm">{review.user.name}</p>
                       <p className="text-gray-400 text-xs">
                         {new Date(review.createdAt).toLocaleDateString('bn-BD', {
-                          year: 'numeric', month: 'long', day: 'numeric',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
                         })}
                       </p>
                     </div>
@@ -99,8 +115,15 @@ export function ReviewSection({
                 {review.images && review.images.length > 0 && (
                   <div className="flex gap-2 mt-3">
                     {review.images.map((img, i) => (
-                      <div key={i} className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100">
-                        <img src={img} alt={`Review image ${i + 1}`} className="w-full h-full object-cover" />
+                      <div
+                        key={i}
+                        className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100"
+                      >
+                        <img
+                          src={img}
+                          alt={`Review image ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>

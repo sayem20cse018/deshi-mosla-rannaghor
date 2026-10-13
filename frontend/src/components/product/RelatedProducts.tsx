@@ -16,8 +16,7 @@ export function RelatedProducts({ slug }: { slug: string }) {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : products.map((p: any) => <ProductCard key={p.id} product={p} />)
-        }
+          : products.map((p: any) => <ProductCard key={p.id} product={p} />)}
       </div>
     </section>
   );

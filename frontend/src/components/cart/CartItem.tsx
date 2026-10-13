@@ -84,9 +84,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             {product.name}
           </Link>
 
-          {product.weight && (
-            <p className="text-gray-400 text-xs mt-0.5">{product.weight}</p>
-          )}
+          {product.weight && <p className="text-gray-400 text-xs mt-0.5">{product.weight}</p>}
 
           {isLow && (
             <p className="text-amber-600 text-[10px] font-semibold mt-0.5">⚠️ সীমিত স্টক</p>
@@ -103,10 +101,12 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               >
                 <Minus className="w-3 h-3" />
               </button>
-              <span className={cn(
-                'w-7 text-center text-xs font-bold text-gray-900 select-none',
-                updating && 'opacity-50',
-              )}>
+              <span
+                className={cn(
+                  'w-7 text-center text-xs font-bold text-gray-900 select-none',
+                  updating && 'opacity-50',
+                )}
+              >
                 {quantity}
               </span>
               <button
@@ -124,7 +124,9 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               <div className="text-right">
                 <p className="text-sm font-bold text-brand-700">{formatPriceEn(lineTotal)}</p>
                 {hasSaving && quantity > 1 && (
-                  <p className="text-[10px] text-gray-400 line-through">{formatPriceEn(originalLineTotal)}</p>
+                  <p className="text-[10px] text-gray-400 line-through">
+                    {formatPriceEn(originalLineTotal)}
+                  </p>
                 )}
               </div>
               <button
@@ -183,7 +185,9 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             </Link>
             <div className="flex flex-wrap items-center gap-2 mt-1">
               {product.weight && (
-                <span className="text-gray-400 text-xs bg-gray-50 px-2 py-0.5 rounded-full">{product.weight}</span>
+                <span className="text-gray-400 text-xs bg-gray-50 px-2 py-0.5 rounded-full">
+                  {product.weight}
+                </span>
               )}
               {hasSaving && (
                 <span className="text-[11px] font-bold text-spice-600 bg-spice-50 px-2 py-0.5 rounded-full">
@@ -216,7 +220,9 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               {formatPriceEn(effectivePrice)}
             </span>
             {hasSaving && (
-              <span className="text-sm text-gray-400 line-through">{formatPriceEn(product.price)}</span>
+              <span className="text-sm text-gray-400 line-through">
+                {formatPriceEn(product.price)}
+              </span>
             )}
             <span className="text-gray-400 text-xs">/ পিস</span>
           </div>
@@ -231,10 +237,12 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className={cn(
-              'w-10 text-center font-bold text-gray-900 text-sm select-none',
-              updating && 'opacity-50',
-            )}>
+            <span
+              className={cn(
+                'w-10 text-center font-bold text-gray-900 text-sm select-none',
+                updating && 'opacity-50',
+              )}
+            >
               {quantity}
             </span>
             <button

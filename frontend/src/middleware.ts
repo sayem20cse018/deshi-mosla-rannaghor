@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Routes that require authentication
-const PROTECTED = [
-  '/account',
-  '/checkout',
-  '/order',
-];
+const PROTECTED = ['/account', '/checkout', '/order'];
 
 // Routes that redirect logged-in users away
-const AUTH_ONLY = [
-  '/login',
-  '/register',
-  '/forgot-password',
-  '/reset-password',
-];
+const AUTH_ONLY = ['/login', '/register', '/forgot-password', '/reset-password'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

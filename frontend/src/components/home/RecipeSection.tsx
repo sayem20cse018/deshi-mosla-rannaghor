@@ -5,12 +5,60 @@ import { ChefHat, ArrowRight, Clock, Users, ShoppingCart } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 
 const RECIPES = [
-  { slug: 'kacchi-biryani',      name: 'কাচ্চি বিরিয়ানি',  emoji: '🍛', time: '৭৫ মিনিট', serving: '৬ জন', difficulty: 'কঠিন',   diffColor: 'text-red-500'    },
-  { slug: 'macher-jhol',         name: 'মাছের ঝোল',          emoji: '🐟', time: '৪০ মিনিট', serving: '৪ জন', difficulty: 'সহজ',    diffColor: 'text-green-600'  },
-  { slug: 'gorur-mangser-kari',  name: 'গরুর মাংস কারি',     emoji: '🥩', time: '৬৫ মিনিট', serving: '৫ জন', difficulty: 'মাঝারি', diffColor: 'text-amber-600'  },
-  { slug: 'mug-daler-khichuri',  name: 'মুগ ডালের খিচুড়ি',  emoji: '🍲', time: '৫০ মিনিট', serving: '৪ জন', difficulty: 'সহজ',    diffColor: 'text-green-600'  },
-  { slug: 'ilish-shorshe',       name: 'ইলিশ সরিষা',          emoji: '🐠', time: '৩৫ মিনিট', serving: '৪ জন', difficulty: 'মাঝারি', diffColor: 'text-amber-600'  },
-  { slug: 'dim-bhorta',          name: 'ডিম ভর্তা',           emoji: '🥚', time: '২০ মিনিট', serving: '২ জন', difficulty: 'সহজ',    diffColor: 'text-green-600'  },
+  {
+    slug: 'kacchi-biryani',
+    name: 'কাচ্চি বিরিয়ানি',
+    emoji: '🍛',
+    time: '৭৫ মিনিট',
+    serving: '৬ জন',
+    difficulty: 'কঠিন',
+    diffColor: 'text-red-500',
+  },
+  {
+    slug: 'macher-jhol',
+    name: 'মাছের ঝোল',
+    emoji: '🐟',
+    time: '৪০ মিনিট',
+    serving: '৪ জন',
+    difficulty: 'সহজ',
+    diffColor: 'text-green-600',
+  },
+  {
+    slug: 'gorur-mangser-kari',
+    name: 'গরুর মাংস কারি',
+    emoji: '🥩',
+    time: '৬৫ মিনিট',
+    serving: '৫ জন',
+    difficulty: 'মাঝারি',
+    diffColor: 'text-amber-600',
+  },
+  {
+    slug: 'mug-daler-khichuri',
+    name: 'মুগ ডালের খিচুড়ি',
+    emoji: '🍲',
+    time: '৫০ মিনিট',
+    serving: '৪ জন',
+    difficulty: 'সহজ',
+    diffColor: 'text-green-600',
+  },
+  {
+    slug: 'ilish-shorshe',
+    name: 'ইলিশ সরিষা',
+    emoji: '🐠',
+    time: '৩৫ মিনিট',
+    serving: '৪ জন',
+    difficulty: 'মাঝারি',
+    diffColor: 'text-amber-600',
+  },
+  {
+    slug: 'dim-bhorta',
+    name: 'ডিম ভর্তা',
+    emoji: '🥚',
+    time: '২০ মিনিট',
+    serving: '২ জন',
+    difficulty: 'সহজ',
+    diffColor: 'text-green-600',
+  },
 ];
 
 export function RecipeSection() {
@@ -68,10 +116,7 @@ export function RecipeSection() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-6">
-          <Link
-            href="/recipes"
-            className="inline-flex items-center gap-2 btn-primary px-6 py-2.5"
-          >
+          <Link href="/recipes" className="inline-flex items-center gap-2 btn-primary px-6 py-2.5">
             সব রেসিপি দেখুন <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

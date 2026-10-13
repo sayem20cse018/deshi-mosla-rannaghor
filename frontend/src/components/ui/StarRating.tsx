@@ -35,9 +35,7 @@ export function StarRating({
       {showCount && (
         <span className="text-xs text-gray-500 leading-none">
           {rating.toFixed(1)}
-          {count !== undefined && (
-            <span className="text-gray-400 ml-0.5">({count})</span>
-          )}
+          {count !== undefined && <span className="text-gray-400 ml-0.5">({count})</span>}
         </span>
       )}
     </div>

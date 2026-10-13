@@ -4,9 +4,19 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ShoppingCart, Zap, Heart, Share2, ChevronRight,
-  Package, Truck, RotateCcw, Shield,
-  Minus, Plus, Check, Info,
+  ShoppingCart,
+  Zap,
+  Heart,
+  Share2,
+  ChevronRight,
+  Package,
+  Truck,
+  RotateCcw,
+  Shield,
+  Minus,
+  Plus,
+  Check,
+  Info,
 } from 'lucide-react';
 import { cn, formatPriceEn, calcDiscount } from '@/lib/utils';
 import { useProduct } from '@/hooks/useProducts';
@@ -81,7 +91,9 @@ export default function ProductDetailPage() {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <p className="text-gray-500 text-lg">পণ্যটি পাওয়া যায়নি।</p>
-        <Link href="/shop" className="btn-primary mt-4 inline-flex">শপে ফিরুন</Link>
+        <Link href="/shop" className="btn-primary mt-4 inline-flex">
+          শপে ফিরুন
+        </Link>
       </div>
     );
   }
@@ -94,12 +106,7 @@ export default function ProductDetailPage() {
   const discountPct = discountPrice ? calcDiscount(price, discountPrice) : 0;
   const maxQty = Math.min(product.inventory?.availableStock ?? 99, product.maxOrderQty ?? 99);
 
-  const tabContent = [
-    product.description,
-    product.ingredients,
-    product.usage,
-    product.storageInfo,
-  ];
+  const tabContent = [product.description, product.ingredients, product.usage, product.storageInfo];
 
   return (
     <div className="bg-white min-h-screen">
@@ -107,9 +114,13 @@ export default function ProductDetailPage() {
       <div className="border-b border-gray-100 bg-gray-50">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-xs text-gray-400">
-            <Link href="/" className="hover:text-brand-600">হোম</Link>
+            <Link href="/" className="hover:text-brand-600">
+              হোম
+            </Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/shop" className="hover:text-brand-600">শপ</Link>
+            <Link href="/shop" className="hover:text-brand-600">
+              শপ
+            </Link>
             {product.category && (
               <>
                 <ChevronRight className="w-3 h-3" />
@@ -126,7 +137,6 @@ export default function ProductDetailPage() {
 
       <div className="container mx-auto px-4 py-6 md:py-10">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-
           {/* ── Left: Gallery ── */}
           <div className="md:sticky md:top-24 self-start">
             <ProductGallery images={product.images ?? []} productName={product.name} />
@@ -134,7 +144,6 @@ export default function ProductDetailPage() {
 
           {/* ── Right: Details ── */}
           <div className="space-y-5">
-
             {/* Badges */}
             <div className="flex flex-wrap gap-2">
               {product.isBestSeller && (
@@ -164,9 +173,7 @@ export default function ProductDetailPage() {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                 {product.name}
               </h1>
-              {product.nameEn && (
-                <p className="text-gray-400 text-sm mt-1">{product.nameEn}</p>
-              )}
+              {product.nameEn && <p className="text-gray-400 text-sm mt-1">{product.nameEn}</p>}
             </div>
 
             {/* Rating */}
@@ -181,7 +188,9 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-end gap-3">
-              <span className="text-3xl font-black text-brand-700">{formatPriceEn(effectivePrice)}</span>
+              <span className="text-3xl font-black text-brand-700">
+                {formatPriceEn(effectivePrice)}
+              </span>
               {discountPrice && (
                 <>
                   <span className="text-lg text-gray-400 line-through">{formatPriceEn(price)}</span>
@@ -195,14 +204,12 @@ export default function ProductDetailPage() {
             {/* Weight / Origin / SKU */}
             <div className="flex flex-wrap gap-3 text-sm">
               {product.weight && (
-                <span className="chip"><Package className="w-3 h-3" /> {product.weight}</span>
+                <span className="chip">
+                  <Package className="w-3 h-3" /> {product.weight}
+                </span>
               )}
-              {product.origin && (
-                <span className="chip">📍 {product.origin}</span>
-              )}
-              {product.brand && (
-                <span className="chip">🏷️ {product.brand.name}</span>
-              )}
+              {product.origin && <span className="chip">📍 {product.origin}</span>}
+              {product.brand && <span className="chip">🏷️ {product.brand.name}</span>}
               <span className="chip text-gray-400">SKU: {product.sku}</span>
             </div>
 
@@ -229,11 +236,16 @@ export default function ProductDetailPage() {
                     </button>
                   </div>
                   <span className="text-sm text-gray-500">
-                    মোট: <strong className="text-brand-700">{formatPriceEn(effectivePrice * qty)}</strong>
+                    মোট:{' '}
+                    <strong className="text-brand-700">
+                      {formatPriceEn(effectivePrice * qty)}
+                    </strong>
                   </span>
                 </div>
                 {product.minOrderQty > 1 && (
-                  <p className="text-xs text-gray-400 mt-1">সর্বনিম্ন অর্ডার: {product.minOrderQty} টি</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    সর্বনিম্ন অর্ডার: {product.minOrderQty} টি
+                  </p>
                 )}
               </div>
             )}
@@ -286,7 +298,11 @@ export default function ProductDetailPage() {
               </button>
 
               <button
-                onClick={() => navigator.clipboard.writeText(window.location.href).then(() => toast.success('লিংক কপি হয়েছে'))}
+                onClick={() =>
+                  navigator.clipboard
+                    .writeText(window.location.href)
+                    .then(() => toast.success('লিংক কপি হয়েছে'))
+                }
                 className="w-12 h-12 flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-brand-200 hover:text-brand-600 transition-colors"
                 aria-label="শেয়ার"
               >
@@ -297,10 +313,10 @@ export default function ProductDetailPage() {
             {/* Trust badges */}
             <div className="grid grid-cols-2 gap-2 pt-2">
               {[
-                { icon: Truck,       label: 'দ্রুত ডেলিভারি',    sub: '২-৩ কার্যদিবসে' },
-                { icon: RotateCcw,   label: 'সহজ রিটার্ন',       sub: '৭ দিনের মধ্যে'  },
-                { icon: Shield,      label: '১০০% খাঁটি',        sub: 'গুণমান নিশ্চিত'  },
-                { icon: Check,       label: 'ক্যাশ অন ডেলিভারি', sub: 'সারাদেশে'        },
+                { icon: Truck, label: 'দ্রুত ডেলিভারি', sub: '২-৩ কার্যদিবসে' },
+                { icon: RotateCcw, label: 'সহজ রিটার্ন', sub: '৭ দিনের মধ্যে' },
+                { icon: Shield, label: '১০০% খাঁটি', sub: 'গুণমান নিশ্চিত' },
+                { icon: Check, label: 'ক্যাশ অন ডেলিভারি', sub: 'সারাদেশে' },
               ].map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-2.5 bg-gray-50 rounded-xl p-3">
                   <div className="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -355,13 +371,20 @@ export default function ProductDetailPage() {
               { label: 'ব্র্যান্ড', value: product.brand?.name },
               { label: 'ক্যাটাগরি', value: product.category?.name },
               { label: 'SKU', value: product.sku },
-              { label: 'স্টক অবস্থা', value: isOOS ? 'স্টক শেষ' : isLow ? 'সীমিত স্টক' : 'স্টকে আছে' },
-            ].filter((r) => r.value).map((row) => (
-              <div key={row.label} className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
-                <span className="text-gray-500 text-xs font-medium w-28 flex-shrink-0">{row.label}</span>
-                <span className="text-gray-800 text-xs font-semibold">{row.value}</span>
-              </div>
-            ))}
+              {
+                label: 'স্টক অবস্থা',
+                value: isOOS ? 'স্টক শেষ' : isLow ? 'সীমিত স্টক' : 'স্টকে আছে',
+              },
+            ]
+              .filter((r) => r.value)
+              .map((row) => (
+                <div key={row.label} className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
+                  <span className="text-gray-500 text-xs font-medium w-28 flex-shrink-0">
+                    {row.label}
+                  </span>
+                  <span className="text-gray-800 text-xs font-semibold">{row.value}</span>
+                </div>
+              ))}
           </div>
         </div>
 
