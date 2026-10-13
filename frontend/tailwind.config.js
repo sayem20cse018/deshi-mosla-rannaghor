@@ -68,6 +68,15 @@ module.exports = {
           900: '#14532d',
           950: '#052e16',
         },
+        forest: {
+          50:  '#f0fdf4',
+          100: '#dcfce7',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#0f4c2a',
+          800: '#0a3d22',
+          900: '#072d18',
+        },
         spice: {
           50:  '#fff7ed',
           100: '#ffedd5',
@@ -79,6 +88,11 @@ module.exports = {
           700: '#c2410c',
           800: '#9a3412',
           900: '#7c2d12',
+        },
+        cream: {
+          50:  '#faf7f2',
+          100: '#f5efe4',
+          200: '#ead9c4',
         },
       },
       borderRadius: {
@@ -115,6 +129,14 @@ module.exports = {
           from: { backgroundPosition: '-200px 0' },
           to: { backgroundPosition: 'calc(200px + 100%) 0' },
         },
+        ticker: {
+          '0%':   { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'slide-up': {
+          '0%':   { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -123,6 +145,8 @@ module.exports = {
         'fade-up': 'fade-up 0.25s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out',
         shimmer: 'shimmer 1.5s infinite',
+        ticker: 'ticker 25s linear infinite',
+        'slide-up': 'slide-up 0.5s ease-out',
       },
     },
   },

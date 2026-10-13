@@ -104,7 +104,7 @@ export function Header() {
             {/* LOGO */}
             <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
               <div className="relative w-10 h-10 lg:w-11 lg:h-11">
-                <div className="absolute inset-0 bg-gradient-to-br from-spice-500 to-spice-700 rounded-2xl shadow-md shadow-spice-600/30 transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-br from-forest-700 to-forest-900 rounded-2xl shadow-md shadow-forest-900/30 transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-white font-black text-[15px] leading-none">দম</span>
                 </div>
@@ -112,7 +112,7 @@ export function Header() {
               </div>
               <div className="hidden sm:block leading-none">
                 <p className="text-gray-900 font-black text-[16px] leading-tight">দেশি মসলার</p>
-                <p className="text-spice-500 text-[11px] font-bold tracking-[0.15em] uppercase mt-0.5">রান্নাঘর</p>
+                <p className="text-forest-700 text-[11px] font-bold tracking-[0.15em] uppercase mt-0.5">রান্নাঘর</p>
               </div>
             </Link>
 
@@ -295,8 +295,8 @@ export function Header() {
           2. CATEGORY NAVIGATION BAR — always sticky
           ════════════════════════════════════════════════════ */}
       <div className={cn(
-        'bg-gradient-to-r from-spice-700 via-spice-600 to-spice-700 transition-shadow duration-300',
-        isScrolled ? 'shadow-lg shadow-spice-900/30' : '',
+        'bg-forest-700 transition-shadow duration-300',
+        isScrolled ? 'shadow-lg shadow-forest-900/40' : '',
       )}>
         <div className="container mx-auto px-4">
 
@@ -370,14 +370,14 @@ export function Header() {
                   <div className="absolute top-full left-0 mt-1 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 w-52 animate-fade-down">
                     {overflowCats.map((cat) => (
                       <Link key={cat.slug} href={`/category/${cat.slug}`} onClick={() => setMoreOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-spice-50 hover:text-spice-700 transition-colors">
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-forest-700 transition-colors">
                         {cat.icon && <span className="text-base w-5 text-center">{cat.icon}</span>}
                         {catName(cat, lang)}
                       </Link>
                     ))}
                     <div className="border-t border-gray-100 mt-1 pt-1 px-3">
                       <Link href="/categories" onClick={() => setMoreOpen(false)}
-                        className="flex items-center gap-1 px-1 py-1.5 text-xs text-spice-600 font-semibold hover:text-spice-800">
+                        className="flex items-center gap-1 px-1 py-1.5 text-xs text-forest-700 font-semibold hover:text-forest-900">
                         {T('viewAllCats')} <ChevronRight className="w-3 h-3" />
                       </Link>
                     </div>
@@ -392,7 +392,7 @@ export function Header() {
             <Link href="/shop"
               className={cn(
                 'flex-shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-full whitespace-nowrap transition-all',
-                pathname === '/shop' ? 'bg-white text-spice-600 shadow-sm' : 'text-white/85 bg-white/15 hover:bg-white/25',
+                pathname === '/shop' ? 'bg-white text-forest-700 shadow-sm' : 'text-white/85 bg-white/15 hover:bg-white/25',
               )}>
               🛒 {T('allProducts')}
             </Link>
@@ -402,7 +402,7 @@ export function Header() {
                 <Link key={cat.slug} href={`/category/${cat.slug}`}
                   className={cn(
                     'flex-shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-all',
-                    active ? 'bg-white text-spice-600 shadow-sm' : 'text-white/85 bg-white/15 hover:bg-white/25',
+                    active ? 'bg-white text-forest-700 shadow-sm' : 'text-white/85 bg-white/15 hover:bg-white/25',
                   )}>
                   {cat.icon && <span className="text-sm leading-none">{cat.icon}</span>}
                   {catName(cat, lang)}
@@ -432,7 +432,7 @@ export function Header() {
           <div className="relative w-[82vw] max-w-sm bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-slide-in-right">
 
             {/* Drawer header */}
-            <div className="bg-gradient-to-br from-spice-600 to-spice-800 px-5 pt-14 pb-6">
+            <div className="bg-gradient-to-br from-forest-700 to-forest-900 px-5 pt-14 pb-6">
               <button onClick={() => setMobileOpen(false)}
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-white">
                 <X className="w-4 h-4" />
@@ -452,7 +452,7 @@ export function Header() {
                   <p className="text-white/70 text-sm mb-3">স্বাগতম!</p>
                   <div className="flex gap-2">
                     <Link href="/login" onClick={() => setMobileOpen(false)}
-                      className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white text-spice-600">লগইন</Link>
+                      className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white text-forest-700">লগইন</Link>
                     <Link href="/register" onClick={() => setMobileOpen(false)}
                       className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white/20 text-white border border-white/30">নিবন্ধন</Link>
                   </div>
@@ -465,7 +465,7 @@ export function Header() {
               {(['bn', 'en'] as Lang[]).map((l) => (
                 <button key={l} onClick={() => setLang(l)}
                   className={cn('flex-1 py-2.5 text-sm font-semibold transition-colors',
-                    lang === l ? 'text-spice-600 bg-spice-50' : 'text-gray-500 hover:bg-gray-50')}>
+                    lang === l ? 'text-forest-700 bg-brand-50' : 'text-gray-500 hover:bg-gray-50')}>
                   {l === 'bn' ? '🇧🇩 বাংলা' : '🇬🇧 English'}
                 </button>
               ))}
@@ -481,7 +481,7 @@ export function Header() {
               ].map(({ href, label }) => (
                 <Link key={href} href={href} onClick={() => setMobileOpen(false)}
                   className={cn('flex items-center justify-between px-5 py-3 text-sm font-medium border-b border-gray-50 transition-colors',
-                    pathname === href ? 'text-spice-600 bg-spice-50' : 'text-gray-700 hover:bg-gray-50')}>
+                    pathname === href ? 'text-forest-700 bg-brand-50' : 'text-gray-700 hover:bg-gray-50')}>
                   {label} <ChevronRight className="w-4 h-4 text-gray-300" />
                 </Link>
               ))}

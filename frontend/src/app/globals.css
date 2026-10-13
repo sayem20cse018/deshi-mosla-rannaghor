@@ -8,13 +8,13 @@
 /* ── CSS Variables ───────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 40 33% 96%;       /* cream #faf7f2 */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 142 71% 28%;
+    --primary: 152 71% 18%;         /* forest green #0f4c2a */
     --primary-foreground: 0 0% 100%;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
@@ -26,7 +26,7 @@
     --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 142 71% 28%;
+    --ring: 152 71% 18%;
     --radius: 0.625rem;
 
     /* Brand */
@@ -39,10 +39,19 @@
     --brand-800: #166534;
     --brand-900: #14532d;
 
+    /* Forest */
+    --forest-700: #0f4c2a;
+    --forest-800: #0a3d22;
+    --forest-900: #072d18;
+
     /* Spice */
     --spice-400: #fb923c;
     --spice-500: #f97316;
     --spice-600: #ea580c;
+
+    /* Cream */
+    --cream-50: #faf7f2;
+    --cream-100: #f5efe4;
   }
 
   * {
@@ -61,7 +70,7 @@
 
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { @apply bg-gray-100; }
-  ::-webkit-scrollbar-thumb { @apply bg-brand-600 rounded-full; }
+  ::-webkit-scrollbar-thumb { @apply bg-forest-700 rounded-full; }
 }
 
 /* ── Reusable Component Classes ─────────────────────────── */
@@ -84,7 +93,7 @@
            hover:border-brand-200 hover:-translate-y-1 cursor-pointer;
   }
 
-  .price-main  { @apply text-brand-700 font-bold; }
+  .price-main  { @apply text-forest-700 font-bold; }
   .price-old   { @apply text-gray-400 line-through text-xs; }
   .badge-disc  { @apply bg-spice-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md; }
   .badge-new   { @apply bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md; }
@@ -92,7 +101,7 @@
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-brand-700 hover:bg-brand-800 active:bg-brand-900
+           bg-forest-700 hover:bg-forest-800 active:bg-forest-900
            text-white font-semibold rounded-xl
            px-5 py-2.5 text-sm
            transition-colors duration-200
@@ -102,8 +111,8 @@
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-white hover:bg-brand-50 border border-brand-300
-           text-brand-700 font-semibold rounded-xl
+           bg-white hover:bg-brand-50 border border-forest-700
+           text-forest-700 font-semibold rounded-xl
            px-5 py-2.5 text-sm
            transition-colors duration-200;
   }
@@ -118,7 +127,7 @@
 
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-1.5
-           text-brand-700 hover:text-brand-800 hover:bg-brand-50
+           text-forest-700 hover:text-forest-800 hover:bg-brand-50
            font-medium text-sm rounded-lg px-3 py-1.5
            transition-colors duration-200;
   }
@@ -126,7 +135,7 @@
   .btn-icon {
     @apply flex items-center justify-center w-9 h-9 rounded-xl
            hover:bg-gray-100 transition-colors duration-200
-           text-gray-600 hover:text-brand-700;
+           text-gray-600 hover:text-forest-700;
   }
 
   .cart-badge {
@@ -146,12 +155,12 @@
   .input-base {
     @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm
            placeholder:text-gray-400
-           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500
+           focus:outline-none focus:ring-2 focus:ring-forest-700 focus:border-forest-700
            transition duration-200;
   }
 
   .chip {
-    @apply inline-flex items-center gap-1 bg-brand-50 text-brand-700
+    @apply inline-flex items-center gap-1 bg-brand-50 text-forest-700
            border border-brand-100 text-xs font-medium px-2.5 py-1 rounded-full;
   }
 
@@ -169,7 +178,7 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-700 to-brand-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-forest-700 to-brand-500;
   }
 
   .text-gradient-spice {
@@ -177,7 +186,7 @@
   }
 
   .hover-ring {
-    @apply transition-all duration-300 hover:ring-2 hover:ring-brand-300 hover:ring-offset-1;
+    @apply transition-all duration-300 hover:ring-2 hover:ring-forest-700 hover:ring-offset-1;
   }
 
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
@@ -260,7 +269,7 @@
 /* ── Header specific ─────────────────────────────────────── */
 .header-action-btn {
   @apply flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl
-         text-gray-600 hover:text-brand-700 hover:bg-brand-50/80
+         text-gray-600 hover:text-forest-700 hover:bg-brand-50/80
          transition-all duration-200 cursor-pointer;
 }
 

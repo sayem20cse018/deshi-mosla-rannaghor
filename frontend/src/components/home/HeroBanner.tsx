@@ -14,8 +14,8 @@ const SLIDES = [
     cta: { label: 'এখনই কিনুন', href: '/shop' },
     cta2: { label: 'রেসিপি দেখুন', href: '/shop' },
     emoji: '🌶️',
-    color: 'from-[#1a0a00] via-[#7c2d12] to-[#ea580c]',
-    dot: 'bg-orange-400',
+    color: 'from-[#0a1f10] via-[#0f4c2a] to-[#1a6b3c]',
+    dot: 'bg-green-400',
   },
   {
     tag: 'ঈদ স্পেশাল কালেকশন',
@@ -26,8 +26,8 @@ const SLIDES = [
     cta: { label: 'কালেকশন দেখুন', href: '/shop' },
     cta2: { label: 'অফার দেখুন', href: '/shop' },
     emoji: '🍛',
-    color: 'from-[#1c1917] via-[#44403c] to-[#92400e]',
-    dot: 'bg-amber-400',
+    color: 'from-[#081a0e] via-[#0f4c2a] to-[#1b5e35]',
+    dot: 'bg-emerald-400',
   },
   {
     tag: 'সুন্দরবনের মধু',
@@ -38,8 +38,8 @@ const SLIDES = [
     cta: { label: 'মধু দেখুন', href: '/shop' },
     cta2: { label: 'সব পণ্য', href: '/shop' },
     emoji: '🍯',
-    color: 'from-[#1a0e00] via-[#78350f] to-[#d97706]',
-    dot: 'bg-yellow-400',
+    color: 'from-[#0a1f10] via-[#0f4c2a] to-[#2d6a3f]',
+    dot: 'bg-teal-400',
   },
 ];
 
@@ -92,8 +92,7 @@ export function HeroBanner() {
                 </h1>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-spice-400 mt-1">
                   {slide.heading2}
-                </h1>
-              </div>
+                </h1>              </div>
 
               <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-md">
                 {slide.sub}
