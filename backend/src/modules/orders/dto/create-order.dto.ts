@@ -16,6 +16,22 @@ export class DeliveryAddressDto {
   @ApiPropertyOptional() @IsOptional() @IsBoolean() saveAddress?: boolean;
 }
 
+// All supported payment methods
+export enum SupportedPaymentMethod {
+  CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
+  SSLCOMMERZ       = 'SSLCOMMERZ',
+  BKASH            = 'BKASH',
+  NAGAD            = 'NAGAD',
+  ROCKET           = 'ROCKET',
+  VISA             = 'VISA',
+  MASTERCARD       = 'MASTERCARD',
+  AMEX             = 'AMEX',
+  DEBIT_CARD       = 'DEBIT_CARD',
+  CREDIT_CARD      = 'CREDIT_CARD',
+  INTERNET_BANKING = 'INTERNET_BANKING',
+  BANK_TRANSFER    = 'BANK_TRANSFER',
+}
+
 export class CreateOrderDto {
   @ApiProperty({ type: DeliveryAddressDto })
   @ValidateNested()
@@ -30,8 +46,12 @@ export class CreateOrderDto {
   @IsOptional() @IsString() @MaxLength(50)
   couponCode?: string;
 
-  @ApiPropertyOptional({ enum: ['CASH_ON_DELIVERY'], default: 'CASH_ON_DELIVERY' })
+  @ApiPropertyOptional({
+    enum: SupportedPaymentMethod,
+    default: SupportedPaymentMethod.CASH_ON_DELIVERY,
+    description: 'Payment method. Online methods (SSLCOMMERZ/BKASH etc.) return a gatewayUrl for redirect.',
+  })
   @IsOptional()
-  @IsEnum(['CASH_ON_DELIVERY'], { message: 'শুধুমাত্র CASH_ON_DELIVERY সমর্থিত' })
-  paymentMethod?: string = 'CASH_ON_DELIVERY';
+  @IsEnum(SupportedPaymentMethod, { message: 'অবৈধ পেমেন্ট পদ্ধতি' })
+  paymentMethod?: SupportedPaymentMethod = SupportedPaymentMethod.CASH_ON_DELIVERY;
 }

@@ -4,7 +4,26 @@
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, SupportedPaymentMethod } from './dto/create-order.dto';
+import { PaymentsService } from '../payments/payments.service';
+
+// COD payment methods — don't need gateway redirect
+const COD_METHODS = new Set([SupportedPaymentMethod.CASH_ON_DELIVERY]);
+
+// Online methods — need SSLCommerz gateway
+const ONLINE_METHODS = new Set([
+  SupportedPaymentMethod.SSLCOMMERZ,
+  SupportedPaymentMethod.BKASH,
+  SupportedPaymentMethod.NAGAD,
+  SupportedPaymentMethod.ROCKET,
+  SupportedPaymentMethod.VISA,
+  SupportedPaymentMethod.MASTERCARD,
+  SupportedPaymentMethod.AMEX,
+  SupportedPaymentMethod.DEBIT_CARD,
+  SupportedPaymentMethod.CREDIT_CARD,
+  SupportedPaymentMethod.INTERNET_BANKING,
+  SupportedPaymentMethod.BANK_TRANSFER,
+]);
 
 // ── Constants (must match frontend cart.store.ts) ──────────
 const FREE_DELIVERY_THRESHOLD = 1000;
@@ -22,7 +41,10 @@ function generateOrderNumber(): string {
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly paymentsService: PaymentsService,
+  ) {}
 
   // ── Place COD Order (main entry point) ─────────────────
   async placeOrder(userId: string, dto: CreateOrderDto) {
@@ -109,7 +131,10 @@ export class OrdersService {
       (afterCoupon >= FREE_DELIVERY_THRESHOLD || isFreeDelivery) ? 0 : DEFAULT_DELIVERY_CHARGE;
     const totalAmount = afterCoupon + deliveryCharge;
 
-    // ── 5. Create or reuse delivery address ───────────────
+    // Determine payment method and whether online gateway is needed
+    const method   = dto.paymentMethod ?? SupportedPaymentMethod.CASH_ON_DELIVERY;
+    const isOnline = ONLINE_METHODS.has(method);
+
     let addressId: string;
 
     if (dto.deliveryAddress.saveAddress) {
@@ -173,8 +198,8 @@ export class OrdersService {
           couponDiscount,
           deliveryCharge,
           totalAmount,
-          paymentMethod:  'CASH_ON_DELIVERY',
-          paymentStatus:  'PENDING',
+          paymentMethod:  method as any,
+          paymentStatus:  isOnline ? 'PROCESSING' : 'PENDING',
           deliveryNote:   dto.deliveryNote,
           estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 days
           items: {
@@ -211,14 +236,14 @@ export class OrdersService {
         },
       });
 
-      // Create COD payment record
+      // Create payment record (COD = PENDING, Online = PROCESSING)
       await tx.payment.create({
         data: {
           orderId:       newOrder.id,
           amount:        totalAmount,
-          paymentMethod: 'CASH_ON_DELIVERY',
-          paymentStatus: 'PENDING',
-          codStatus:     'PENDING',
+          paymentMethod: method as any,
+          paymentStatus: isOnline ? 'PROCESSING' : 'PENDING',
+          codStatus:     !isOnline ? 'PENDING' : undefined,
         },
       });
 
@@ -292,7 +317,7 @@ export class OrdersService {
       return newOrder;
     });
 
-    // ── 7. Return order summary ───────────────────────────
+    // ── 7. Fetch full order for response ─────────────────
     const fullOrder = await this.prisma.order.findUnique({
       where: { id: order.id },
       include: {
@@ -303,8 +328,39 @@ export class OrdersService {
       },
     });
 
+    // ── For online payments — initiate gateway ────────
+    if (isOnline) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const gatewayResult = await this.paymentsService.initiateSSLCommerzPayment(userId, {
+        orderId:         order.id,
+        paymentMethod:   method as any,
+        customerName:    user?.name,
+        customerEmail:   user?.email,
+        customerPhone:   user?.phone,
+        customerAddress: dto.deliveryAddress.fullAddress,
+      });
+
+      return {
+        success:       true,
+        requiresGateway: true,
+        message:       'পেমেন্ট গেটওয়েতে রিডাইরেক্ট করুন',
+        gatewayUrl:    gatewayResult.gatewayUrl,
+        transactionId: gatewayResult.transactionId,
+        data: {
+          ...fullOrder,
+          subtotal:      Number(fullOrder!.subtotal),
+          totalAmount:   Number(fullOrder!.totalAmount),
+          deliveryCharge: Number(fullOrder!.deliveryCharge),
+          discountAmount: Number(fullOrder!.discountAmount),
+          couponDiscount: Number(fullOrder!.couponDiscount),
+        },
+      };
+    }
+
+    // ── 8. COD — return order summary ────────────────────
     return {
       success: true,
+      requiresGateway: false,
       message: 'অর্ডার সফলভাবে প্রদান করা হয়েছে!',
       data: {
         ...fullOrder,
