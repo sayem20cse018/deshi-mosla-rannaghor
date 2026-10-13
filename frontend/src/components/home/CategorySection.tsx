@@ -111,13 +111,13 @@ export function CategorySection() {
               <Link
                 href="/categories"
                 className="group flex flex-col items-center gap-2 p-3 md:p-4 rounded-2xl
-                  bg-gradient-to-br from-brand-700 to-brand-800 border border-brand-600
+                  bg-gradient-to-br from-spice-600 to-spice-700 border border-spice-500
                   hover:shadow-lg hover:scale-105 transition-all duration-200 text-center"
               >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
                   <ArrowRight className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-white text-xs font-bold leading-tight">সব ক্যাটাগরি</p>
+                <p className="text-white text-xs font-bold leading-tight">সব দেখুন</p>
               </Link>
             </>
           )}
