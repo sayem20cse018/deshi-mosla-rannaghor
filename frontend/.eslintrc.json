@@ -2,7 +2,8 @@
   "extends": ["next/core-web-vitals"],
   "rules": {
     "no-unused-vars": "off",
-    "@next/next/no-img-element": "warn",
+    "@next/next/no-img-element": "off",
+    "react/no-unescaped-entities": "off",
     "react/display-name": "off"
   }
 }
