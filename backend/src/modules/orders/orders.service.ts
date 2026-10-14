@@ -380,7 +380,7 @@ export class OrdersService {
       include: {
         items:         true,
         address:       true,
-        payment:       true,
+        payment:       { select: { id: true, paymentMethod: true, paymentStatus: true, codStatus: true, paidAt: true, transactionId: true, amount: true } },
         delivery:      true,
         statusHistory: { orderBy: { createdAt: 'asc' } },
       },
@@ -388,13 +388,191 @@ export class OrdersService {
     if (!order) throw new NotFoundException('অর্ডারটি পাওয়া যায়নি');
     return {
       success: true,
+      data: this.serializeOrder(order),
+    };
+  }
+
+  // ── Cancel order (customer) ───────────────────────────
+  async cancelOrder(userId: string, orderId: string, reason?: string) {
+    const order = await this.prisma.order.findFirst({
+      where: { id: orderId, userId },
+      include: { items: { include: { product: { include: { inventory: true } } } } },
+    });
+
+    if (!order) throw new NotFoundException('অর্ডারটি পাওয়া যায়নি');
+
+    // Only PENDING orders can be cancelled by customer
+    const cancellableStatuses = ['PENDING'];
+    if (!cancellableStatuses.includes(order.status)) {
+      throw new BadRequestException(
+        `"${order.status}" অবস্থায় অর্ডার বাতিল করা যাবে না। শুধুমাত্র অপেক্ষারত অর্ডার বাতিল করা যায়।`,
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // Cancel the order
+      await tx.order.update({
+        where: { id: orderId },
+        data: {
+          status:      'CANCELLED',
+          cancelledAt: new Date(),
+          cancelReason: reason ?? 'গ্রাহক কর্তৃক বাতিল',
+          paymentStatus: order.paymentStatus === 'PENDING' ? 'CANCELLED' : order.paymentStatus,
+        },
+      });
+
+      // Add to status history
+      await tx.orderStatusHistory.create({
+        data: {
+          orderId,
+          status:    'CANCELLED',
+          note:      reason ?? 'গ্রাহক কর্তৃক বাতিল',
+          createdBy: 'CUSTOMER',
+        },
+      });
+
+      // Cancel delivery record
+      await tx.delivery.updateMany({
+        where: { orderId },
+        data:  { status: 'RETURNED' },
+      });
+
+      // Restore stock for all items
+      for (const item of order.items) {
+        if (!item.product.inventory) continue;
+        const inv = item.product.inventory;
+        const newAvailable = inv.availableStock + item.quantity;
+
+        await tx.inventory.update({
+          where: { productId: item.productId },
+          data: {
+            availableStock: newAvailable,
+            soldQuantity:   Math.max(0, inv.soldQuantity - item.quantity),
+          },
+        });
+
+        await tx.inventoryLog.create({
+          data: {
+            inventoryId: inv.id,
+            changeQty:   +item.quantity,
+            type:        'ADJUSTMENT',
+            reason:      `Order #${order.orderNumber} cancelled`,
+            reference:   orderId,
+          },
+        });
+
+        // Restore stock status
+        if (item.product.stockStatus === 'OUT_OF_STOCK' && newAvailable > 0) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data:  { stockStatus: newAvailable <= 10 ? 'LOW_STOCK' : 'IN_STOCK' },
+          });
+        }
+      }
+
+      // Cancel payment if pending
+      await tx.payment.updateMany({
+        where: { orderId, paymentStatus: { in: ['PENDING', 'PROCESSING'] } },
+        data:  { paymentStatus: 'CANCELLED' },
+      });
+    });
+
+    return {
+      success: true,
+      message: 'অর্ডার সফলভাবে বাতিল করা হয়েছে',
+    };
+  }
+
+  // ── Track order by order number (public) ─────────────
+  async trackOrderByNumber(orderNumber: string, phone?: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { orderNumber: orderNumber.toUpperCase() },
+      include: {
+        items:    { select: { productName: true, productImage: true, quantity: true, totalPrice: true } },
+        address:  { select: { fullName: true, phone: true, division: true, district: true, area: true, fullAddress: true } },
+        delivery: { select: { status: true, courierName: true, trackingNumber: true, estimatedDate: true, deliveredAt: true } },
+        statusHistory: { orderBy: { createdAt: 'asc' } },
+        payment:  { select: { paymentMethod: true, paymentStatus: true, paidAt: true } },
+      },
+    });
+
+    if (!order) throw new NotFoundException('অর্ডার নম্বরটি পাওয়া যায়নি। সঠিক অর্ডার নম্বর দিন।');
+
+    // Optional phone verification for security
+    if (phone) {
+      const normalizedPhone = phone.replace(/\D/g, '').slice(-11);
+      const orderPhone = order.address.phone.replace(/\D/g, '').slice(-11);
+      if (normalizedPhone !== orderPhone) {
+        throw new BadRequestException('ফোন নম্বর মেলেনি। সঠিক ফোন নম্বর দিন।');
+      }
+    }
+
+    return {
+      success: true,
       data: {
-        ...order,
-        subtotal:      Number(order.subtotal),
-        totalAmount:   Number(order.totalAmount),
-        deliveryCharge: Number(order.deliveryCharge),
-        discountAmount: Number(order.discountAmount),
-        couponDiscount: Number(order.couponDiscount),
+        orderNumber:      order.orderNumber,
+        status:           order.status,
+        paymentStatus:    order.paymentStatus,
+        paymentMethod:    order.paymentMethod,
+        totalAmount:      Number(order.totalAmount),
+        deliveryCharge:   Number(order.deliveryCharge),
+        estimatedDelivery: order.estimatedDelivery,
+        createdAt:        order.createdAt,
+        cancelReason:     order.cancelReason,
+        items:            order.items.map(i => ({
+          ...i,
+          totalPrice: Number(i.totalPrice),
+        })),
+        delivery:      order.delivery,
+        statusHistory: order.statusHistory,
+        payment:       order.payment,
+        // Partial address for privacy
+        address: {
+          fullName:  order.address.fullName,
+          phone:     `${order.address.phone.slice(0, 5)}****${order.address.phone.slice(-2)}`,
+          division:  order.address.division,
+          district:  order.address.district,
+          area:      order.address.area,
+          fullAddress: order.address.fullAddress,
+        },
+      },
+    };
+  }
+
+  // ── Calculate delivery charge by district ─────────────
+  async calculateDeliveryCharge(district: string, orderAmount: number) {
+    // Try to find district-specific charge
+    const charge = await this.prisma.deliveryCharge.findFirst({
+      where: {
+        isActive: true,
+        district: { equals: district, mode: 'insensitive' },
+      },
+    });
+
+    let chargeAmount: number;
+    let isFree = false;
+
+    if (charge) {
+      chargeAmount = Number(charge.charge);
+      if (charge.minOrderFree && orderAmount >= Number(charge.minOrderFree)) {
+        chargeAmount = 0;
+        isFree = true;
+      }
+    } else {
+      // Default rule: free over ৳1000, else ৳60
+      chargeAmount = orderAmount >= FREE_DELIVERY_THRESHOLD ? 0 : DEFAULT_DELIVERY_CHARGE;
+      isFree = chargeAmount === 0;
+    }
+
+    return {
+      success: true,
+      data: {
+        district,
+        charge: chargeAmount,
+        isFree,
+        freeDeliveryThreshold: charge?.minOrderFree
+          ? Number(charge.minOrderFree)
+          : FREE_DELIVERY_THRESHOLD,
       },
     };
   }
@@ -403,8 +581,20 @@ export class OrdersService {
   async getDeliveryCharges() {
     const charges = await this.prisma.deliveryCharge.findMany({
       where: { isActive: true },
-      orderBy: { charge: 'asc' },
+      orderBy: [{ division: 'asc' }, { charge: 'asc' }],
     });
     return { success: true, data: charges };
+  }
+
+  // ── Private: serialize order Decimal fields ───────────
+  private serializeOrder(order: any) {
+    return {
+      ...order,
+      subtotal:       Number(order.subtotal),
+      totalAmount:    Number(order.totalAmount),
+      deliveryCharge: Number(order.deliveryCharge),
+      discountAmount: Number(order.discountAmount),
+      couponDiscount: Number(order.couponDiscount),
+    };
   }
 }
