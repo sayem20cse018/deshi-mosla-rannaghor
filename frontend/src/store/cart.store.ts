@@ -229,13 +229,17 @@ export const useCartStore = create<CartStore>()(
         set({ isLoading: true, couponError: null });
         try {
           const { subtotal } = get().getTotals();
-          const res = await api.post('/coupons/validate', {
+          const isLoggedIn = !!Cookies.get('access_token');
+
+          // Use authenticated endpoint if logged in (checks user-limit)
+          const endpoint = isLoggedIn ? '/coupons/validate/me' : '/coupons/validate';
+          const res = await api.post(endpoint, {
             code: code.trim().toUpperCase(),
             orderAmount: subtotal,
           });
           const couponData = res.data.data as CouponResult;
 
-          // Recalculate discount amount
+          // Recalculate discount amount on client side for accuracy
           let discountAmount = 0;
           if (couponData.discountType === 'PERCENTAGE') {
             discountAmount = (subtotal * couponData.discountValue) / 100;
