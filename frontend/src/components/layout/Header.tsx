@@ -16,6 +16,7 @@ import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { useNavCategories } from '@/hooks/useCategories';
 import { SearchBar } from './SearchBar';
+import { useWishlistStore } from '@/store/wishlist.store';
 import { AnnouncementBar } from '@/components/home/AnnouncementBar';
 import toast from 'react-hot-toast';
 
@@ -28,6 +29,7 @@ export function Header() {
   const { getItemCount, getTotals, openCart }      = useCartStore();
   const { user, isAuthenticated, logout }          = useAuthStore();
   const { data: navCats = [], isLoading: catsLoading } = useNavCategories();
+  const wishlistCount = useWishlistStore((s) => s.items.length);
 
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [moreOpen,    setMoreOpen]    = useState(false);
@@ -247,7 +249,14 @@ export function Header() {
               {/* Wishlist */}
               <Link href="/account/wishlist"
                 className="flex flex-col items-center px-2.5 py-1.5 rounded-xl hover:bg-gray-50 transition-colors group">
-                <Heart className="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors" />
+                <div className="relative">
+                  <Heart className="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors" />
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                      {wishlistCount > 9 ? '9+' : wishlistCount}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] text-gray-400 group-hover:text-red-500 mt-0.5 font-medium transition-colors hidden xl:block">{T('wishlist')}</span>
               </Link>
 

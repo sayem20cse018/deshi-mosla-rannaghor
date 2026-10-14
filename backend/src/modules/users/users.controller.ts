@@ -108,6 +108,46 @@ export class UsersController {
     return this.usersService.getMyCoupons(userId);
   }
 
+  // ── Wishlist ──────────────────────────────────────────
+  @Get('me/wishlist')
+  @ApiOperation({ summary: 'Get my wishlist' })
+  getWishlist(@CurrentUser('id') userId: string) {
+    return this.usersService.getWishlist(userId);
+  }
+
+  @Post('me/wishlist/:productId')
+  @ApiOperation({ summary: 'Add product to wishlist' })
+  addToWishlist(
+    @CurrentUser('id') userId: string,
+    @Param('productId') productId: string,
+  ) {
+    return this.usersService.addToWishlist(userId, productId);
+  }
+
+  @Delete('me/wishlist/:productId')
+  @ApiOperation({ summary: 'Remove product from wishlist' })
+  removeFromWishlist(
+    @CurrentUser('id') userId: string,
+    @Param('productId') productId: string,
+  ) {
+    return this.usersService.removeFromWishlist(userId, productId);
+  }
+
+  @Delete('me/wishlist')
+  @ApiOperation({ summary: 'Clear entire wishlist' })
+  clearWishlist(@CurrentUser('id') userId: string) {
+    return this.usersService.clearWishlist(userId);
+  }
+
+  @Get('me/wishlist/check/:productId')
+  @ApiOperation({ summary: 'Check if product is in wishlist' })
+  checkWishlist(
+    @CurrentUser('id') userId: string,
+    @Param('productId') productId: string,
+  ) {
+    return this.usersService.isInWishlist(userId, productId);
+  }
+
   // ── Notifications ─────────────────────────────────────
   @Get('me/notifications')
   @ApiOperation({ summary: 'My notifications' })

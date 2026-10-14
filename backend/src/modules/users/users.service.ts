@@ -263,6 +263,124 @@ export class UsersService {
     return { success: true, data: usages };
   }
 
+  // ── Wishlist ──────────────────────────────────────────
+  private async ensureWishlist(userId: string) {
+    return this.prisma.wishlist.upsert({
+      where:  { id: (await this.prisma.wishlist.findFirst({ where: { userId } }))?.id ?? '' },
+      update: {},
+      create: { userId },
+    });
+  }
+
+  async getWishlist(userId: string) {
+    // Upsert wishlist record
+    let wishlist = await this.prisma.wishlist.findFirst({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true, name: true, slug: true,
+                price: true, discountPrice: true, discountPercent: true,
+                weight: true, stockStatus: true, isActive: true,
+                images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+
+    if (!wishlist) {
+      wishlist = await this.prisma.wishlist.create({
+        data: { userId },
+        include: { items: { include: { product: { select: {
+          id: true, name: true, slug: true,
+          price: true, discountPrice: true, discountPercent: true,
+          weight: true, stockStatus: true, isActive: true,
+          images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+        } } } } },
+      });
+    }
+
+    const items = wishlist.items.map((item) => ({
+      id:          item.id,
+      productId:   item.productId,
+      addedAt:     item.createdAt,
+      name:        item.product.name,
+      slug:        item.product.slug,
+      price:       Number(item.product.price),
+      discountPrice: item.product.discountPrice ? Number(item.product.discountPrice) : null,
+      discountPercent: item.product.discountPercent,
+      weight:      item.product.weight,
+      stockStatus: item.product.stockStatus,
+      isActive:    item.product.isActive,
+      primaryImage: item.product.images[0]?.url ?? null,
+    }));
+
+    return { success: true, data: items, total: items.length };
+  }
+
+  async addToWishlist(userId: string, productId: string) {
+    // Verify product exists
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true, name: true, isActive: true },
+    });
+    if (!product) throw new NotFoundException('পণ্যটি পাওয়া যায়নি');
+
+    // Get or create wishlist
+    let wishlist = await this.prisma.wishlist.findFirst({ where: { userId } });
+    if (!wishlist) {
+      wishlist = await this.prisma.wishlist.create({ data: { userId } });
+    }
+
+    // Check duplicate
+    const existing = await this.prisma.wishlistItem.findUnique({
+      where: { wishlistId_productId: { wishlistId: wishlist.id, productId } },
+    });
+    if (existing) {
+      return { success: true, message: 'পণ্যটি ইতিমধ্যে উইশলিস্টে আছে', alreadyExists: true };
+    }
+
+    await this.prisma.wishlistItem.create({
+      data: { wishlistId: wishlist.id, productId },
+    });
+
+    return { success: true, message: `"${product.name}" উইশলিস্টে যোগ হয়েছে` };
+  }
+
+  async removeFromWishlist(userId: string, productId: string) {
+    const wishlist = await this.prisma.wishlist.findFirst({ where: { userId } });
+    if (!wishlist) throw new NotFoundException('উইশলিস্ট পাওয়া যায়নি');
+
+    const item = await this.prisma.wishlistItem.findUnique({
+      where: { wishlistId_productId: { wishlistId: wishlist.id, productId } },
+    });
+    if (!item) throw new NotFoundException('পণ্যটি উইশলিস্টে নেই');
+
+    await this.prisma.wishlistItem.delete({ where: { id: item.id } });
+    return { success: true, message: 'উইশলিস্ট থেকে সরানো হয়েছে' };
+  }
+
+  async clearWishlist(userId: string) {
+    const wishlist = await this.prisma.wishlist.findFirst({ where: { userId } });
+    if (!wishlist) return { success: true, message: 'উইশলিস্ট খালি' };
+    await this.prisma.wishlistItem.deleteMany({ where: { wishlistId: wishlist.id } });
+    return { success: true, message: 'উইশলিস্ট পরিষ্কার হয়েছে' };
+  }
+
+  async isInWishlist(userId: string, productId: string) {
+    const wishlist = await this.prisma.wishlist.findFirst({ where: { userId } });
+    if (!wishlist) return { success: true, data: { inWishlist: false } };
+    const item = await this.prisma.wishlistItem.findUnique({
+      where: { wishlistId_productId: { wishlistId: wishlist.id, productId } },
+    });
+    return { success: true, data: { inWishlist: !!item } };
+  }
+
   // ── Notifications ─────────────────────────────────────
   async getNotifications(userId: string, unreadOnly = false) {
     const notifs = await this.prisma.notification.findMany({

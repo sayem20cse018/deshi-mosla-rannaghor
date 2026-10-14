@@ -5,7 +5,10 @@ import Image from 'next/image';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
+import { useWishlistStore } from '@/store/wishlist.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 export interface ProductCardData {
@@ -46,14 +49,18 @@ function getEmoji(slug: string) {
 
 export function ProductCard({ product, className, variant = 'default' }: ProductCardProps) {
   const { addItem } = useCartStore();
-  const [wishlisted, setWishlisted] = useState(false);
-  const [adding,     setAdding]     = useState(false);
+  const { isWishlisted, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
+  const [adding,   setAdding]   = useState(false);
+  const [wishBusy, setWishBusy] = useState(false);
 
   const isOOS       = product.stockStatus === 'OUT_OF_STOCK';
   const isLow       = product.stockStatus === 'LOW_STOCK';
   const hasDiscount = !!product.discountPrice && product.discountPrice < product.price;
   const price       = hasDiscount ? product.discountPrice! : product.price;
   const savings     = hasDiscount ? product.price - product.discountPrice! : 0;
+  const wishlisted  = isWishlisted(product.id);
 
   async function handleCart(e: React.MouseEvent) {
     e.preventDefault();
@@ -75,10 +82,22 @@ export function ProductCard({ product, className, variant = 'default' }: Product
   function handleWishlist(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    setWishlisted((w) => !w);
-    toast(wishlisted ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে', {
-      icon: wishlisted ? '💔' : '❤️',
-    });
+    if (!isAuthenticated) {
+      toast('উইশলিস্টে যোগ করতে লগইন করুন', { icon: '🔐' });
+      router.push('/login');
+      return;
+    }
+    if (wishBusy) return;
+    setWishBusy(true);
+    const action = wishlisted ? removeFromWishlist : addToWishlist;
+    action(product.id)
+      .then(() => {
+        toast(wishlisted ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে', {
+          icon: wishlisted ? '💔' : '❤️',
+        });
+      })
+      .catch(() => toast.error('কিছু একটা সমস্যা হয়েছে'))
+      .finally(() => setWishBusy(false));
   }
 
   return (
