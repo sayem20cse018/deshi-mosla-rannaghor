@@ -72,9 +72,10 @@ export function AnnouncementBar() {
   const { icon: Icon, text, link } = MESSAGES[current];
 
   return (
-    <div className="relative bg-gradient-to-r from-spice-700 via-spice-600 to-spice-700 text-white select-none">
-      {/* Top shimmer line */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+    <div className="relative bg-[#111827] text-white select-none"
+         style={{ minHeight: '34px' }}>
+      {/* Top shimmer */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="container mx-auto px-4">
         <div className="flex items-center h-9 gap-2">

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingCart, Heart, Star } from 'lucide-react';
+import { ShoppingCart, Heart, Star, Zap } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
@@ -36,22 +36,43 @@ interface ProductCardProps {
 }
 
 const EMOJI_MAP: [string, string][] = [
-  ['mosla', '🌶️'], ['tel', '🫙'], ['chal', '🍚'], ['dal', '🫘'],
+  ['mosla', '🌶️'], ['tel', '🫙'],  ['chal', '🍚'],  ['dal', '🫘'],
   ['ata', '🌾'],   ['lobon', '🧂'], ['chini', '🍯'], ['cha', '☕'],
-  ['modhu', '🍯'], ['snacks', '🍿'], ['noodles', '🍜'], ['sauce', '🥫'],
-  ['gur', '🍯'],   ['biryani', '🍛'], ['morich', '🌶️'],
+  ['modhu', '🍯'], ['snacks', '🍿'],['noodles', '🍜'],['sauce', '🥫'],
+  ['gur', '🍯'],   ['biryani', '🍛'],['morich', '🌶️'],
 ];
 
 function getEmoji(slug: string) {
-  const found = EMOJI_MAP.find(([k]) => slug.toLowerCase().includes(k));
-  return found ? found[1] : '🌿';
+  const match = EMOJI_MAP.find(([k]) => slug.toLowerCase().includes(k));
+  return match ? match[1] : '🌿';
+}
+
+// ── Star Rating sub-component ─────────────────────────────
+function Stars({ rating, count }: { rating: number; count?: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      <div className="flex gap-[1px]">
+        {[1, 2, 3, 4, 5].map((s) => (
+          <Star key={s}
+            className={cn('w-[11px] h-[11px]',
+              s <= Math.round(rating)
+                ? 'text-amber-400 fill-amber-400'
+                : 'text-gray-200 fill-gray-200')}
+          />
+        ))}
+      </div>
+      {count !== undefined && count > 0 && (
+        <span className="text-[10px] text-gray-400 leading-none">({count})</span>
+      )}
+    </div>
+  );
 }
 
 export function ProductCard({ product, className, variant = 'default' }: ProductCardProps) {
-  const { addItem } = useCartStore();
-  const { isWishlisted, addToWishlist, removeFromWishlist } = useWishlistStore();
-  const { isAuthenticated } = useAuthStore();
-  const router = useRouter();
+  const { addItem }                                           = useCartStore();
+  const { isWishlisted, addToWishlist, removeFromWishlist }  = useWishlistStore();
+  const { isAuthenticated }                                  = useAuthStore();
+  const router                                               = useRouter();
   const [adding,   setAdding]   = useState(false);
   const [wishBusy, setWishBusy] = useState(false);
 
@@ -59,7 +80,8 @@ export function ProductCard({ product, className, variant = 'default' }: Product
   const isLow       = product.stockStatus === 'LOW_STOCK';
   const hasDiscount = !!product.discountPrice && product.discountPrice < product.price;
   const price       = hasDiscount ? product.discountPrice! : product.price;
-  const savings     = hasDiscount ? product.price - product.discountPrice! : 0;
+  const originalPx  = product.price;
+  const savings     = hasDiscount ? originalPx - price : 0;
   const wishlisted  = isWishlisted(product.id);
 
   async function handleCart(e: React.MouseEvent) {
@@ -89,13 +111,8 @@ export function ProductCard({ product, className, variant = 'default' }: Product
     }
     if (wishBusy) return;
     setWishBusy(true);
-    const action = wishlisted ? removeFromWishlist : addToWishlist;
-    action(product.id)
-      .then(() => {
-        toast(wishlisted ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে', {
-          icon: wishlisted ? '💔' : '❤️',
-        });
-      })
+    (wishlisted ? removeFromWishlist : addToWishlist)(product.id)
+      .then(() => toast(wishlisted ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে', { icon: wishlisted ? '💔' : '❤️' }))
       .catch(() => toast.error('কিছু একটা সমস্যা হয়েছে'))
       .finally(() => setWishBusy(false));
   }
@@ -104,82 +121,108 @@ export function ProductCard({ product, className, variant = 'default' }: Product
     <Link
       href={`/product/${product.slug}`}
       className={cn(
-        'group flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden',
-        'transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-gray-200/80 hover:border-forest-200',
-        isOOS && 'opacity-70',
+        'group relative flex flex-col bg-white overflow-hidden',
+        'rounded-2xl border border-gray-100/90',
+        'transition-all duration-300 ease-out',
+        'hover:-translate-y-1 hover:shadow-xl hover:shadow-forest-900/8 hover:border-forest-200/70',
+        isOOS && 'opacity-60',
         className,
       )}
     >
-      {/* IMAGE */}
-      <div className="relative overflow-hidden bg-gray-50">
-        <div className={cn('relative w-full', variant === 'compact' ? 'aspect-square' : 'aspect-[1/1]')}>
+      {/* ── IMAGE ─────────────────────────────────────── */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div className={cn('relative w-full', variant === 'compact' ? 'aspect-[4/3]' : 'aspect-square')}>
           {product.primaryImage ? (
-            <Image src={product.primaryImage} alt={product.name} fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,22vw" />
+            <Image
+              src={product.primaryImage}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+              sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,22vw"
+            />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
-              <span className="text-5xl md:text-6xl transition-transform duration-500 group-hover:scale-110">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cream-50 to-forest-50/20">
+              <span className="text-[3.5rem] transition-transform duration-500 group-hover:scale-110 select-none">
                 {getEmoji(product.slug)}
               </span>
             </div>
           )}
 
-          {/* Dark overlay on hover */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {/* ── TOP LEFT BADGES ── */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 pointer-events-none">
             {hasDiscount && product.discountPercent && (
-              <span className="bg-spice-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-sm">
+              <span className="inline-flex items-center bg-spice-600 text-white text-[10px] font-black px-2 py-[3px] rounded-lg shadow-sm leading-none">
                 -{product.discountPercent}%
               </span>
             )}
             {product.isNewArrival && (
-              <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
+              <span className="inline-flex items-center bg-emerald-500 text-white text-[10px] font-bold px-2 py-[3px] rounded-lg shadow-sm leading-none">
                 নতুন
               </span>
             )}
             {product.isBestSeller && (
-              <span className="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
+              <span className="inline-flex items-center gap-0.5 bg-amber-500 text-white text-[10px] font-bold px-2 py-[3px] rounded-lg shadow-sm leading-none">
                 🔥 হট
+              </span>
+            )}
+            {product.isFeatured && !product.isBestSeller && (
+              <span className="inline-flex items-center gap-0.5 bg-violet-500 text-white text-[10px] font-bold px-2 py-[3px] rounded-lg shadow-sm leading-none">
+                ⭐
               </span>
             )}
           </div>
 
-          {/* Wishlist */}
-          <button onClick={handleWishlist}
+          {/* ── WISHLIST (top-right, appears on hover) ── */}
+          <button
+            type="button"
+            onClick={handleWishlist}
+            aria-label={wishlisted ? 'উইশলিস্ট থেকে সরান' : 'উইশলিস্টে যোগ করুন'}
             className={cn(
-              'absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200',
-              'opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0',
-              wishlisted ? 'bg-red-500 text-white' : 'bg-white shadow-sm text-gray-400 hover:text-red-500',
+              'absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center',
+              'transition-all duration-200 shadow-sm',
+              // Show always if wishlisted, hover-show otherwise
+              wishlisted
+                ? 'opacity-100 bg-red-500 text-white'
+                : 'opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 bg-white text-gray-400 hover:text-red-500 hover:bg-red-50',
+              wishBusy && 'animate-pulse',
             )}
-            aria-label="উইশলিস্ট">
-            <Heart className={cn('w-3.5 h-3.5', wishlisted && 'fill-current')} />
+          >
+            <Heart className={cn('w-[15px] h-[15px]', wishlisted && 'fill-current')} strokeWidth={2} />
           </button>
 
-          {/* OOS overlay */}
+          {/* ── OUT OF STOCK ── */}
           {isOOS && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-              <span className="bg-gray-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">স্টক শেষ</span>
+            <div className="absolute inset-0 bg-white/65 backdrop-blur-[1px] flex items-center justify-center">
+              <span className="bg-gray-800/90 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-lg">
+                স্টক শেষ
+              </span>
             </div>
           )}
 
-          {/* Low stock */}
+          {/* ── LOW STOCK ── */}
           {isLow && !isOOS && (
             <div className="absolute bottom-2 left-2">
-              <span className="bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">⚡ সীমিত</span>
+              <span className="inline-flex items-center gap-0.5 bg-amber-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-[3px] rounded-md shadow-sm">
+                <Zap className="w-2.5 h-2.5" /> সীমিত
+              </span>
             </div>
           )}
 
-          {/* Quick add (desktop hover) */}
+          {/* ── QUICK ADD (slides up on hover) ── */}
           {!isOOS && (
-            <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <button onClick={handleCart} disabled={adding}
-                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-forest-700/95 text-white text-xs font-bold hover:bg-forest-800 transition-colors">
+            <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out px-2 pb-2">
+              <button
+                type="button"
+                onClick={handleCart}
+                disabled={adding}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-forest-700/95 backdrop-blur-sm text-white text-xs font-bold hover:bg-forest-800 active:bg-forest-900 transition-colors shadow-lg"
+              >
                 {adding
                   ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  : <ShoppingCart className="w-3.5 h-3.5" />
+                  : <ShoppingCart className="w-3.5 h-3.5" strokeWidth={2.5} />
                 }
                 {adding ? 'যোগ হচ্ছে...' : 'কার্টে যোগ করুন'}
               </button>
@@ -188,58 +231,69 @@ export function ProductCard({ product, className, variant = 'default' }: Product
         </div>
       </div>
 
-      {/* INFO */}
-      <div className="flex flex-col flex-1 p-3 gap-1.5">
-        {/* Name */}
-        <h3 className="text-gray-800 font-semibold text-[13px] leading-snug line-clamp-2 group-hover:text-forest-700 transition-colors flex-1">
+      {/* ── INFO ──────────────────────────────────────── */}
+      <div className="flex flex-col flex-1 px-3 pt-3 pb-3 gap-1.5">
+
+        {/* Product name */}
+        <h3
+          className="text-gray-800 font-semibold text-[13px] leading-snug line-clamp-2 group-hover:text-forest-700 transition-colors duration-200 flex-1"
+          style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
+        >
           {product.name}
         </h3>
 
-        {/* Weight */}
+        {/* Weight tag */}
         {product.weight && (
-          <p className="text-gray-400 text-[11px]">{product.weight}</p>
+          <span className="inline-flex self-start text-[10px] text-gray-400 bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded-md font-medium leading-none">
+            {product.weight}
+          </span>
         )}
 
-        {/* Stars */}
+        {/* Rating */}
         {product.avgRating !== undefined && product.avgRating > 0 && (
-          <div className="flex items-center gap-1">
-            <div className="flex">
-              {[1,2,3,4,5].map((s) => (
-                <Star key={s} className={cn('w-2.5 h-2.5',
-                  s <= Math.round(product.avgRating!)
-                    ? 'text-amber-400 fill-amber-400'
-                    : 'text-gray-200 fill-gray-200')} />
-              ))}
-            </div>
-            <span className="text-[10px] text-gray-400">({product.reviewCount ?? 0})</span>
-          </div>
+          <Stars rating={product.avgRating} count={product.reviewCount} />
         )}
 
-        {/* Price row */}
-        <div className="flex items-center gap-2 mt-auto">
-          <span className="text-forest-700 font-black text-base leading-none">{formatPriceEn(price)}</span>
-          {hasDiscount && (
-            <span className="text-gray-400 line-through text-[11px]">{formatPriceEn(product.price)}</span>
-          )}
+        {/* Price block */}
+        <div className="flex items-center justify-between gap-1 mt-auto pt-0.5">
+          <div className="flex items-baseline gap-1.5 min-w-0">
+            <span className="text-forest-700 font-black text-[16px] leading-none" style={{ fontFamily: 'Inter, Noto Sans Bengali, sans-serif' }}>
+              {formatPriceEn(price)}
+            </span>
+            {hasDiscount && (
+              <span className="text-gray-400 line-through text-[11px] leading-none">
+                {formatPriceEn(originalPx)}
+              </span>
+            )}
+          </div>
           {savings > 0 && (
-            <span className="ml-auto text-[10px] text-green-700 font-bold bg-green-50 px-1.5 py-0.5 rounded-md flex-shrink-0">
+            <span className="flex-shrink-0 text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-md leading-none">
               -{savings.toFixed(0)}৳
             </span>
           )}
         </div>
 
-        {/* Mobile-only CTA (always visible, hidden on desktop via group-hover) */}
-        <button onClick={handleCart} disabled={isOOS || adding}
+        {/* Add to Cart button — visible always on mobile, hidden on desktop (quick-add overlay handles it) */}
+        <button
+          type="button"
+          onClick={handleCart}
+          disabled={isOOS || adding}
           className={cn(
-            'group-hover:hidden w-full flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-bold transition-all mt-1',
-            isOOS ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : adding ? 'bg-brand-100 text-forest-700'
-                  : 'bg-forest-700 hover:bg-forest-800 text-white',
-          )}>
-          {isOOS ? 'স্টক নেই'
-            : adding ? <><span className="w-3 h-3 border-2 border-brand-300 border-t-forest-700 rounded-full animate-spin" /> হচ্ছে...</>
-            : <><ShoppingCart className="w-3.5 h-3.5" /> কার্টে যোগ করুন</>
-          }
+            'group-hover:hidden w-full flex items-center justify-center gap-1.5 rounded-xl py-[9px] text-[12px] font-bold transition-all mt-0.5',
+            isOOS
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : adding
+                ? 'bg-forest-100 text-forest-700'
+                : 'bg-forest-700 hover:bg-forest-800 active:bg-forest-900 text-white shadow-sm shadow-forest-700/20',
+          )}
+        >
+          {isOOS ? (
+            'স্টক নেই'
+          ) : adding ? (
+            <><span className="w-3 h-3 border-2 border-forest-400 border-t-forest-700 rounded-full animate-spin" /> যোগ হচ্ছে...</>
+          ) : (
+            <><ShoppingCart className="w-3.5 h-3.5" strokeWidth={2.5} /> কার্টে যোগ করুন</>
+          )}
         </button>
       </div>
     </Link>
