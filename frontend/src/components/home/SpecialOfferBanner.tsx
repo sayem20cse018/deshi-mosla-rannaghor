@@ -33,7 +33,7 @@ export function SpecialOfferBanner() {
           </div>
 
           {/* Banner 2 — Free delivery */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-forest-800 via-forest-700 to-forest-600 p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
             <div className="absolute right-4 top-0 text-8xl opacity-15 select-none leading-none">
               🚚
             </div>
@@ -44,7 +44,7 @@ export function SpecialOfferBanner() {
               <h3 className="text-white text-2xl md:text-3xl font-bold leading-snug">
                 ৳১০০০+ অর্ডারে
                 <br />
-                <span className="text-brand-200">ফ্রি ডেলিভারি!</span>
+                <span className="text-forest-200">ফ্রি ডেলিভারি!</span>
               </h3>
               <p className="text-white/80 text-sm mt-1">
                 কোড: <strong>FREEDEL</strong> — সারাদেশে প্রযোজ্য
@@ -52,7 +52,7 @@ export function SpecialOfferBanner() {
             </div>
             <Link
               href="/shop"
-              className="mt-4 inline-flex items-center gap-2 bg-white text-brand-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-brand-50 transition-colors w-fit"
+              className="mt-4 inline-flex items-center gap-2 bg-white text-forest-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-forest-50 transition-colors w-fit"
             >
               অর্ডার করুন <ArrowRight className="w-4 h-4" />
             </Link>

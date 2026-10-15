@@ -5,6 +5,21 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { useCategories } from '@/hooks/useCategories';
 
+const MOCK_CATEGORIES = [
+  { id:'1', name:'মসলা',      nameEn:'Spices',  slug:'mosla',   icon:'🌶️', _count:{products:0} },
+  { id:'2', name:'তেল',       nameEn:'Oil',     slug:'tel',     icon:'🫙',  _count:{products:0} },
+  { id:'3', name:'চাল',       nameEn:'Rice',    slug:'chal',    icon:'🍚',  _count:{products:0} },
+  { id:'4', name:'ডাল',       nameEn:'Dal',     slug:'dal',     icon:'🫘',  _count:{products:0} },
+  { id:'5', name:'আটা',       nameEn:'Flour',   slug:'ata',     icon:'🌾',  _count:{products:0} },
+  { id:'6', name:'মধু',       nameEn:'Honey',   slug:'modhu',   icon:'🍯',  _count:{products:0} },
+  { id:'7', name:'চিনি',      nameEn:'Sugar',   slug:'chini',   icon:'🍬',  _count:{products:0} },
+  { id:'8', name:'চা',        nameEn:'Tea',     slug:'cha',     icon:'☕',  _count:{products:0} },
+  { id:'9', name:'স্ন্যাকস', nameEn:'Snacks',  slug:'snacks',  icon:'🍿',  _count:{products:0} },
+  { id:'10',name:'নুডলস',    nameEn:'Noodles', slug:'noodles', icon:'🍜',  _count:{products:0} },
+  { id:'11',name:'সস',        nameEn:'Sauce',   slug:'sauce',   icon:'🥫',  _count:{products:0} },
+  { id:'12',name:'আচার',      nameEn:'Pickle',  slug:'achar',   icon:'🥒',  _count:{products:0} },
+];
+
 // Fallback color map by slug
 const COLOR_MAP: Record<string, { color: string; border: string; text: string }> = {
   mosla: { color: 'from-red-50 to-orange-50', border: 'border-red-100', text: 'text-red-700' },
@@ -55,9 +70,9 @@ const COLOR_MAP: Record<string, { color: string; border: string; text: string }>
 };
 
 const DEFAULT_STYLE = {
-  color: 'from-brand-50 to-brand-100',
-  border: 'border-brand-100',
-  text: 'text-brand-700',
+  color: 'from-forest-50 to-forest-100',
+  border: 'border-forest-100',
+  text: 'text-forest-700',
 };
 
 // Skeleton card for loading state
@@ -66,7 +81,8 @@ function SkeletonCat() {
 }
 
 export function CategorySection() {
-  const { data: categories = [], isLoading } = useCategories();
+  const { data: rawCats = [], isLoading } = useCategories();
+  const categories = rawCats.length > 0 ? rawCats : MOCK_CATEGORIES as any[];
 
   return (
     <section className="section-wrap bg-gray-50">

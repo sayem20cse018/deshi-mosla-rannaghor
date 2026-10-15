@@ -41,12 +41,12 @@ export function Footer() {
           <div className="lg:col-span-1">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-700 flex items-center justify-center shadow">
+              <div className="w-10 h-10 rounded-xl bg-forest-700 flex items-center justify-center shadow">
                 <span className="text-white font-bold text-sm">দম</span>
               </div>
               <div className="leading-none">
                 <p className="text-white font-bold text-sm">দেশি মসলার রান্নাঘর</p>
-                <p className="text-brand-400 text-xs mt-0.5">Deshi Moslar Rannaghar</p>
+                <p className="text-forest-400 text-xs mt-0.5">Deshi Moslar Rannaghar</p>
               </div>
             </Link>
 
@@ -66,7 +66,7 @@ export function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-brand-700 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-forest-700 flex items-center justify-center transition-colors"
                 >
                   <Icon className="w-4 h-4 text-gray-300" />
                 </a>

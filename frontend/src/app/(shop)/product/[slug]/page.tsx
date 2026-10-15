@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ShoppingCart,
@@ -21,6 +21,8 @@ import {
 import { cn, formatPriceEn, calcDiscount } from '@/lib/utils';
 import { useProduct } from '@/hooks/useProducts';
 import { useCartStore } from '@/store/cart.store';
+import { useWishlistStore } from '@/store/wishlist.store';
+import { useAuthStore } from '@/store/auth.store';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ReviewSection } from '@/components/product/ReviewSection';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
@@ -35,10 +37,12 @@ export default function ProductDetailPage() {
   const { data, isLoading } = useProduct(slug);
   const product = data?.data as any;
   const { addItem, openCart } = useCartStore();
+  const { isWishlisted, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
-  const [wishlisted, setWishlisted] = useState(false);
   const [addingCart, setAddingCart] = useState(false);
 
   function buildProductArg() {
@@ -114,17 +118,17 @@ export default function ProductDetailPage() {
       <div className="border-b border-gray-100 bg-gray-50">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-xs text-gray-400">
-            <Link href="/" className="hover:text-brand-600">
+            <Link href="/" className="hover:text-forest-600">
               হোম
             </Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/shop" className="hover:text-brand-600">
+            <Link href="/shop" className="hover:text-forest-600">
               শপ
             </Link>
             {product.category && (
               <>
                 <ChevronRight className="w-3 h-3" />
-                <Link href={`/category/${product.category.slug}`} className="hover:text-brand-600">
+                <Link href={`/category/${product.category.slug}`} className="hover:text-forest-600">
                   {product.category.name}
                 </Link>
               </>
@@ -152,7 +156,7 @@ export default function ProductDetailPage() {
                 </span>
               )}
               {product.isNewArrival && (
-                <span className="bg-brand-50 text-brand-700 border border-brand-100 text-xs font-bold px-2.5 py-1 rounded-full">
+                <span className="bg-forest-50 text-forest-700 border border-forest-100 text-xs font-bold px-2.5 py-1 rounded-full">
                   ✨ নতুন
                 </span>
               )}
@@ -180,7 +184,7 @@ export default function ProductDetailPage() {
             {product.reviewCount > 0 && (
               <div className="flex items-center gap-3">
                 <StarRating rating={product.avgRating} count={product.reviewCount} size="md" />
-                <a href="#reviews" className="text-sm text-brand-600 hover:underline">
+                <a href="#reviews" className="text-sm text-forest-600 hover:underline">
                   {product.reviewCount} টি রিভিউ
                 </a>
               </div>
@@ -188,7 +192,7 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-end gap-3">
-              <span className="text-3xl font-black text-brand-700">
+              <span className="text-3xl font-black text-forest-700">
                 {formatPriceEn(effectivePrice)}
               </span>
               {discountPrice && (
@@ -237,7 +241,7 @@ export default function ProductDetailPage() {
                   </div>
                   <span className="text-sm text-gray-500">
                     মোট:{' '}
-                    <strong className="text-brand-700">
+                    <strong className="text-forest-700">
                       {formatPriceEn(effectivePrice * qty)}
                     </strong>
                   </span>
@@ -259,7 +263,7 @@ export default function ProductDetailPage() {
                   'flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all',
                   isOOS
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-brand-700 hover:bg-brand-800 text-white active:scale-95',
+                    : 'bg-forest-700 hover:bg-forest-800 text-white active:scale-95',
                 )}
               >
                 {addingCart ? (
@@ -280,21 +284,30 @@ export default function ProductDetailPage() {
               )}
 
               <button
-                onClick={() => {
-                  setWishlisted((w) => !w);
-                  toast(wishlisted ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে', {
-                    icon: wishlisted ? '💔' : '❤️',
-                  });
+                onClick={async () => {
+                  if (!isAuthenticated) {
+                    toast('উইশলিস্টে যোগ করতে লগইন করুন', { icon: '🔐' });
+                    router.push('/login');
+                    return;
+                  }
+                  const isW = isWishlisted(product.id);
+                  if (isW) {
+                    await removeFromWishlist(product.id);
+                    toast('উইশলিস্ট থেকে সরানো হয়েছে', { icon: '💔' });
+                  } else {
+                    await addToWishlist(product.id);
+                    toast.success('উইশলিস্টে যোগ হয়েছে');
+                  }
                 }}
                 className={cn(
                   'w-12 h-12 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all',
-                  wishlisted
+                  isWishlisted(product?.id ?? '')
                     ? 'bg-red-50 border-red-200 text-red-500'
                     : 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-400',
                 )}
                 aria-label="উইশলিস্ট"
               >
-                <Heart className={cn('w-5 h-5', wishlisted && 'fill-current')} />
+                <Heart className={cn('w-5 h-5', isWishlisted(product?.id ?? '') && 'fill-current')} />
               </button>
 
               <button
@@ -303,7 +316,7 @@ export default function ProductDetailPage() {
                     .writeText(window.location.href)
                     .then(() => toast.success('লিংক কপি হয়েছে'))
                 }
-                className="w-12 h-12 flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-brand-200 hover:text-brand-600 transition-colors"
+                className="w-12 h-12 flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-forest-200 hover:text-forest-600 transition-colors"
                 aria-label="শেয়ার"
               >
                 <Share2 className="w-4 h-4" />
@@ -319,8 +332,8 @@ export default function ProductDetailPage() {
                 { icon: Check, label: 'ক্যাশ অন ডেলিভারি', sub: 'সারাদেশে' },
               ].map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-2.5 bg-gray-50 rounded-xl p-3">
-                  <div className="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-brand-700" />
+                  <div className="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-4 h-4 text-forest-700" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-800 leading-tight">{label}</p>
@@ -343,7 +356,7 @@ export default function ProductDetailPage() {
                 className={cn(
                   'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px',
                   activeTab === i
-                    ? 'text-brand-700 border-brand-600'
+                    ? 'text-forest-700 border-forest-600'
                     : 'text-gray-500 border-transparent hover:text-gray-700',
                 )}
               >
