@@ -1,4 +1,4 @@
-﻿import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BannersController } from './banners.controller';
 import { BannersService } from './banners.service';
 
