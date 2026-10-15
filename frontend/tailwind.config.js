@@ -101,8 +101,8 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        bengali: ['Hind Siliguri', 'Noto Sans Bengali', 'sans-serif'],
-        sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+        bengali: ['Noto Sans Bengali', 'sans-serif'],
+        sans: ['Noto Sans Bengali', 'Inter', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
