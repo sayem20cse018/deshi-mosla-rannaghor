@@ -1,4 +1,4 @@
-﻿[variables]
+[variables]
 NODE_VERSION = "20"
 
 [phases.install]
