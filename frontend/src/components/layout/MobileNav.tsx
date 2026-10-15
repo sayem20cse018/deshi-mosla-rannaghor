@@ -2,89 +2,96 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, User, ShoppingCart, Grid2X2 } from 'lucide-react';
+import { Home, Grid2X2, ShoppingBag, Heart, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
+import { useWishlistStore } from '@/store/wishlist.store';
+
+const NAV_ITEMS = [
+  { href: '/',            icon: Home,        label: 'হোম'      },
+  { href: '/categories',  icon: Grid2X2,     label: 'ক্যাটাগরি' },
+  { href: '/shop',        icon: ShoppingBag, label: 'শপ'        },
+  { href: '/account/wishlist', icon: Heart,  label: 'উইশলিস্ট' },
+];
 
 export function MobileNav() {
-  const pathname = usePathname();
+  const pathname  = usePathname();
   const { getItemCount, openCart } = useCartStore();
-  const itemCount = getItemCount();
-
-  const LEFT_NAV = [
-    { href: '/',     icon: Home,    label: 'হোম'  },
-    { href: '/shop', icon: Grid2X2, label: 'মেনু' },
-  ];
-
-  const RIGHT_NAV = [
-    { href: '/blog',    icon: BookOpen, label: 'ব্লগ'       },
-    { href: '/account', icon: User,     label: 'অ্যাকাউন্ট' },
-  ];
+  const wishCount = useWishlistStore((s) => s.items.length);
+  const cartCount = getItemCount();
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100 pb-safe"
-      style={{ boxShadow: '0 -1px 0 0 #f3f4f6, 0 -4px 16px rgba(0,0,0,0.06)' }}
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white pb-safe"
+      style={{ boxShadow: '0 -1px 0 rgba(0,0,0,0.06), 0 -4px 12px rgba(0,0,0,0.04)' }}
       aria-label="মোবাইল নেভিগেশন"
     >
-      <div className="flex items-center h-16">
-        {/* Left: Home + Menu */}
-        {LEFT_NAV.map(({ href, icon: Icon, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              'flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors',
-              isActive(href) ? 'text-forest-700' : 'text-gray-400 hover:text-gray-600',
-            )}
-          >
-            <Icon className={cn('w-[22px] h-[22px]', isActive(href) && 'stroke-[2.5px]')} />
-            <span className={cn('text-[10px] font-semibold leading-none',
-              isActive(href) ? 'text-forest-700' : 'text-gray-400')}>
-              {label}
-            </span>
-          </Link>
-        ))}
+      <div className="flex items-center h-[58px]">
 
-        {/* Center: Cart FAB */}
+        {/* Left 4: Home, Categories, Shop, Wishlist */}
+        {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+          const active = isActive(href);
+          const isWish = href.includes('wishlist');
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                'flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors',
+                active ? 'text-forest-700' : 'text-gray-400',
+              )}
+            >
+              {/* Icon with optional badge */}
+              <div className="relative">
+                <Icon
+                  className="w-[21px] h-[21px]"
+                  strokeWidth={active ? 2.5 : 1.75}
+                />
+                {isWish && wishCount > 0 && (
+                  <span className="absolute -top-[6px] -right-[6px] min-w-[15px] h-[15px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-red-500 rounded-full border border-white leading-none">
+                    {wishCount > 9 ? '9+' : wishCount}
+                  </span>
+                )}
+              </div>
+              <span className={cn(
+                'text-[10px] font-semibold leading-none',
+                active ? 'text-forest-700' : 'text-gray-400',
+              )}>
+                {label}
+              </span>
+              {/* Active underline dot */}
+              <div className={cn(
+                'w-1 h-1 rounded-full transition-all duration-200',
+                active ? 'bg-forest-700 opacity-100' : 'opacity-0',
+              )} />
+            </Link>
+          );
+        })}
+
+        {/* Cart — rightmost, pill style */}
         <button
           onClick={openCart}
-          className="flex flex-col items-center justify-center flex-1 h-full relative"
+          className="flex flex-col items-center justify-center gap-[3px] flex-1 h-full"
           aria-label="কার্ট"
         >
-          <div className="relative -mt-5">
-            <div className="w-[52px] h-[52px] rounded-full bg-forest-700 flex items-center justify-center shadow-lg shadow-forest-700/40 border-[3px] border-white">
-              <ShoppingCart className="w-5 h-5 text-white" />
+          <div className="relative -mt-1">
+            {/* Elevated pill */}
+            <div className="w-[46px] h-[32px] rounded-[14px] bg-forest-700 flex items-center justify-center shadow-md shadow-forest-700/35">
+              <ShoppingCart className="w-[17px] h-[17px] text-white" strokeWidth={2.5} />
             </div>
-            {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-0.5 bg-spice-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border border-white shadow-sm">
-                {itemCount > 9 ? '9+' : itemCount}
+            {cartCount > 0 && (
+              <span className="absolute -top-[5px] -right-[4px] min-w-[16px] h-[16px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-spice-500 rounded-full border border-white leading-none">
+                {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-bold text-forest-700 leading-none mt-1">কার্ট</span>
+          <span className="text-[10px] font-bold text-forest-700 leading-none">কার্ট</span>
+          <div className="w-1 h-1 rounded-full bg-transparent" />
         </button>
 
-        {/* Right: Blog + Account */}
-        {RIGHT_NAV.map(({ href, icon: Icon, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              'flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors',
-              isActive(href) ? 'text-forest-700' : 'text-gray-400 hover:text-gray-600',
-            )}
-          >
-            <Icon className={cn('w-[22px] h-[22px]', isActive(href) && 'stroke-[2.5px]')} />
-            <span className={cn('text-[10px] font-semibold leading-none',
-              isActive(href) ? 'text-forest-700' : 'text-gray-400')}>
-              {label}
-            </span>
-          </Link>
-        ))}
       </div>
     </nav>
   );

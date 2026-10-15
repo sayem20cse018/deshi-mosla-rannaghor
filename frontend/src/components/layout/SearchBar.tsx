@@ -75,7 +75,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
         className={cn(
           'flex items-center gap-2 bg-gray-50 border rounded-xl transition-all duration-200',
           open
-            ? 'border-brand-500 ring-2 ring-brand-100 bg-white'
+            ? 'border-forest-500 ring-2 ring-forest-100 bg-white'
             : 'border-gray-200 hover:border-gray-300',
           mobile ? 'px-3 py-2' : 'px-3 py-2.5',
         )}
@@ -99,7 +99,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
         )}
         <button
           onClick={() => handleSearch(query)}
-          className="bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
+          className="bg-forest-700 hover:bg-forest-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
         >
           {lang === 'en' ? 'Search' : 'খুঁজুন'}
         </button>
@@ -118,7 +118,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
                   <button
                     key={r}
                     onClick={() => handleSearch(r)}
-                    className="chip hover:bg-brand-100 transition-colors cursor-pointer"
+                    className="chip hover:bg-forest-100 transition-colors cursor-pointer"
                   >
                     {r}
                   </button>
@@ -147,7 +147,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
               onClick={() => handleSearch(query)}
               className="w-full text-left px-4 py-3 border-t border-gray-50 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
             >
-              <Search className="w-4 h-4 text-brand-600" />
+              <Search className="w-4 h-4 text-forest-600" />
               <span>
                 <strong>&ldquo;{query}&rdquo;</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}
               </span>
