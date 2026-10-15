@@ -56,17 +56,17 @@ export default function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-emerald-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf4] via-white to-[#fff7ed] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-            <div className="w-12 h-12 rounded-2xl bg-brand-700 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-2xl bg-[#0f4c2a] flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">দম</span>
             </div>
             <div className="text-left">
-              <p className="text-brand-800 font-bold text-base leading-tight">দেশি মসলার</p>
-              <p className="text-brand-500 text-sm">রান্নাঘর</p>
+              <p className="text-[#0f4c2a] font-bold text-base leading-tight">দেশি মসলার</p>
+              <p className="text-[#ea580c] text-sm font-medium">রান্নাঘর</p>
             </div>
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-1">
@@ -155,7 +155,7 @@ export default function LoginContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-brand-700/20 text-base"
+              className="w-full flex items-center justify-center gap-2 bg-[#0f4c2a] hover:bg-[#0a3d22] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#0f4c2a]/20 text-base"
             >
               {isLoading ? (
                 <>
@@ -180,9 +180,10 @@ export default function LoginContent() {
           </div>
 
           {/* Demo credentials */}
-          <div className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-xs text-gray-600 space-y-1">
-            <p className="font-semibold text-brand-700 mb-1.5">🧪 টেস্ট অ্যাকাউন্ট:</p>
+          <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-3 text-xs text-gray-600 space-y-1">
+            <p className="font-semibold text-[#0f4c2a] mb-1.5">🧪 টেস্ট অ্যাকাউন্ট:</p>
             <p>📧 rahim@test.com&nbsp;&nbsp;&nbsp;🔑 Customer@123</p>
+            <p className="text-gray-400 text-[10px] mt-1">অথবা: test@deshimoslar.com / Test@12345</p>
           </div>
         </div>
 
@@ -191,7 +192,7 @@ export default function LoginContent() {
           নতুন গ্রাহক?{' '}
           <Link
             href="/register"
-            className="text-brand-700 font-semibold hover:text-brand-800 underline underline-offset-2"
+            className="text-[#0f4c2a] font-semibold hover:text-[#072d18] underline underline-offset-2"
           >
             নিবন্ধন করুন
           </Link>
