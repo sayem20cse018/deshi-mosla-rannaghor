@@ -1,5 +1,14 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm install"]
+
 [phases.build]
-cmds = ["npm ci --prefer-offline", "npm run build", "npx prisma generate"]
+cmds = [
+  "npm run build",
+  "npx prisma generate"
+]
 
 [start]
 cmd = "node dist/main"
