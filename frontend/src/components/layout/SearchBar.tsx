@@ -73,11 +73,11 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
     <div ref={ref} className={cn('relative', className)}>
       <div
         className={cn(
-          'flex items-center gap-2 bg-gray-50 border rounded-xl transition-all duration-200',
+          'flex items-center gap-2 bg-white border rounded-full transition-all duration-200',
           open
-            ? 'border-forest-500 ring-2 ring-forest-100 bg-white'
+            ? 'border-[#ea580c] ring-2 ring-[#ea580c]/15 bg-white'
             : 'border-gray-200 hover:border-gray-300',
-          mobile ? 'px-3 py-2' : 'px-3 py-2.5',
+          mobile ? 'px-3 py-2' : 'px-4 py-2.5',
         )}
       >
         <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -99,7 +99,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
         )}
         <button
           onClick={() => handleSearch(query)}
-          className="bg-forest-700 hover:bg-forest-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
+        className="bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-semibold px-3 py-1.5 rounded-full transition-colors flex-shrink-0"
         >
           {lang === 'en' ? 'Search' : 'খুঁজুন'}
         </button>
@@ -147,7 +147,7 @@ export function SearchBar({ className, mobile = false, lang = 'bn' }: SearchBarP
               onClick={() => handleSearch(query)}
               className="w-full text-left px-4 py-3 border-t border-gray-50 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
             >
-              <Search className="w-4 h-4 text-forest-600" />
+              <Search className="w-4 h-4 text-[#ea580c]" />
               <span>
                 <strong>&ldquo;{query}&rdquo;</strong> {lang === 'en' ? 'search' : 'খুঁজুন'}
               </span>

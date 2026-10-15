@@ -94,6 +94,18 @@ module.exports = {
           100: '#f5efe4',
           200: '#ead9c4',
         },
+        orange: {
+          50:  '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316',
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -101,8 +113,9 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
+        sans:    ['Manrope', 'Noto Sans Bengali', 'Inter', 'sans-serif'],
         bengali: ['Noto Sans Bengali', 'sans-serif'],
-        sans: ['Noto Sans Bengali', 'Inter', 'sans-serif'],
+        english: ['Manrope', 'Inter', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
@@ -121,8 +134,12 @@ module.exports = {
           from: { opacity: '0', transform: 'translateY(8px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        'fade-down': {
+          from: { opacity: '0', transform: 'translateY(-8px)' },
+          to:   { opacity: '1', transform: 'translateY(0)' },
+        },
         'slide-in-right': {
-          from: { transform: 'translateX(100%)' },
+          from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(0)' },
         },
         shimmer: {
@@ -143,6 +160,7 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
         'fade-up': 'fade-up 0.25s ease-out',
+        'fade-down': 'fade-down 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out',
         shimmer: 'shimmer 1.5s infinite',
         ticker: 'ticker 25s linear infinite',

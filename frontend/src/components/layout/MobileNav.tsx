@@ -41,8 +41,9 @@ export function MobileNav() {
               href={href}
               className={cn(
                 'flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors',
-                active ? 'text-forest-700' : 'text-gray-400',
+                active ? 'text-[#0f4c2a]' : 'text-gray-400',
               )}
+              style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
             >
               {/* Icon with optional badge */}
               <div className="relative">
@@ -58,14 +59,14 @@ export function MobileNav() {
               </div>
               <span className={cn(
                 'text-[10px] font-semibold leading-none',
-                active ? 'text-forest-700' : 'text-gray-400',
+                active ? 'text-[#0f4c2a]' : 'text-gray-400',
               )}>
                 {label}
               </span>
               {/* Active underline dot */}
               <div className={cn(
                 'w-1 h-1 rounded-full transition-all duration-200',
-                active ? 'bg-forest-700 opacity-100' : 'opacity-0',
+                active ? 'bg-[#0f4c2a] opacity-100' : 'opacity-0',
               )} />
             </Link>
           );
@@ -76,19 +77,21 @@ export function MobileNav() {
           onClick={openCart}
           className="flex flex-col items-center justify-center gap-[3px] flex-1 h-full"
           aria-label="কার্ট"
+          style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
         >
           <div className="relative -mt-1">
             {/* Elevated pill */}
-            <div className="w-[46px] h-[32px] rounded-[14px] bg-forest-700 flex items-center justify-center shadow-md shadow-forest-700/35">
+            <div className="w-[46px] h-[32px] rounded-[14px] flex items-center justify-center shadow-md"
+                 style={{ backgroundColor: '#0f4c2a', boxShadow: '0 4px 12px rgba(15,76,42,0.35)' }}>
               <ShoppingCart className="w-[17px] h-[17px] text-white" strokeWidth={2.5} />
             </div>
             {cartCount > 0 && (
-              <span className="absolute -top-[5px] -right-[4px] min-w-[16px] h-[16px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-spice-500 rounded-full border border-white leading-none">
+              <span className="absolute -top-[5px] -right-[4px] min-w-[16px] h-[16px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-[#ea580c] rounded-full border border-white leading-none">
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-bold text-forest-700 leading-none">কার্ট</span>
+          <span className="text-[10px] font-bold leading-none" style={{ color: '#0f4c2a' }}>কার্ট</span>
           <div className="w-1 h-1 rounded-full bg-transparent" />
         </button>
 
