@@ -1,12 +1,10 @@
 'use client';
-
 import { ProductRow } from '@/components/product/ProductRow';
 import { useNewArrivals } from '@/hooks/useProducts';
 
 export function NewArrivalsSection() {
   const { data, isLoading } = useNewArrivals(10);
   const products = data?.data ?? [];
-
   return (
     <ProductRow
       title="নতুন পণ্য"
@@ -15,7 +13,7 @@ export function NewArrivalsSection() {
       href="/shop?sort=newest"
       products={products}
       loading={isLoading}
-      bg="bg-gray-50"
+      bg="bg-cream-50"
     />
   );
 }
