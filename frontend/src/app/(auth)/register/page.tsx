@@ -13,10 +13,10 @@ const BD_PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 
 function PasswordStrength({ password }: { password: string }) {
   const checks = [
-    { label: 'ন্যূনতম ৮ অক্ষর', ok: password.length >= 8 },
-    { label: 'সংখ্যা আছে', ok: /\d/.test(password) },
-    { label: 'বড় হাতের অক্ষর', ok: /[A-Z]/.test(password) },
-    { label: 'ছোট হাতের অক্ষর', ok: /[a-z]/.test(password) },
+    { label: 'à¦¨à§à¦¯à§‚à¦¨à¦¤à¦® à§® à¦…à¦•à§à¦·à¦°', ok: password.length >= 8 },
+    { label: 'à¦¸à¦‚à¦–à§à¦¯à¦¾ à¦†à¦›à§‡', ok: /\d/.test(password) },
+    { label: 'à¦¬à¦¡à¦¼ à¦¹à¦¾à¦¤à§‡à¦° à¦…à¦•à§à¦·à¦°', ok: /[A-Z]/.test(password) },
+    { label: 'à¦›à§‹à¦Ÿ à¦¹à¦¾à¦¤à§‡à¦° à¦…à¦•à§à¦·à¦°', ok: /[a-z]/.test(password) },
   ];
   const score = checks.filter((c) => c.ok).length;
   const color =
@@ -26,7 +26,7 @@ function PasswordStrength({ password }: { password: string }) {
         ? 'bg-amber-400'
         : score === 3
           ? 'bg-yellow-400'
-          : 'bg-brand-500';
+          : 'bg-[#0f4c2a]';
   if (!password) return null;
   return (
     <div className="mt-2 space-y-1.5">
@@ -47,7 +47,7 @@ function PasswordStrength({ password }: { password: string }) {
             key={label}
             className={cn(
               'flex items-center gap-1 text-[11px]',
-              ok ? 'text-brand-600' : 'text-gray-400',
+              ok ? 'text-[#0f4c2a]' : 'text-gray-400',
             )}
           >
             {ok ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} {label}
@@ -76,14 +76,14 @@ export default function RegisterPage() {
 
   function validate() {
     const e: Record<string, string> = {};
-    if (!form.name.trim() || form.name.trim().length < 2) e.name = 'নাম কমপক্ষে ২ অক্ষর';
+    if (!form.name.trim() || form.name.trim().length < 2) e.name = 'à¦¨à¦¾à¦® à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¨ à¦…à¦•à§à¦·à¦°';
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      e.email = 'সঠিক ইমেইল দিন';
+      e.email = 'à¦¸à¦ à¦¿à¦• à¦‡à¦®à§‡à¦‡à¦² à¦¦à¦¿à¦¨';
     if (!BD_PHONE.test(form.phone.trim()))
-      e.phone = 'সঠিক বাংলাদেশি ফোন নম্বর দিন (যেমন: 01700000000)';
-    if (form.password.length < 8) e.password = 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষর';
-    if (form.password !== form.confirm) e.confirm = 'পাসওয়ার্ড মিলছে না';
-    if (!agreed) e.agreed = 'শর্তাবলীতে সম্মত হন';
+      e.phone = 'à¦¸à¦ à¦¿à¦• à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à¦¿ à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦° à¦¦à¦¿à¦¨ (à¦¯à§‡à¦®à¦¨: 01700000000)';
+    if (form.password.length < 8) e.password = 'à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§® à¦…à¦•à§à¦·à¦°';
+    if (form.password !== form.confirm) e.confirm = 'à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦®à¦¿à¦²à¦›à§‡ à¦¨à¦¾';
+    if (!agreed) e.agreed = 'à¦¶à¦°à§à¦¤à¦¾à¦¬à¦²à§€à¦¤à§‡ à¦¸à¦®à§à¦®à¦¤ à¦¹à¦¨';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -97,36 +97,36 @@ export default function RegisterPage() {
       await register(form.name.trim(), form.email.trim(), form.phone.trim(), form.password);
       if (hadGuestItems) await syncToServer();
       await fetchFromServer();
-      toast.success('নিবন্ধন সফল হয়েছে! স্বাগতম।');
+      toast.success('à¦¨à¦¿à¦¬à¦¨à§à¦§à¦¨ à¦¸à¦«à¦² à¦¹à¦¯à¦¼à§‡à¦›à§‡! à¦¸à§à¦¬à¦¾à¦—à¦¤à¦®à¥¤');
       router.push('/account');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'নিবন্ধন ব্যর্থ হয়েছে';
+      const msg = err.response?.data?.message || 'à¦¨à¦¿à¦¬à¦¨à§à¦§à¦¨ à¦¬à§à¦¯à¦°à§à¦¥ à¦¹à¦¯à¦¼à§‡à¦›à§‡';
       setErrors({ form: msg });
       toast.error(msg);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-emerald-50 flex items-center justify-center p-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf4] via-white to-[#ecfdf5] flex items-center justify-center p-4 py-10">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-            <div className="w-11 h-11 rounded-2xl bg-brand-700 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-base">দম</span>
+            <div className="w-11 h-11 rounded-2xl bg-[#0f4c2a] flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-base">à¦¦à¦®</span>
             </div>
             <div className="text-left">
-              <p className="text-brand-800 font-bold text-sm leading-tight">দেশি মসলার রান্নাঘর</p>
+              <p className="text-[#0f4c2a] font-bold text-sm leading-tight">à¦¦à§‡à¦¶à¦¿ à¦®à¦¸à¦²à¦¾à¦° à¦°à¦¾à¦¨à§à¦¨à¦¾à¦˜à¦°</p>
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-5 mb-1">নতুন অ্যাকাউন্ট তৈরি করুন</h1>
-          <p className="text-gray-500 text-sm">বিশেষ অফার ও সহজ কেনাকাটার জন্য</p>
+          <h1 className="text-2xl font-bold text-gray-900 mt-5 mb-1">à¦¨à¦¤à§à¦¨ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à§à¦¨</h1>
+          <p className="text-gray-500 text-sm">à¦¬à¦¿à¦¶à§‡à¦· à¦…à¦«à¦¾à¦° à¦“ à¦¸à¦¹à¦œ à¦•à§‡à¦¨à¦¾à¦•à¦¾à¦Ÿà¦¾à¦° à¦œà¦¨à§à¦¯</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-7">
           {errors.form && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
-              <span>⚠️</span> {errors.form}
+              <span>âš ï¸</span> {errors.form}
             </div>
           )}
 
@@ -134,13 +134,13 @@ export default function RegisterPage() {
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                পূর্ণ নাম *
+                à¦ªà§‚à¦°à§à¦£ à¦¨à¦¾à¦® *
               </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={set_('name')}
-                placeholder="রহিম উদ্দিন"
+                placeholder="à¦°à¦¹à¦¿à¦® à¦‰à¦¦à§à¦¦à¦¿à¦¨"
                 className={cn('input-base', errors.name && 'border-red-400')}
                 autoComplete="name"
               />
@@ -150,7 +150,7 @@ export default function RegisterPage() {
             {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                ইমেইল ঠিকানা *
+                à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾ *
               </label>
               <input
                 type="email"
@@ -167,7 +167,7 @@ export default function RegisterPage() {
             {/* Phone */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                ফোন নম্বর *
+                à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦° *
               </label>
               <input
                 type="tel"
@@ -184,14 +184,14 @@ export default function RegisterPage() {
             {/* Password */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                পাসওয়ার্ড *
+                à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ *
               </label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
                   value={form.password}
                   onChange={set_('password')}
-                  placeholder="কমপক্ষে ৮ অক্ষর"
+                  placeholder="à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§® à¦…à¦•à§à¦·à¦°"
                   className={cn('input-base pr-10', errors.password && 'border-red-400')}
                   autoComplete="new-password"
                 />
@@ -211,14 +211,14 @@ export default function RegisterPage() {
             {/* Confirm */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                পাসওয়ার্ড নিশ্চিত করুন *
+                à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à§à¦¨ *
               </label>
               <div className="relative">
                 <input
                   type={showCf ? 'text' : 'password'}
                   value={form.confirm}
                   onChange={set_('confirm')}
-                  placeholder="পাসওয়ার্ড আবার দিন"
+                  placeholder="à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨"
                   className={cn('input-base pr-10', errors.confirm && 'border-red-400')}
                   autoComplete="new-password"
                 />
@@ -240,18 +240,18 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 flex-shrink-0"
+                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#0f4c2a] focus:ring-[#0f4c2a] flex-shrink-0"
               />
               <span className="text-xs text-gray-600 leading-relaxed">
-                আমি{' '}
-                <Link href="/terms" className="text-brand-600 hover:underline">
-                  শর্তাবলী
+                à¦†à¦®à¦¿{' '}
+                <Link href="/terms" className="text-[#0f4c2a] hover:underline">
+                  à¦¶à¦°à§à¦¤à¦¾à¦¬à¦²à§€
                 </Link>{' '}
-                এবং{' '}
-                <Link href="/privacy-policy" className="text-brand-600 hover:underline">
-                  গোপনীয়তা নীতি
+                à¦à¦¬à¦‚{' '}
+                <Link href="/privacy-policy" className="text-[#0f4c2a] hover:underline">
+                  à¦—à§‹à¦ªà¦¨à§€à¦¯à¦¼à¦¤à¦¾ à¦¨à§€à¦¤à¦¿
                 </Link>{' '}
-                পড়েছি এবং সম্মত আছি
+                à¦ªà¦¡à¦¼à§‡à¦›à¦¿ à¦à¦¬à¦‚ à¦¸à¦®à§à¦®à¦¤ à¦†à¦›à¦¿
               </span>
             </label>
             {errors.agreed && <p className="text-red-500 text-xs -mt-2">{errors.agreed}</p>}
@@ -260,15 +260,15 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-brand-700/20 text-base mt-1"
+              className="w-full flex items-center justify-center gap-2 bg-[#0f4c2a] hover:bg-[#0a3d22] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#0f4c2a]/20 text-base mt-1"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" /> নিবন্ধন হচ্ছে...
+                  <Loader2 className="w-5 h-5 animate-spin" /> à¦¨à¦¿à¦¬à¦¨à§à¦§à¦¨ à¦¹à¦šà§à¦›à§‡...
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-5 h-5" /> নিবন্ধন করুন
+                  <UserPlus className="w-5 h-5" /> à¦¨à¦¿à¦¬à¦¨à§à¦§à¦¨ à¦•à¦°à§à¦¨
                 </>
               )}
             </button>
@@ -276,12 +276,12 @@ export default function RegisterPage() {
         </div>
 
         <p className="text-center text-sm text-gray-600 mt-5">
-          ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
+          à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦†à¦›à§‡?{' '}
           <Link
             href="/login"
-            className="text-brand-700 font-semibold hover:text-brand-800 underline underline-offset-2"
+            className="text-[#0f4c2a] font-semibold hover:text-[#072d18] underline underline-offset-2"
           >
-            লগইন করুন
+            à¦²à¦—à¦‡à¦¨ à¦•à¦°à§à¦¨
           </Link>
         </p>
       </div>

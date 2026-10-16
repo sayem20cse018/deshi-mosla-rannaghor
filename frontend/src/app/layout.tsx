@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'দেশি মসলার রান্নাঘর | Deshi Moslar Rannaghar',
     template: '%s | দেশি মসলার রান্নাঘর',
   },
-  metadataBase: new URL('http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://deshi-moslar-rannaghar.vercel.app'),
   description:
     'বাংলাদেশের সেরা অনলাইন মসলা ও গ্রোসারি শপ। দেশীয় মসলা, চাল, ডাল, তেল এবং রান্নার প্রয়োজনীয় পণ্য ঘরে বসে অর্ডার করুন।',
   keywords: ['মসলা', 'গ্রোসারি', 'অনলাইন শপ', 'বাংলাদেশ', 'spices', 'grocery', 'deshi moslar'],
@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     locale: 'bn_BD',
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: 'দেশি মসলার রান্নাঘর',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
   },
   robots: { index: true, follow: true },
-  icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
+  icons: { icon: '/favicon.svg', apple: '/favicon.svg' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
-      <body className="min-h-screen bg-background font-bengali antialiased">
+      <body className="min-h-screen bg-background antialiased">
         <Providers>
           {children}
           <Toaster
@@ -39,11 +39,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#166534',
+                background: '#0f4c2a',
                 color: '#fff',
-                fontFamily: 'Hind Siliguri, sans-serif',
+                fontFamily: 'Manrope, Noto Sans Bengali, sans-serif',
               },
-              success: { style: { background: '#166534' } },
+              success: { style: { background: '#0f4c2a' } },
               error: { style: { background: '#dc2626' } },
             }}
           />

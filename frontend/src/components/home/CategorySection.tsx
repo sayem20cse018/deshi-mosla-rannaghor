@@ -35,13 +35,28 @@ const COLOR_MAP: Record<string, { color: string; border: string; text: string }>
     border: 'border-amber-100',
     text: 'text-amber-700',
   },
+  ata: {
+    color: 'from-amber-50 to-yellow-50',
+    border: 'border-amber-100',
+    text: 'text-amber-700',
+  },
   lobon: { color: 'from-slate-50 to-gray-50', border: 'border-slate-100', text: 'text-slate-700' },
   'chini-gur': {
     color: 'from-orange-50 to-red-50',
     border: 'border-orange-100',
     text: 'text-orange-700',
   },
+  chini: {
+    color: 'from-orange-50 to-red-50',
+    border: 'border-orange-100',
+    text: 'text-orange-700',
+  },
   'cha-kofi': {
+    color: 'from-stone-50 to-amber-50',
+    border: 'border-stone-100',
+    text: 'text-stone-700',
+  },
+  cha: {
     color: 'from-stone-50 to-amber-50',
     border: 'border-stone-100',
     text: 'text-stone-700',
@@ -56,6 +71,16 @@ const COLOR_MAP: Record<string, { color: string; border: string; text: string }>
     color: 'from-lime-50 to-green-50',
     border: 'border-lime-100',
     text: 'text-lime-700',
+  },
+  sauce: {
+    color: 'from-lime-50 to-green-50',
+    border: 'border-lime-100',
+    text: 'text-lime-700',
+  },
+  achar: {
+    color: 'from-yellow-50 to-orange-50',
+    border: 'border-yellow-100',
+    text: 'text-yellow-800',
   },
   modhu: {
     color: 'from-yellow-50 to-orange-50',

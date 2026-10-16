@@ -12,7 +12,7 @@ const SLIDES = [
     heading2: 'আসল স্বাদ',
     sub: 'নির্বাচিত দেশি মসলা ও নিত্যপ্রয়োজনীয় পণ্য, এখন আপনার দরজায়।',
     cta: { label: 'এখনই কিনুন', href: '/shop' },
-    cta2: { label: 'রেসিপি দেখুন', href: '/shop' },
+    cta2: { label: 'রেসিপি দেখুন', href: '/blog' },
     emoji: '🌶️',
     color: 'from-[#0a1f10] via-[#0f4c2a] to-[#1a6b3c]',
     dot: 'bg-green-400',

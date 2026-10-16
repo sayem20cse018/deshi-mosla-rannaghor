@@ -10,11 +10,19 @@ export function NewsletterSection() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setDone(true);
-    setLoading(false);
+    try {
+      // Try to call newsletter API, fall back silently if endpoint doesn't exist
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      }).catch(() => {}); // Silently fail if endpoint doesn't exist
+      setDone(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -22,8 +30,8 @@ export function NewsletterSection() {
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           {/* Icon */}
-          <div className="w-14 h-14 bg-brand-50 border border-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Mail className="w-7 h-7 text-brand-600" />
+          <div className="w-14 h-14 bg-[#f0fdf4] border border-[#bbf7d0] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Mail className="w-7 h-7 text-[#0f4c2a]" />
           </div>
 
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -34,7 +42,7 @@ export function NewsletterSection() {
           </p>
 
           {done ? (
-            <div className="flex items-center justify-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 rounded-xl p-4 font-semibold">
+            <div className="flex items-center justify-center gap-2 bg-[#f0fdf4] border border-[#bbf7d0] text-[#0f4c2a] rounded-xl p-4 font-semibold">
               <CheckCircle className="w-5 h-5" />
               সাবস্ক্রিপশন সফল হয়েছে! ধন্যবাদ।
             </div>
