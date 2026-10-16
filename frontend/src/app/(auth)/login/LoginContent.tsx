@@ -49,9 +49,14 @@ export default function LoginContent() {
       toast.success('লগইন সফল হয়েছে!');
       router.push(redirect);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'লগইন ব্যর্থ হয়েছে';
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        'লগইন ব্যর্থ হয়েছে। ইন্টারনেট সংযোগ ও তথ্য যাচাই করুন।';
       setErrors({ form: msg });
       toast.error(msg);
+      // Debug: log full error
+      console.error('Login error:', err.response?.data || err.message);
     }
   }
 

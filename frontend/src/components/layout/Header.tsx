@@ -341,7 +341,7 @@ export function Header() {
                     <ChevronDown className={cn('w-4 h-4 transition-transform duration-200', moreOpen && 'rotate-180')} />
                   </button>
                   {moreOpen && (
-                    <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl shadow-black/15 border border-gray-100 py-1.5 z-50 w-[204px] animate-fade-down">
+                    <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl shadow-black/15 border border-gray-100 py-1.5 z-[200] w-[204px] animate-fade-down">
                       {overflowCats.map(cat => (
                         <Link key={cat.slug} href={`/category/${cat.slug}`} onClick={() => setMoreOpen(false)}
                           className={cn('flex items-center gap-3 px-4 py-2.5 text-[13.5px] transition-colors',
