@@ -36,15 +36,41 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster
             position="top-center"
+            gutter={8}
             toastOptions={{
               duration: 3000,
               style: {
                 background: '#0f4c2a',
                 color: '#fff',
                 fontFamily: 'Manrope, Noto Sans Bengali, sans-serif',
+                fontSize: '14px',
+                fontWeight: '600',
+                borderRadius: '14px',
+                padding: '12px 18px',
+                boxShadow: '0 8px 32px rgba(15,76,42,0.25), 0 2px 8px rgba(0,0,0,0.12)',
+                maxWidth: '380px',
               },
-              success: { style: { background: '#0f4c2a' } },
-              error: { style: { background: '#dc2626' } },
+              success: {
+                style: {
+                  background: '#0f4c2a',
+                  color: '#fff',
+                },
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#0f4c2a',
+                },
+              },
+              error: {
+                style: {
+                  background: '#dc2626',
+                  color: '#fff',
+                  boxShadow: '0 8px 32px rgba(220,38,38,0.25), 0 2px 8px rgba(0,0,0,0.12)',
+                },
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#dc2626',
+                },
+              },
             }}
           />
         </Providers>
