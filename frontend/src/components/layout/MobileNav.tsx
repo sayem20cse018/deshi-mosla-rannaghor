@@ -2,22 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Grid2X2, ShoppingBag, Heart, ShoppingCart } from 'lucide-react';
+import { Home, Grid2X2, BookOpen, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart.store';
-import { useWishlistStore } from '@/store/wishlist.store';
 
-const NAV_ITEMS = [
-  { href: '/',            icon: Home,        label: 'হোম'      },
-  { href: '/categories',  icon: Grid2X2,     label: 'ক্যাটাগরি' },
-  { href: '/shop',        icon: ShoppingBag, label: 'শপ'        },
-  { href: '/account/wishlist', icon: Heart,  label: 'উইশলিস্ট' },
+// Home | Menu | Cart | Blog | Account — exact items kept
+const LEFT_ITEMS = [
+  { href: '/',           icon: Home,     label: 'Home'    },
+  { href: '/categories', icon: Grid2X2,  label: 'Menu'    },
+];
+const RIGHT_ITEMS = [
+  { href: '/blog',    icon: BookOpen, label: 'Blog'    },
+  { href: '/account', icon: User,     label: 'Account' },
 ];
 
 export function MobileNav() {
   const pathname  = usePathname();
   const { getItemCount, openCart } = useCartStore();
-  const wishCount = useWishlistStore((s) => s.items.length);
   const cartCount = getItemCount();
 
   const isActive = (href: string) =>
@@ -25,76 +26,188 @@ export function MobileNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white pb-safe"
-      style={{ boxShadow: '0 -1px 0 rgba(0,0,0,0.06), 0 -4px 12px rgba(0,0,0,0.04)' }}
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40"
+      style={{
+        background: 'linear-gradient(180deg, #c2410c 0%, #ea580c 60%, #d85a0b 100%)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        boxShadow: '0 -4px 24px rgba(194,65,12,0.4), 0 -1px 0 rgba(255,255,255,0.08) inset',
+      }}
       aria-label="মোবাইল নেভিগেশন"
     >
-      <div className="flex items-center h-[58px]">
+      <div className="flex items-center" style={{ height: '72px' }}>
 
-        {/* Left 4: Home, Categories, Shop, Wishlist */}
-        {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+        {/* LEFT: Home + Menu */}
+        {LEFT_ITEMS.map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
-          const isWish = href.includes('wishlist');
           return (
             <Link
               key={href}
               href={href}
-              className={cn(
-                'flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors',
-                active ? 'text-[#0f4c2a]' : 'text-gray-400',
-              )}
-              style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
+              className="flex flex-col items-center justify-center flex-1 h-full gap-[5px] transition-all duration-200 active:opacity-70 relative"
             >
-              {/* Icon with optional badge */}
-              <div className="relative">
-                <Icon
-                  className="w-[21px] h-[21px]"
-                  strokeWidth={active ? 2.5 : 1.75}
+              {/* Active indicator — top pill */}
+              {active && (
+                <span
+                  className="absolute top-0 left-1/2 -translate-x-1/2"
+                  style={{
+                    width: '32px',
+                    height: '3px',
+                    background: 'rgba(255,255,255,0.95)',
+                    borderRadius: '0 0 6px 6px',
+                    boxShadow: '0 0 8px rgba(255,255,255,0.6)',
+                  }}
                 />
-                {isWish && wishCount > 0 && (
-                  <span className="absolute -top-[6px] -right-[6px] min-w-[15px] h-[15px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-red-500 rounded-full border border-white leading-none">
-                    {wishCount > 9 ? '9+' : wishCount}
-                  </span>
-                )}
+              )}
+              <div
+                className="flex items-center justify-center transition-all duration-200"
+                style={{
+                  width: '40px',
+                  height: '32px',
+                  borderRadius: '10px',
+                  background: active ? 'rgba(255,255,255,0.2)' : 'transparent',
+                }}
+              >
+                <Icon
+                  style={{
+                    width: '25px',
+                    height: '25px',
+                    color: active ? 'white' : 'rgba(255,255,255,0.58)',
+                    strokeWidth: active ? 2.5 : 1.75,
+                    transition: 'all 0.2s',
+                  }}
+                />
               </div>
-              <span className={cn(
-                'text-[10px] font-semibold leading-none',
-                active ? 'text-[#0f4c2a]' : 'text-gray-400',
-              )}>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontWeight: active ? 700 : 500,
+                  color: active ? 'white' : 'rgba(255,255,255,0.58)',
+                  letterSpacing: '0.01em',
+                  lineHeight: 1,
+                  transition: 'all 0.2s',
+                }}
+              >
                 {label}
               </span>
-              {/* Active underline dot */}
-              <div className={cn(
-                'w-1 h-1 rounded-full transition-all duration-200',
-                active ? 'bg-[#0f4c2a] opacity-100' : 'opacity-0',
-              )} />
             </Link>
           );
         })}
 
-        {/* Cart — rightmost, pill style */}
+        {/* CENTER: Cart FAB */}
         <button
           onClick={openCart}
-          className="flex flex-col items-center justify-center gap-[3px] flex-1 h-full"
-          aria-label="কার্ট"
-          style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
+          className="flex flex-col items-center justify-center flex-1 h-full gap-[5px] relative active:opacity-80 transition-opacity"
+          aria-label="Cart"
         >
-          <div className="relative -mt-1">
-            {/* Elevated pill */}
-            <div className="w-[46px] h-[32px] rounded-[14px] flex items-center justify-center shadow-md"
-                 style={{ backgroundColor: '#0f4c2a', boxShadow: '0 4px 12px rgba(15,76,42,0.35)' }}>
-              <ShoppingCart className="w-[17px] h-[17px] text-white" strokeWidth={2.5} />
-            </div>
+          {/* Raised pill */}
+          <div
+            className="relative flex items-center justify-center transition-transform duration-150 active:scale-95"
+            style={{
+              width: '58px',
+              height: '42px',
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.24)',
+              border: '1.5px solid rgba(255,255,255,0.38)',
+              marginTop: '-12px',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.15) inset',
+            }}
+          >
+            <ShoppingCart
+              style={{ width: '24px', height: '24px', color: 'white', strokeWidth: 2.5 }}
+            />
             {cartCount > 0 && (
-              <span className="absolute -top-[5px] -right-[4px] min-w-[16px] h-[16px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-[#ea580c] rounded-full border border-white leading-none">
+              <span
+                className="absolute flex items-center justify-center text-white font-black leading-none"
+                style={{
+                  top: '-7px',
+                  right: '-7px',
+                  minWidth: '19px',
+                  height: '19px',
+                  padding: '0 3px',
+                  background: '#fff',
+                  color: '#ea580c',
+                  borderRadius: '10px',
+                  fontSize: '9.5px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontWeight: 900,
+                }}
+              >
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-bold leading-none" style={{ color: '#0f4c2a' }}>কার্ট</span>
-          <div className="w-1 h-1 rounded-full bg-transparent" />
+          <span
+            style={{
+              fontSize: '11px',
+              fontFamily: 'Manrope, sans-serif',
+              fontWeight: 700,
+              color: 'white',
+              letterSpacing: '0.01em',
+              lineHeight: 1,
+            }}
+          >
+            Cart
+          </span>
         </button>
 
+        {/* RIGHT: Blog + Account */}
+        {RIGHT_ITEMS.map(({ href, icon: Icon, label }) => {
+          const active = isActive(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center justify-center flex-1 h-full gap-[5px] transition-all duration-200 active:opacity-70 relative"
+            >
+              {active && (
+                <span
+                  className="absolute top-0 left-1/2 -translate-x-1/2"
+                  style={{
+                    width: '32px',
+                    height: '3px',
+                    background: 'rgba(255,255,255,0.95)',
+                    borderRadius: '0 0 6px 6px',
+                    boxShadow: '0 0 8px rgba(255,255,255,0.6)',
+                  }}
+                />
+              )}
+              <div
+                className="flex items-center justify-center transition-all duration-200"
+                style={{
+                  width: '40px',
+                  height: '32px',
+                  borderRadius: '10px',
+                  background: active ? 'rgba(255,255,255,0.2)' : 'transparent',
+                }}
+              >
+                <Icon
+                  style={{
+                    width: '25px',
+                    height: '25px',
+                    color: active ? 'white' : 'rgba(255,255,255,0.58)',
+                    strokeWidth: active ? 2.5 : 1.75,
+                    transition: 'all 0.2s',
+                  }}
+                />
+              </div>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontWeight: active ? 700 : 500,
+                  color: active ? 'white' : 'rgba(255,255,255,0.58)',
+                  letterSpacing: '0.01em',
+                  lineHeight: 1,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

@@ -83,8 +83,8 @@ export function Header() {
           DESKTOP ≥ lg
       ══════════════════════════════════ */}
       <div className="hidden lg:block">
-        {/* Sticky wrapper */}
-        <div className="sticky top-0 z-50">
+        {/* Sticky wrapper — z-[60] ensures More dropdown appears above hero */}
+        <div className="sticky top-0 z-[60]">
 
           {/* ── Main Header 96px ── */}
           <div
@@ -374,45 +374,50 @@ export function Header() {
       </div>
 
 
-      {/* ══════════════════════════════════
-          MOBILE < lg
-      ══════════════════════════════════ */}
-      <div className="lg:hidden sticky top-0 z-50">
-        <div className="bg-white border-b border-gray-100 shadow-sm">
-          <div className="flex items-center h-14 px-3 gap-2">
+      {/* ══ MOBILE < lg ════════════════════════════════ */}
+      <div className="lg:hidden sticky top-0 z-[60]">
+
+        {/* ── 1. Announcement Bar — ALWAYS TOP on mobile ── */}
+        <AnnouncementBar />
+
+        {/* ── 2. Main Header ── */}
+        <div className="bg-white border-b border-gray-100/80" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+          <div className="flex items-center px-3 sm:px-4" style={{ height: '72px', gap: '6px' }}>
             <button type="button" onClick={() => setDrawerOpen(o => !o)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0">
-              {drawerOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              className="flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors flex-shrink-0"
+              style={{ width: '48px', height: '48px' }}>
+              {drawerOpen
+                ? <X className="w-[24px] h-[24px]" strokeWidth={2} />
+                : <Menu className="w-[24px] h-[24px]" strokeWidth={2} />
+              }
             </button>
 
-            <Link href="/" className="flex-1 flex flex-col items-center gap-0.5 min-w-0">
-              <span className="text-[#0f4c2a] font-black text-[15px] leading-tight tracking-tight truncate" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
+            <Link href="/" className="flex-1 flex flex-col items-center justify-center gap-[3px] min-w-0">
+              <span className="text-[#0f4c2a] font-black leading-tight tracking-tight truncate"
+                    style={{ fontSize: '17px', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                 দেশি মসলার রান্নাঘর
               </span>
-              <span className="text-gray-400 text-[9px] font-semibold tracking-[0.15em] uppercase leading-none" style={{fontFamily:'Manrope,sans-serif'}}>
+              <span className="text-gray-400 font-semibold uppercase leading-none"
+                    style={{ fontSize: '9px', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.14em' }}>
                 Deshi Moslar Rannaghar
               </span>
             </Link>
 
-            <div className="flex items-center gap-0.5 flex-shrink-0">
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {/* Search */}
               <button type="button" onClick={() => setMobileSearch(o => !o)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
-                <Search className="w-5 h-5" strokeWidth={2} />
+                className="flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                style={{ width: '48px', height: '48px' }}>
+                <Search className="w-[24px] h-[24px]" strokeWidth={2} />
               </button>
-              <Link href="/account/wishlist"
-                className="relative w-9 h-9 flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
-                <Heart className="w-5 h-5" strokeWidth={2} />
-                {wishCount > 0 && (
-                  <span className="absolute -top-[3px] -right-[3px] min-w-[15px] h-[15px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-red-500 rounded-full border border-white leading-none">
-                    {wishCount > 9 ? '9+' : wishCount}
-                  </span>
-                )}
-              </Link>
+              {/* Cart */}
               <button type="button" onClick={openCart}
-                className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-[#0f4c2a] text-white hover:bg-[#0a3d22] transition-colors ml-0.5">
-                <ShoppingCart className="w-[18px] h-[18px]" strokeWidth={2} />
+                className="relative flex items-center justify-center rounded-xl text-white hover:opacity-90 active:opacity-80 transition-all"
+                style={{ width: '48px', height: '48px', backgroundColor: '#0f4c2a' }}>
+                <ShoppingCart className="w-[24px] h-[24px]" strokeWidth={2} />
                 {itemCount > 0 && (
-                  <span className="absolute -top-[3px] -right-[3px] min-w-[15px] h-[15px] px-0.5 flex items-center justify-center text-[8px] font-black text-white bg-[#ea580c] rounded-full border border-[#0f4c2a] leading-none">
+                  <span className="absolute -top-[5px] -right-[5px] min-w-[19px] h-[19px] px-0.5 flex items-center justify-center text-[9px] font-black text-white rounded-full border-[1.5px] border-white leading-none"
+                        style={{ backgroundColor: '#ea580c' }}>
                     {itemCount > 9 ? '9+' : itemCount}
                   </span>
                 )}
@@ -425,10 +430,6 @@ export function Header() {
               <SearchBar mobile className="w-full" lang={lang} />
             </div>
           </div>
-        </div>
-
-        <div className={cn('overflow-hidden transition-all duration-300 ease-in-out', mbAnnHide ? 'max-h-0 opacity-0' : 'max-h-[40px] opacity-100')}>
-          <AnnouncementBar />
         </div>
       </div>
 
