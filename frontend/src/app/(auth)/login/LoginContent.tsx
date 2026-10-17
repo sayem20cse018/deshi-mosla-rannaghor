@@ -59,13 +59,13 @@ export default function LoginContent() {
 
       {/* ══ LEFT PANEL — Brand visual (desktop only) ══════════════ */}
       <div className="hidden lg:flex lg:w-[48%] xl:w-[52%] relative overflow-hidden flex-col justify-between"
-           style={{ background: 'linear-gradient(145deg, #0a1f10 0%, #0f4c2a 50%, #1a6b3c 100%)' }}>
+           style={{ background: 'linear-gradient(145deg, #7c1d06 0%, #c2410c 50%, #ea580c 100%)' }}>
 
         {/* Decorative circles */}
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-10"
-             style={{ background: 'radial-gradient(circle, #ea580c, transparent)' }} />
+             style={{ background: 'radial-gradient(circle, #fff7ed, transparent)' }} />
         <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full opacity-[0.07]"
-             style={{ background: 'radial-gradient(circle, #4ade80, transparent)' }} />
+             style={{ background: 'radial-gradient(circle, #fed7aa, transparent)' }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.04]"
              style={{ background: 'radial-gradient(circle, #ffffff, transparent)' }} />
 
@@ -87,13 +87,13 @@ export default function LoginContent() {
           <div className="mb-8">
             <span className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-full mb-6"
                   style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ea580c] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               ১০০% খাঁটি দেশীয় পণ্য
             </span>
             <h2 className="text-white font-black text-4xl xl:text-5xl leading-tight mb-4"
                 style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
               প্রতিটি রান্নায়<br />
-              <span style={{ color: '#fb923c' }}>আসল স্বাদ</span>
+              <span style={{ color: '#fff7ed' }}>আসল স্বাদ</span>
             </h2>
             <p className="text-white/60 text-base leading-relaxed max-w-sm"
                style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
@@ -109,7 +109,7 @@ export default function LoginContent() {
               { icon: Star,        text: '১০,০০০+ সন্তুষ্ট গ্রাহক' },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center flex-shrink-0">
                   <Icon className="w-4 h-4 text-white/80" />
                 </div>
                 <span className="text-white/70 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{text}</span>
@@ -118,7 +118,7 @@ export default function LoginContent() {
           </div>
 
           {/* Testimonial */}
-          <div className="bg-white/[0.07] border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <div className="bg-white/[0.10] border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
             <div className="flex gap-0.5 mb-2">
               {[1,2,3,4,5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}
             </div>
@@ -199,7 +199,7 @@ export default function LoginContent() {
                       'focus:outline-none focus:ring-2 focus:bg-white',
                       errors.identifier
                         ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
-                        : 'border-gray-200 focus:ring-[#0f4c2a]/10 focus:border-[#0f4c2a]',
+                        : 'border-gray-200 focus:ring-[#ea580c]/10 focus:border-[#ea580c]',
                     )}
                     autoComplete="username"
                     inputMode="email"
@@ -222,7 +222,7 @@ export default function LoginContent() {
                     পাসওয়ার্ড
                   </label>
                   <Link href="/forgot-password"
-                        className="text-xs font-semibold text-[#0f4c2a] hover:text-[#072d18] transition-colors"
+                        className="text-xs font-semibold text-[#c2410c] hover:text-[#7c1d06] transition-colors"
                         style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                     ভুলে গেছেন?
                   </Link>
@@ -238,7 +238,7 @@ export default function LoginContent() {
                       'focus:outline-none focus:ring-2 focus:bg-white',
                       errors.password
                         ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
-                        : 'border-gray-200 focus:ring-[#0f4c2a]/10 focus:border-[#0f4c2a]',
+                        : 'border-gray-200 focus:ring-[#ea580c]/10 focus:border-[#ea580c]',
                     )}
                     autoComplete="current-password"
                     style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
@@ -265,8 +265,8 @@ export default function LoginContent() {
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-2 text-white font-black py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
-                  background: isLoading ? '#0f4c2a' : 'linear-gradient(135deg, #0f4c2a 0%, #1a6b3c 100%)',
-                  boxShadow: '0 6px 20px rgba(15,76,42,0.3)',
+                  background: isLoading ? '#c2410c' : 'linear-gradient(135deg, #c2410c 0%, #ea580c 100%)',
+                  boxShadow: '0 6px 20px rgba(194,65,12,0.35)',
                   fontFamily: 'Noto Sans Bengali, sans-serif',
                 }}
               >
@@ -290,7 +290,7 @@ export default function LoginContent() {
 
             {/* Register CTA inside card */}
             <Link href="/register"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-100 hover:border-[#0f4c2a]/20 hover:bg-[#f0fdf4] text-gray-700 hover:text-[#0f4c2a] font-semibold text-sm transition-all duration-200 group"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-100 hover:border-[#ea580c]/20 hover:bg-[#fff7ed] text-gray-700 hover:text-[#c2410c] font-semibold text-sm transition-all duration-200 group"
                   style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
               নতুন অ্যাকাউন্ট তৈরি করুন
               <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -298,8 +298,8 @@ export default function LoginContent() {
           </div>
 
           {/* Test credentials */}
-          <div className="mt-4 bg-white border border-[#bbf7d0] rounded-2xl p-4 shadow-sm">
-            <p className="text-[11px] font-black text-[#0f4c2a] uppercase tracking-[0.08em] mb-2"
+          <div className="mt-4 bg-white border border-[#fed7aa] rounded-2xl p-4 shadow-sm">
+            <p className="text-[11px] font-black text-[#c2410c] uppercase tracking-[0.08em] mb-2"
                style={{ fontFamily: 'Manrope, sans-serif' }}>🧪 টেস্ট অ্যাকাউন্ট</p>
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs text-gray-600">
