@@ -115,9 +115,9 @@ export default function ProductDetailPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumb */}
-      <div className="border-b border-gray-100 bg-gray-50">
+      <div className="border-b border-gray-200/60 bg-white">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-xs text-gray-400">
+          <nav className="flex items-center gap-1.5 text-xs text-gray-400" style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}>
             <Link href="/" className="hover:text-forest-600">
               হোম
             </Link>
@@ -174,7 +174,7 @@ export default function ProductDetailPage() {
 
             {/* Name */}
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                 {product.name}
               </h1>
               {product.nameEn && <p className="text-gray-400 text-sm mt-1">{product.nameEn}</p>}
@@ -191,18 +191,20 @@ export default function ProductDetailPage() {
             )}
 
             {/* Price */}
-            <div className="flex items-end gap-3">
-              <span className="text-3xl font-black text-forest-700">
-                {formatPriceEn(effectivePrice)}
-              </span>
-              {discountPrice && (
-                <>
-                  <span className="text-lg text-gray-400 line-through">{formatPriceEn(price)}</span>
-                  <span className="bg-spice-500 text-white text-sm font-bold px-2.5 py-1 rounded-xl">
-                    {discountPct}% ছাড়
-                  </span>
-                </>
-              )}
+            <div className="bg-gradient-to-r from-forest-50 to-white border border-forest-100/50 rounded-2xl p-4">
+              <div className="flex items-end gap-3">
+                <span className="text-3xl font-black text-forest-700">
+                  {formatPriceEn(effectivePrice)}
+                </span>
+                {discountPrice && (
+                  <>
+                    <span className="text-lg text-gray-400 line-through">{formatPriceEn(price)}</span>
+                    <span className="bg-spice-500 text-white text-sm font-bold px-2.5 py-1 rounded-xl">
+                      {discountPct}% ছাড়
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Weight / Origin / SKU */}
@@ -222,19 +224,19 @@ export default function ProductDetailPage() {
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-2 block">পরিমাণ</label>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
                     <button
                       onClick={() => setQty((q) => Math.max(product.minOrderQty ?? 1, q - 1))}
                       disabled={qty <= (product.minOrderQty ?? 1)}
-                      className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+                      className="w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="w-12 text-center font-bold text-gray-900">{qty}</span>
+                    <span className="w-14 text-center font-black text-lg text-gray-900">{qty}</span>
                     <button
                       onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
                       disabled={qty >= maxQty}
-                      className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+                      className="w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -260,10 +262,10 @@ export default function ProductDetailPage() {
                 onClick={handleAddToCart}
                 disabled={isOOS || addingCart}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all',
+                  'flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] transition-all',
                   isOOS
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-forest-700 hover:bg-forest-800 text-white active:scale-95',
+                    : 'bg-forest-700 hover:bg-forest-800 text-white active:scale-95 shadow-lg shadow-forest-700/20',
                 )}
               >
                 {addingCart ? (
@@ -277,7 +279,7 @@ export default function ProductDetailPage() {
               {!isOOS && (
                 <button
                   onClick={handleBuyNow}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm bg-spice-500 hover:bg-spice-600 text-white active:scale-95 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] bg-spice-500 hover:bg-spice-600 text-white active:scale-95 transition-all shadow-lg shadow-spice-600/25"
                 >
                   <Zap className="w-4 h-4" /> এখনই কিনুন
                 </button>
@@ -300,7 +302,7 @@ export default function ProductDetailPage() {
                   }
                 }}
                 className={cn(
-                  'w-12 h-12 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all',
+                  'w-[54px] h-[54px] flex-shrink-0 rounded-xl border flex items-center justify-center transition-all',
                   isWishlisted(product?.id ?? '')
                     ? 'bg-red-50 border-red-200 text-red-500'
                     : 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-400',
@@ -316,7 +318,7 @@ export default function ProductDetailPage() {
                     .writeText(window.location.href)
                     .then(() => toast.success('লিংক কপি হয়েছে'))
                 }
-                className="w-12 h-12 flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-forest-200 hover:text-forest-600 transition-colors"
+                className="w-[54px] h-[54px] flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-forest-200 hover:text-forest-600 transition-colors"
                 aria-label="শেয়ার"
               >
                 <Share2 className="w-4 h-4" />
@@ -324,15 +326,15 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
               {[
                 { icon: Truck, label: 'দ্রুত ডেলিভারি', sub: '২-৩ কার্যদিবসে' },
                 { icon: RotateCcw, label: 'সহজ রিটার্ন', sub: '৭ দিনের মধ্যে' },
                 { icon: Shield, label: '১০০% খাঁটি', sub: 'গুণমান নিশ্চিত' },
                 { icon: Check, label: 'ক্যাশ অন ডেলিভারি', sub: 'সারাদেশে' },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex items-center gap-2.5 bg-gray-50 rounded-xl p-3">
-                  <div className="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div key={label} className="flex items-center gap-2.5 bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
+                  <div className="w-8 h-8 bg-gradient-to-br from-forest-50 to-forest-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4 h-4 text-forest-700" />
                   </div>
                   <div>
@@ -354,9 +356,9 @@ export default function ProductDetailPage() {
                 key={tab}
                 onClick={() => setActiveTab(i)}
                 className={cn(
-                  'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px',
+                  'px-5 py-3 text-sm font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px',
                   activeTab === i
-                    ? 'text-forest-700 border-forest-600'
+                    ? 'text-forest-700 border-forest-600 font-bold'
                     : 'text-gray-500 border-transparent hover:text-gray-700',
                 )}
               >
@@ -391,7 +393,7 @@ export default function ProductDetailPage() {
             ]
               .filter((r) => r.value)
               .map((row) => (
-                <div key={row.label} className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
+                <div key={row.label} className="flex items-start gap-3 bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
                   <span className="text-gray-500 text-xs font-medium w-28 flex-shrink-0">
                     {row.label}
                   </span>

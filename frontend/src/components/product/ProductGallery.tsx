@@ -34,7 +34,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   return (
     <div className="space-y-3">
       {/* Main image */}
-      <div className="relative aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group">
+      <div className="relative aspect-square bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 shadow-sm group">
         {hasImages && current ? (
           <>
             <Image
@@ -48,7 +48,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             {/* Zoom btn */}
             <button
               onClick={() => setLightbox(true)}
-              className="absolute top-3 right-3 w-9 h-9 bg-white/90 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+              className="absolute top-3 right-3 w-10 h-10 bg-white/90 rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow"
               aria-label="বড় করে দেখুন"
             >
               <ZoomIn className="w-4 h-4 text-gray-600" />
@@ -65,13 +65,13 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <>
             <button
               onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -94,17 +94,18 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               key={i}
               onClick={() => setActive(i)}
               className={cn(
-                'flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all',
+                'flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all',
                 i === active
-                  ? 'border-brand-600 shadow-sm'
+                  ? 'border-forest-600 shadow-md'
                   : 'border-gray-100 hover:border-gray-300',
               )}
+              style={{ width: '72px', height: '72px' }}
             >
               <Image
                 src={img.url}
                 alt={img.altText ?? `${productName} ${i + 1}`}
-                width={64}
-                height={64}
+                width={72}
+                height={72}
                 className="w-full h-full object-cover"
               />
             </button>

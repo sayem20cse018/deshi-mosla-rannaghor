@@ -198,7 +198,7 @@ function ReviewCard({ review, currentUserId, onEdit, onDelete }: {
   const isOwn = currentUserId && review.user?.id === currentUserId;
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 transition-colors">
+    <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-start justify-between gap-3 mb-3">
         {/* User */}
         <div className="flex items-center gap-2.5">
@@ -339,7 +339,7 @@ export function ReviewSection({
   return (
     <section className="mt-10" id="reviews">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-black text-gray-900">গ্রাহকদের রিভিউ</h2>
+        <h2 className="text-2xl font-black text-gray-900">গ্রাহকদের রিভিউ</h2>
         {total > 0 && (
           <div className="flex items-center gap-2">
             <select value={sort} onChange={(e) => setSort(e.target.value as any)}
@@ -362,8 +362,8 @@ export function ReviewSection({
       ) : (
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {/* Rating summary */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
-            <div className="text-6xl font-black text-gray-900 leading-none">{avg}</div>
+          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200/60 shadow-sm rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+            <div className="text-7xl font-black text-gray-900 leading-none">{avg}</div>
             <StarRating rating={avg} showCount={false} size="md" className="my-2 justify-center" />
             <p className="text-gray-500 text-sm font-medium">{total} টি রিভিউ</p>
 
@@ -411,7 +411,7 @@ export function ReviewSection({
       )}
 
       {/* ── Write / Edit Review ── */}
-      <div id="review-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div id="review-form" className="bg-gradient-to-b from-white to-gray-50/50 rounded-2xl border border-gray-200 shadow-sm p-6">
         {!isAuthenticated ? (
           <div className="text-center py-4">
             <Star className="w-10 h-10 text-amber-300 mx-auto mb-3 fill-amber-300" />
