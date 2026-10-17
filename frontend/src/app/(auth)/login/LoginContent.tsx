@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, LogIn, Phone, Mail, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, LogIn, Phone, Mail, Loader2, ShieldCheck, Truck, Star, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useCartStore } from '@/store/cart.store';
 import { cn } from '@/lib/utils';
@@ -39,13 +39,8 @@ export default function LoginContent() {
     try {
       const hadGuestItems = guestItems.length > 0;
       await login(identifier.trim(), password);
-
-      // Cart merge: sync guest → server, then fetch merged cart
-      if (hadGuestItems) {
-        await syncToServer();
-      }
+      if (hadGuestItems) await syncToServer();
       await fetchFromServer();
-
       toast.success('লগইন সফল হয়েছে!');
       router.push(redirect);
     } catch (err: any) {
@@ -55,153 +50,279 @@ export default function LoginContent() {
         'লগইন ব্যর্থ হয়েছে। ইন্টারনেট সংযোগ ও তথ্য যাচাই করুন।';
       setErrors({ form: msg });
       toast.error(msg);
-      // Debug: log full error
       console.error('Login error:', err.response?.data || err.message);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf4] via-white to-[#fff7ed] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
+    <div className="min-h-screen flex">
+
+      {/* ══ LEFT PANEL — Brand visual (desktop only) ══════════════ */}
+      <div className="hidden lg:flex lg:w-[48%] xl:w-[52%] relative overflow-hidden flex-col justify-between"
+           style={{ background: 'linear-gradient(145deg, #0a1f10 0%, #0f4c2a 50%, #1a6b3c 100%)' }}>
+
+        {/* Decorative circles */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-10"
+             style={{ background: 'radial-gradient(circle, #ea580c, transparent)' }} />
+        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full opacity-[0.07]"
+             style={{ background: 'radial-gradient(circle, #4ade80, transparent)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.04]"
+             style={{ background: 'radial-gradient(circle, #ffffff, transparent)' }} />
+
+        {/* Top — Logo */}
+        <div className="relative z-10 p-10">
+          <Link href="/" className="inline-flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center backdrop-blur-sm">
+              <span className="text-white font-black text-base" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দম</span>
+            </div>
+            <div>
+              <p className="text-white font-black text-base leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দেশি মসলার রান্নাঘর</p>
+              <p className="text-white/50 text-[11px] font-semibold tracking-[0.15em] uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Deshi Moslar Rannaghar</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Middle — Hero text */}
+        <div className="relative z-10 px-10 pb-6">
+          <div className="mb-8">
+            <span className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-full mb-6"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ea580c] animate-pulse" />
+              ১০০% খাঁটি দেশীয় পণ্য
+            </span>
+            <h2 className="text-white font-black text-4xl xl:text-5xl leading-tight mb-4"
+                style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              প্রতিটি রান্নায়<br />
+              <span style={{ color: '#fb923c' }}>আসল স্বাদ</span>
+            </h2>
+            <p className="text-white/60 text-base leading-relaxed max-w-sm"
+               style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              দেশি মসলা ও গ্রোসারি পণ্য — সরাসরি আপনার দরজায়।
+            </p>
+          </div>
+
+          {/* Trust points */}
+          <div className="space-y-3 mb-10">
+            {[
+              { icon: ShieldCheck, text: '১০০% খাঁটি ও মানসম্পন্ন পণ্য' },
+              { icon: Truck,       text: 'সারাদেশে দ্রুত ডেলিভারি' },
+              { icon: Star,        text: '১০,০০০+ সন্তুষ্ট গ্রাহক' },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-4 h-4 text-white/80" />
+                </div>
+                <span className="text-white/70 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonial */}
+          <div className="bg-white/[0.07] border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
+            <div className="flex gap-0.5 mb-2">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}
+            </div>
+            <p className="text-white/75 text-sm leading-relaxed italic"
+               style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              &ldquo;মসলার গুণমান অসাধারণ। প্রতিবারই অর্ডার করি, কখনো হতাশ হইনি।&rdquo;
+            </p>
+            <p className="text-white/40 text-xs mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>— রহিম উদ্দিন, ঢাকা</p>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div className="relative z-10 px-10 pb-8">
+          <p className="text-white/25 text-xs" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            © 2025 দেশি মসলার রান্নাঘর
+          </p>
+        </div>
+      </div>
+
+      {/* ══ RIGHT PANEL — Login form ════════════════════════════ */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 bg-gray-50 overflow-y-auto">
+
+        {/* Mobile logo */}
+        <div className="lg:hidden w-full max-w-sm mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-            <div className="w-12 h-12 rounded-2xl bg-[#0f4c2a] flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">দম</span>
+            <div className="w-11 h-11 rounded-2xl bg-[#0f4c2a] flex items-center justify-center shadow-lg">
+              <span className="text-white font-black text-base" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দম</span>
             </div>
             <div className="text-left">
-              <p className="text-[#0f4c2a] font-bold text-base leading-tight">দেশি মসলার</p>
-              <p className="text-[#ea580c] text-sm font-medium">রান্নাঘর</p>
+              <p className="text-[#0f4c2a] font-black text-base leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দেশি মসলার রান্নাঘর</p>
+              <p className="text-[#ea580c] text-xs font-semibold tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Deshi Moslar Rannaghar</p>
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-6 mb-1">
-            আপনার অ্যাকাউন্টে লগইন করুন
-          </h1>
-          <p className="text-gray-500 text-sm">ইমেইল বা ফোন নম্বর দিয়ে লগইন করুন</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          {/* Global error */}
-          {errors.form && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
-              <span className="flex-shrink-0">⚠️</span> {errors.form}
-            </div>
-          )}
+        <div className="w-full max-w-sm">
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
-            {/* Identifier */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                ইমেইল বা ফোন নম্বর
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {identifier.includes('@') ? (
-                    <Mail className="w-4 h-4" />
-                  ) : (
-                    <Phone className="w-4 h-4" />
-                  )}
+          {/* Heading */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-black text-gray-900 mb-1.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              স্বাগতম 👋
+            </h1>
+            <p className="text-gray-500 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              আপনার অ্যাকাউন্টে লগইন করুন
+            </p>
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-7">
+
+            {/* Global error */}
+            {errors.form && (
+              <div className="mb-5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-2xl flex items-center gap-2"
+                   style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                <span className="flex-shrink-0 text-base">⚠️</span> {errors.form}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+
+              {/* Identifier */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-[0.08em] mb-2"
+                       style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  ইমেইল বা ফোন নম্বর
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                    {identifier.includes('@') ? <Mail className="w-4 h-4" /> : <Phone className="w-4 h-4" />}
+                  </div>
+                  <input
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="rahim@example.com বা 01700000000"
+                    className={cn(
+                      'w-full rounded-xl border bg-gray-50 px-4 py-3 pl-10 text-sm placeholder:text-gray-400 transition-all duration-200',
+                      'focus:outline-none focus:ring-2 focus:bg-white',
+                      errors.identifier
+                        ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
+                        : 'border-gray-200 focus:ring-[#0f4c2a]/10 focus:border-[#0f4c2a]',
+                    )}
+                    autoComplete="username"
+                    inputMode="email"
+                    style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
+                  />
                 </div>
-                <input
-                  type="text"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="rahim@example.com অথবা 01700000000"
-                  className={cn(
-                    'input-base pl-9',
-                    errors.identifier && 'border-red-400 focus:border-red-500 focus:ring-red-200',
-                  )}
-                  autoComplete="username"
-                  inputMode="email"
-                />
+                {errors.identifier && (
+                  <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1"
+                     style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                    ⚠ {errors.identifier}
+                  </p>
+                )}
               </div>
-              {errors.identifier && (
-                <p className="text-red-500 text-xs mt-1">{errors.identifier}</p>
-              )}
+
+              {/* Password */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.08em]"
+                         style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    পাসওয়ার্ড
+                  </label>
+                  <Link href="/forgot-password"
+                        className="text-xs font-semibold text-[#0f4c2a] hover:text-[#072d18] transition-colors"
+                        style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                    ভুলে গেছেন?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPw ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="আপনার পাসওয়ার্ড"
+                    className={cn(
+                      'w-full rounded-xl border bg-gray-50 px-4 py-3 pr-11 text-sm placeholder:text-gray-400 transition-all duration-200',
+                      'focus:outline-none focus:ring-2 focus:bg-white',
+                      errors.password
+                        ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
+                        : 'border-gray-200 focus:ring-[#0f4c2a]/10 focus:border-[#0f4c2a]',
+                    )}
+                    autoComplete="current-password"
+                    style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((s) => !s)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                    ⚠ {errors.password}
+                  </p>
+                )}
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 text-white font-black py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{
+                  background: isLoading ? '#0f4c2a' : 'linear-gradient(135deg, #0f4c2a 0%, #1a6b3c 100%)',
+                  boxShadow: '0 6px 20px rgba(15,76,42,0.3)',
+                  fontFamily: 'Noto Sans Bengali, sans-serif',
+                }}
+              >
+                {isLoading ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> লগইন হচ্ছে...</>
+                ) : (
+                  <><LogIn className="w-5 h-5" /> লগইন করুন</>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-100" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-white px-3 text-xs text-gray-400" style={{ fontFamily: 'Manrope, sans-serif' }}>অথবা</span>
+              </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-semibold text-gray-700">পাসওয়ার্ড</label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-brand-600 hover:text-brand-800 font-medium"
-                >
-                  পাসওয়ার্ড ভুলে গেছেন?
-                </Link>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPw ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="আপনার পাসওয়ার্ড দিন"
-                  className={cn(
-                    'input-base pr-10',
-                    errors.password && 'border-red-400 focus:border-red-500 focus:ring-red-200',
-                  )}
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  tabIndex={-1}
-                >
-                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-            </div>
+            {/* Register CTA inside card */}
+            <Link href="/register"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-100 hover:border-[#0f4c2a]/20 hover:bg-[#f0fdf4] text-gray-700 hover:text-[#0f4c2a] font-semibold text-sm transition-all duration-200 group"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              নতুন অ্যাকাউন্ট তৈরি করুন
+              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-[#0f4c2a] hover:bg-[#0a3d22] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#0f4c2a]/20 text-base"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" /> লগইন হচ্ছে...
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5" /> লগইন করুন
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-100" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-white px-3 text-xs text-gray-400">অথবা</span>
+          {/* Test credentials */}
+          <div className="mt-4 bg-white border border-[#bbf7d0] rounded-2xl p-4 shadow-sm">
+            <p className="text-[11px] font-black text-[#0f4c2a] uppercase tracking-[0.08em] mb-2"
+               style={{ fontFamily: 'Manrope, sans-serif' }}>🧪 টেস্ট অ্যাকাউন্ট</p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <span className="w-4 text-center">📧</span>
+                <span style={{ fontFamily: 'Manrope, sans-serif' }}>rahim@test.com</span>
+                <span className="text-gray-300">•</span>
+                <span style={{ fontFamily: 'Manrope, sans-serif' }}>Customer@123</span>
+              </div>
+              <p className="text-gray-400 text-[10px] pl-6" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                বা: test@deshimoslar.com / Test@12345
+              </p>
             </div>
           </div>
 
-          {/* Demo credentials */}
-          <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-3 text-xs text-gray-600 space-y-1">
-            <p className="font-semibold text-[#0f4c2a] mb-1.5">🧪 টেস্ট অ্যাকাউন্ট:</p>
-            <p>📧 rahim@test.com&nbsp;&nbsp;&nbsp;🔑 Customer@123</p>
-            <p className="text-gray-400 text-[10px] mt-1">অথবা: test@deshimoslar.com / Test@12345</p>
+          {/* Back to shop */}
+          <div className="text-center mt-5">
+            <Link href="/"
+                  className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              ← হোম পেজে ফিরুন
+            </Link>
           </div>
         </div>
-
-        {/* Register link */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          নতুন গ্রাহক?{' '}
-          <Link
-            href="/register"
-            className="text-[#0f4c2a] font-semibold hover:text-[#072d18] underline underline-offset-2"
-          >
-            নিবন্ধন করুন
-          </Link>
-        </p>
       </div>
     </div>
   );
