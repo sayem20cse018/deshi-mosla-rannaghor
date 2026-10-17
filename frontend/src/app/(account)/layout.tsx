@@ -37,7 +37,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pb-[80px] lg:pb-0">
       <div className="container mx-auto px-4 py-6">
         {/* Page header */}
         <div className="flex items-center justify-between mb-6">
