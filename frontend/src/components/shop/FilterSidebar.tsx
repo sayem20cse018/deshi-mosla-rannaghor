@@ -41,7 +41,7 @@ function Accordion({
     <div className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center justify-between w-full text-sm font-semibold text-gray-800 py-1"
+        className="flex items-center justify-between w-full text-sm font-bold text-gray-800 py-1"
       >
         {title}
         <ChevronDown
@@ -105,14 +105,14 @@ export function FilterSidebar({
   }
 
   return (
-    <div className={cn('bg-white rounded-2xl border border-gray-100 p-4', className)}>
+    <div className={cn('bg-white rounded-2xl border border-gray-100 p-4 shadow-sm', className)}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-brand-600" />
+          <SlidersHorizontal className="w-4 h-4 text-[#0f4c2a]" />
           <span className="font-bold text-gray-900 text-sm">ফিল্টার</span>
           {activeCount > 0 && (
-            <span className="bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            <span className="bg-[#0f4c2a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
               {activeCount}
             </span>
           )}
@@ -142,7 +142,7 @@ export function FilterSidebar({
             className={cn(
               'w-full text-left text-sm px-3 py-2 rounded-xl transition-colors',
               !filters.category
-                ? 'bg-brand-50 text-brand-700 font-semibold'
+                ? 'bg-[#f0fdf4] text-[#0f4c2a] font-bold'
                 : 'hover:bg-gray-50 text-gray-700',
             )}
           >
@@ -157,7 +157,7 @@ export function FilterSidebar({
                 className={cn(
                   'w-full text-left text-sm px-3 py-2 rounded-xl transition-colors flex items-center justify-between',
                   filters.category === cat.slug
-                    ? 'bg-brand-50 text-brand-700 font-semibold'
+                    ? 'bg-[#f0fdf4] text-[#0f4c2a] font-bold'
                     : 'hover:bg-gray-50 text-gray-700',
                 )}
               >
@@ -198,7 +198,7 @@ export function FilterSidebar({
               />
             </div>
           </div>
-          <button onClick={applyPrice} className="w-full btn-primary text-xs py-2">
+          <button onClick={applyPrice} className="w-full btn-primary text-xs py-2 active:scale-95 transition-transform">
             মূল্য প্রয়োগ করুন
           </button>
           {/* Quick price presets */}
@@ -219,7 +219,7 @@ export function FilterSidebar({
                 className={cn(
                   'text-[11px] px-2.5 py-1 rounded-lg border transition-colors',
                   filters.minPrice === mn
-                    ? 'bg-brand-50 border-brand-300 text-brand-700 font-semibold'
+                    ? 'bg-[#f0fdf4] border-[#0f4c2a]/30 text-[#0f4c2a] font-bold'
                     : 'border-gray-200 text-gray-600 hover:border-brand-200',
                 )}
               >

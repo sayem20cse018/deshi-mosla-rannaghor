@@ -29,11 +29,11 @@ export function ProductGrid({ products, loading, view = 'grid', emptyMessage }: 
   if (!products.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-          <PackageSearch className="w-10 h-10 text-gray-300" />
+        <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center mb-5 shadow-inner">
+          <PackageSearch className="w-11 h-11 text-gray-300" />
         </div>
-        <h3 className="text-gray-700 font-semibold text-lg mb-1">কোনো পণ্য পাওয়া যায়নি</h3>
-        <p className="text-gray-400 text-sm max-w-xs">
+        <h3 className="text-gray-800 font-black text-lg mb-2" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>কোনো পণ্য পাওয়া যায়নি</h3>
+        <p className="text-gray-400 text-sm max-w-xs leading-relaxed" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
           {emptyMessage ?? 'অন্য ফিল্টার বা সার্চ ব্যবহার করে দেখুন।'}
         </p>
       </div>

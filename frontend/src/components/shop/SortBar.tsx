@@ -49,12 +49,12 @@ export function SortBar({
   }, []);
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-white rounded-2xl border border-gray-100 px-4 py-3">
+    <div className="flex items-center justify-between gap-3 bg-white rounded-2xl border border-gray-100 px-4 py-3 shadow-sm">
       {/* Left: filter toggle (mobile) + count */}
       <div className="flex items-center gap-3">
         <button
           onClick={onFilterToggle}
-          className="md:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-200 hover:border-brand-300 transition-colors"
+          className="md:hidden flex items-center gap-1.5 text-sm font-bold text-white bg-[#0f4c2a] px-3.5 py-2 rounded-xl shadow-sm active:opacity-80 transition-opacity"
         >
           <SlidersHorizontal className="w-4 h-4" /> ফিল্টার
         </button>
@@ -73,7 +73,7 @@ export function SortBar({
         <div ref={ref} className="relative">
           <button
             onClick={() => setOpen((o) => !o)}
-            className="flex items-center gap-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 hover:border-brand-300 px-3 py-2 rounded-xl transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-300 px-3 py-2 rounded-xl transition-colors shadow-sm"
           >
             <span className="hidden sm:inline">{currentLabel}</span>
             <span className="sm:hidden">সাজান</span>
@@ -112,7 +112,7 @@ export function SortBar({
             className={cn(
               'p-2 transition-colors',
               view === 'grid'
-                ? 'bg-brand-700 text-white'
+                ? 'bg-[#0f4c2a] text-white'
                 : 'bg-white text-gray-500 hover:bg-gray-50',
             )}
             aria-label="গ্রিড ভিউ"
@@ -124,7 +124,7 @@ export function SortBar({
             className={cn(
               'p-2 transition-colors',
               view === 'list'
-                ? 'bg-brand-700 text-white'
+                ? 'bg-[#0f4c2a] text-white'
                 : 'bg-white text-gray-500 hover:bg-gray-50',
             )}
             aria-label="লিস্ট ভিউ"

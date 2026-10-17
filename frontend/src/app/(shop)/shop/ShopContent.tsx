@@ -64,7 +64,7 @@ export default function ShopContent() {
             <ChevronRight className="w-3 h-3" />
             <span className="text-gray-700 font-medium">শপ</span>
           </nav>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-black text-gray-900" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             {search
               ? `"${search}" এর ফলাফল`
               : filters.category
@@ -93,16 +93,23 @@ export default function ShopContent() {
           {mobileFilterOpen && (
             <div className="fixed inset-0 z-50 md:hidden">
               <div
-                className="absolute inset-0 bg-black/50"
+                className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
                 onClick={() => setMobileFilterOpen(false)}
               />
-              <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white overflow-y-auto">
-                <div className="p-4">
-                  <FilterSidebar
-                    filters={filters}
-                    onChange={handleFilterChange}
-                    onClose={() => setMobileFilterOpen(false)}
-                  />
+              <div className="absolute bottom-0 inset-x-0 bg-white rounded-t-3xl overflow-hidden shadow-2xl"
+                   style={{ maxHeight: '88vh' }}>
+                {/* Handle bar */}
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-gray-200" />
+                </div>
+                <div className="overflow-y-auto" style={{ maxHeight: 'calc(88vh - 20px)' }}>
+                  <div className="p-4 pb-[env(safe-area-inset-bottom,16px)]">
+                    <FilterSidebar
+                      filters={filters}
+                      onChange={handleFilterChange}
+                      onClose={() => setMobileFilterOpen(false)}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
