@@ -240,7 +240,7 @@ export default function CheckoutPage() {
     label, name, required = false, error, children,
   }: { label: string; name: string; required?: boolean; error?: string; children: React.ReactNode }) => (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+      <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-[0.08em] mb-1.5">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
@@ -264,7 +264,7 @@ export default function CheckoutPage() {
             <ChevronRight className="w-3 h-3" />
             <span className="text-gray-700 font-medium">চেকআউট</span>
           </nav>
-          <h1 className="text-xl font-bold text-gray-900">চেকআউট</h1>
+          <h1 className="text-xl font-black text-gray-900" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>চেকআউট</h1>
         </div>
       </div>
 
@@ -277,8 +277,8 @@ export default function CheckoutPage() {
 
               {/* ── 1. Customer Info ── */}
               <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <div className="w-7 h-7 bg-brand-700 text-white rounded-full flex items-center justify-center text-xs font-black">১</div>
+                <h2 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#0f4c2a] to-[#072d18] text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm">১</div>
                   ব্যক্তিগত তথ্য
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -316,8 +316,8 @@ export default function CheckoutPage() {
               {/* ── 2. Delivery Address ── */}
               <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-bold text-gray-900 flex items-center gap-2">
-                    <div className="w-7 h-7 bg-brand-700 text-white rounded-full flex items-center justify-center text-xs font-black">২</div>
+                  <h2 className="font-black text-gray-900 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#0f4c2a] to-[#072d18] text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm">২</div>
                     ডেলিভারি ঠিকানা
                   </h2>
                   {savedAddrs.length > 0 && (
@@ -391,8 +391,8 @@ export default function CheckoutPage() {
 
               {/* ── 3. Payment Method ── */}
               <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <div className="w-7 h-7 bg-brand-700 text-white rounded-full flex items-center justify-center text-xs font-black">৩</div>
+                <h2 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#0f4c2a] to-[#072d18] text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm">৩</div>
                   পেমেন্ট পদ্ধতি
                 </h2>
 
@@ -406,7 +406,7 @@ export default function CheckoutPage() {
                           'flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all',
                           selected
                             ? `${OPTION_COLOR[opt.color]} ring-2`
-                            : 'border-gray-100 bg-gray-50 hover:border-gray-200',
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/50',
                         )}
                       >
                         <input
@@ -473,7 +473,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm sticky top-24">
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-gray-50 bg-brand-700 rounded-t-2xl">
+                <div className="px-5 py-4 border-b border-gray-50 bg-gradient-to-r from-[#0f4c2a] to-[#1a6b3c] rounded-t-2xl">
                   <h2 className="font-bold text-white flex items-center gap-2">
                     <ShoppingBag className="w-4 h-4" /> অর্ডার সামারি
                   </h2>
@@ -565,14 +565,14 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between items-center font-black text-base border-t border-gray-100 pt-2 mt-2">
                     <span>সর্বমোট</span>
-                    <span className="text-brand-700 text-xl">{formatPriceEn(totals.grandTotal)}</span>
+                    <span className="text-[#0f4c2a] text-2xl font-black" style={{ fontFamily: 'Manrope, sans-serif' }}>{formatPriceEn(totals.grandTotal)}</span>
                   </div>
                 </div>
 
                 {/* Submit button */}
                 <div className="px-4 pb-4">
                   <button type="submit" disabled={submitting}
-                    className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white font-bold py-4 rounded-xl text-base transition-all active:scale-[0.98] shadow-lg shadow-brand-700/20">
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0f4c2a] to-[#1a6b3c] hover:from-[#0a3d22] hover:to-[#0f4c2a] disabled:opacity-60 text-white font-black py-4 rounded-xl text-[15px] transition-all active:scale-[0.98] shadow-lg shadow-[#0f4c2a]/25">
                     {submitting ? (
                       <><Loader2 className="w-5 h-5 animate-spin" />
                         {selectedOption.online ? 'গেটওয়েতে যাচ্ছে...' : 'অর্ডার দেওয়া হচ্ছে...'}</>
@@ -597,9 +597,9 @@ export default function CheckoutPage() {
       </form>
 
       {/* Mobile sticky bottom */}
-      <div className="lg:hidden fixed bottom-16 inset-x-0 z-30 bg-white border-t border-gray-200 px-4 py-3">
+      <div className="lg:hidden fixed bottom-[72px] inset-x-0 z-30 bg-white border-t border-gray-200 px-4 py-3">
         <button type="button" disabled={submitting} onClick={handleSubmit}
-          className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white font-bold py-3 rounded-xl text-sm transition-all">
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0f4c2a] to-[#1a6b3c] hover:from-[#0a3d22] hover:to-[#0f4c2a] disabled:opacity-60 text-white font-bold py-3 rounded-xl text-sm transition-all">
           {submitting
             ? <><Loader2 className="w-4 h-4 animate-spin" /> হচ্ছে...</>
             : <>অর্ডার নিশ্চিত করুন — {formatPriceEn(totals.grandTotal)}</>
