@@ -3,29 +3,44 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, LogIn, Phone, Mail, Loader2, ShieldCheck, Truck, Star, ChevronRight } from 'lucide-react';
+import {
+  Eye, EyeOff, LogIn, Phone, Mail, Loader2,
+  Send, Smartphone, ArrowRight, Lock,
+} from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useCartStore } from '@/store/cart.store';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import api from '@/lib/api';
+
+const G  = '#0f4c2a';
+const G2 = '#1a6b3c';
+const GL = '#f0fdf4';
+const GB = '#bbf7d0';
 
 export default function LoginContent() {
-  const router = useRouter();
+  const router       = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/account';
+  const redirect     = searchParams.get('redirect') || '/account';
 
-  const { login, isLoading } = useAuthStore();
+  const { login, isLoading }                                 = useAuthStore();
   const { syncToServer, fetchFromServer, items: guestItems } = useCartStore();
 
   const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPw, setShowPw] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [password,   setPassword]   = useState('');
+  const [showPw,     setShowPw]     = useState(false);
+  const [errors,     setErrors]     = useState<Record<string, string>>({});
+
+  const [otpPhone,   setOtpPhone]   = useState('');
+  const [otp,        setOtp]        = useState('');
+  const [otpSent,    setOtpSent]    = useState(false);
+  const [otpLoad,    setOtpLoad]    = useState(false);
+  const [verLoad,    setVerLoad]    = useState(false);
 
   function validate() {
     const e: Record<string, string> = {};
     if (!identifier.trim()) e.identifier = 'ইমেইল বা ফোন নম্বর দিন';
-    if (!password) e.password = 'পাসওয়ার্ড দিন';
+    if (!password)           e.password   = 'পাসওয়ার্ড দিন';
     else if (password.length < 6) e.password = 'পাসওয়ার্ড ন্যূনতম ৬ অক্ষর';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -35,293 +50,249 @@ export default function LoginContent() {
     e.preventDefault();
     if (!validate()) return;
     setErrors({});
-
     try {
-      const hadGuestItems = guestItems.length > 0;
+      const hadGuest = guestItems.length > 0;
       await login(identifier.trim(), password);
-      if (hadGuestItems) await syncToServer();
+      if (hadGuest) await syncToServer();
       await fetchFromServer();
       toast.success('লগইন সফল হয়েছে!');
       router.push(redirect);
     } catch (err: any) {
-      const msg =
-        err.response?.data?.message ||
-        err.message ||
-        'লগইন ব্যর্থ হয়েছে। ইন্টারনেট সংযোগ ও তথ্য যাচাই করুন।';
+      const msg = err.response?.data?.message || err.message || 'লগইন ব্যর্থ হয়েছে';
       setErrors({ form: msg });
       toast.error(msg);
       console.error('Login error:', err.response?.data || err.message);
     }
   }
 
+  async function handleSendOtp() {
+    if (!otpPhone.trim()) { toast.error('ফোন নম্বর দিন'); return; }
+    setOtpLoad(true);
+    try {
+      await api.post('/auth/send-otp', { phone: otpPhone.trim() });
+      setOtpSent(true);
+      toast.success('OTP পাঠানো হয়েছে');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'OTP পাঠাতে সমস্যা হয়েছে');
+    } finally { setOtpLoad(false); }
+  }
+
+  async function handleVerifyOtp() {
+    if (!otp.trim()) { toast.error('OTP দিন'); return; }
+    setVerLoad(true);
+    try {
+      await api.post('/auth/verify-otp', { phone: otpPhone.trim(), otp: otp.trim() });
+      await fetchFromServer();
+      toast.success('লগইন সফল!');
+      router.push(redirect);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'OTP যাচাই ব্যর্থ');
+    } finally { setVerLoad(false); }
+  }
+
+  const inp = (field: string) => cn(
+    'w-full rounded-2xl border bg-white px-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400',
+    'transition-all duration-150 focus:outline-none focus:ring-2',
+    errors[field]
+      ? 'border-red-300 focus:ring-red-100'
+      : 'border-gray-200 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a]',
+  );
+
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex items-center justify-center p-4 py-10"
+         style={{ background: '#f3f4f6', fontFamily: 'Noto Sans Bengali, Manrope, sans-serif' }}>
+      <div className="w-full" style={{ maxWidth: '400px' }}>
 
-      {/* ══ LEFT PANEL — Brand visual (desktop only) ══════════════ */}
-      <div className="hidden lg:flex lg:w-[48%] xl:w-[52%] relative overflow-hidden flex-col justify-between"
-           style={{ background: 'linear-gradient(145deg, #7c1d06 0%, #c2410c 50%, #ea580c 100%)' }}>
-
-        {/* Decorative circles */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-10"
-             style={{ background: 'radial-gradient(circle, #fff7ed, transparent)' }} />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full opacity-[0.07]"
-             style={{ background: 'radial-gradient(circle, #fed7aa, transparent)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.04]"
-             style={{ background: 'radial-gradient(circle, #ffffff, transparent)' }} />
-
-        {/* Top — Logo */}
-        <div className="relative z-10 p-10">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center backdrop-blur-sm">
-              <span className="text-white font-black text-base" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দম</span>
-            </div>
-            <div>
-              <p className="text-white font-black text-base leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দেশি মসলার রান্নাঘর</p>
-              <p className="text-white/50 text-[11px] font-semibold tracking-[0.15em] uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Deshi Moslar Rannaghar</p>
-            </div>
-          </Link>
-        </div>
-
-        {/* Middle — Hero text */}
-        <div className="relative z-10 px-10 pb-6">
-          <div className="mb-8">
-            <span className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-full mb-6"
-                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              ১০০% খাঁটি দেশীয় পণ্য
-            </span>
-            <h2 className="text-white font-black text-4xl xl:text-5xl leading-tight mb-4"
-                style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              প্রতিটি রান্নায়<br />
-              <span style={{ color: '#fff7ed' }}>আসল স্বাদ</span>
-            </h2>
-            <p className="text-white/60 text-base leading-relaxed max-w-sm"
-               style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              দেশি মসলা ও গ্রোসারি পণ্য — সরাসরি আপনার দরজায়।
-            </p>
-          </div>
-
-          {/* Trust points */}
-          <div className="space-y-3 mb-10">
-            {[
-              { icon: ShieldCheck, text: '১০০% খাঁটি ও মানসম্পন্ন পণ্য' },
-              { icon: Truck,       text: 'সারাদেশে দ্রুত ডেলিভারি' },
-              { icon: Star,        text: '১০,০০০+ সন্তুষ্ট গ্রাহক' },
-            ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-4 h-4 text-white/80" />
-                </div>
-                <span className="text-white/70 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{text}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Testimonial */}
-          <div className="bg-white/[0.10] border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
-            <div className="flex gap-0.5 mb-2">
-              {[1,2,3,4,5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}
-            </div>
-            <p className="text-white/75 text-sm leading-relaxed italic"
-               style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              &ldquo;মসলার গুণমান অসাধারণ। প্রতিবারই অর্ডার করি, কখনো হতাশ হইনি।&rdquo;
-            </p>
-            <p className="text-white/40 text-xs mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>— রহিম উদ্দিন, ঢাকা</p>
-          </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="relative z-10 px-10 pb-8">
-          <p className="text-white/25 text-xs" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            © 2025 দেশি মসলার রান্নাঘর
-          </p>
-        </div>
-      </div>
-
-      {/* ══ RIGHT PANEL — Login form ════════════════════════════ */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 bg-gray-50 overflow-y-auto">
-
-        {/* Mobile logo */}
-        <div className="lg:hidden w-full max-w-sm mb-8 text-center">
+        {/* Logo */}
+        <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-            <div className="w-11 h-11 rounded-2xl bg-[#0f4c2a] flex items-center justify-center shadow-lg">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-md"
+                 style={{ background: `linear-gradient(135deg,${G},${G2})` }}>
               <span className="text-white font-black text-base" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দম</span>
             </div>
             <div className="text-left">
-              <p className="text-[#0f4c2a] font-black text-base leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>দেশি মসলার রান্নাঘর</p>
-              <p className="text-[#ea580c] text-xs font-semibold tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Deshi Moslar Rannaghar</p>
+              <p className="font-black text-base leading-tight" style={{ color: G, fontFamily: 'Noto Sans Bengali, sans-serif' }}>দেশি মসলার রান্নাঘর</p>
+              <p className="text-[10px] font-semibold tracking-[0.14em] uppercase" style={{ color: '#ea580c', fontFamily: 'Manrope, sans-serif' }}>Deshi Moslar Rannaghar</p>
             </div>
           </Link>
         </div>
 
-        <div className="w-full max-w-sm">
+        {/* Card */}
+        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden" style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
 
-          {/* Heading */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-black text-gray-900 mb-1.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              স্বাগতম 👋
-            </h1>
-            <p className="text-gray-500 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              আপনার অ্যাকাউন্টে লগইন করুন
-            </p>
+          {/* Tab toggle */}
+          <div className="flex p-2 gap-1.5" style={{ background: '#f3f4f6' }}>
+            <div className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-black text-white select-none"
+                 style={{ background: `linear-gradient(135deg,${G},${G2})`, boxShadow: '0 2px 8px rgba(15,76,42,0.25)' }}>
+              <LogIn className="w-4 h-4" />
+              <span style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>লগইন</span>
+            </div>
+            <Link href="/register"
+                  className="flex-1 flex items-center justify-center py-2.5 rounded-2xl text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              নিবন্ধন
+            </Link>
           </div>
 
-          {/* Card */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-7">
+          <div className="px-7 pt-6 pb-7">
 
-            {/* Global error */}
+            {/* Heading */}
+            <div className="text-center mb-5">
+              <h1 className="text-[22px] font-black text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Welcome Back</h1>
+              <p className="text-gray-400 text-sm mt-1">Sign in to your account</p>
+            </div>
+
+            {/* Error */}
             {errors.form && (
-              <div className="mb-5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-2xl flex items-center gap-2"
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-2xl flex items-center gap-2"
                    style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                <span className="flex-shrink-0 text-base">⚠️</span> {errors.form}
+                <span>⚠️</span> {errors.form}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-
+            {/* Password login form */}
+            <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
               {/* Identifier */}
               <div>
-                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-[0.08em] mb-2"
-                       style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  ইমেইল বা ফোন নম্বর
-                </label>
                 <div className="relative">
                   <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                     {identifier.includes('@') ? <Mail className="w-4 h-4" /> : <Phone className="w-4 h-4" />}
                   </div>
-                  <input
-                    type="text"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="rahim@example.com বা 01700000000"
-                    className={cn(
-                      'w-full rounded-xl border bg-gray-50 px-4 py-3 pl-10 text-sm placeholder:text-gray-400 transition-all duration-200',
-                      'focus:outline-none focus:ring-2 focus:bg-white',
-                      errors.identifier
-                        ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
-                        : 'border-gray-200 focus:ring-[#ea580c]/10 focus:border-[#ea580c]',
-                    )}
-                    autoComplete="username"
-                    inputMode="email"
-                    style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
-                  />
+                  <input type="text" value={identifier} onChange={e => setIdentifier(e.target.value)}
+                    placeholder="Mobile Number or Email"
+                    className={cn(inp('identifier'), 'pl-10')}
+                    autoComplete="username" inputMode="email" />
                 </div>
-                {errors.identifier && (
-                  <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1"
-                     style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                    ⚠ {errors.identifier}
-                  </p>
-                )}
+                {errors.identifier && <p className="text-red-500 text-xs mt-1" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>⚠ {errors.identifier}</p>}
               </div>
 
               {/* Password */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.08em]"
-                         style={{ fontFamily: 'Manrope, sans-serif' }}>
-                    পাসওয়ার্ড
-                  </label>
-                  <Link href="/forgot-password"
-                        className="text-xs font-semibold text-[#c2410c] hover:text-[#7c1d06] transition-colors"
-                        style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                    ভুলে গেছেন?
-                  </Link>
-                </div>
                 <div className="relative">
-                  <input
-                    type={showPw ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="আপনার পাসওয়ার্ড"
-                    className={cn(
-                      'w-full rounded-xl border bg-gray-50 px-4 py-3 pr-11 text-sm placeholder:text-gray-400 transition-all duration-200',
-                      'focus:outline-none focus:ring-2 focus:bg-white',
-                      errors.password
-                        ? 'border-red-300 focus:ring-red-100 focus:border-red-400'
-                        : 'border-gray-200 focus:ring-[#ea580c]/10 focus:border-[#ea580c]',
-                    )}
-                    autoComplete="current-password"
-                    style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPw((s) => !s)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    tabIndex={-1}
-                  >
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className={cn(inp('password'), 'pl-10 pr-11')}
+                    autoComplete="current-password" />
+                  <button type="button" onClick={() => setShowPw(s => !s)} tabIndex={-1}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                     {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                    ⚠ {errors.password}
-                  </p>
-                )}
+                {errors.password && <p className="text-red-500 text-xs mt-1" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>⚠ {errors.password}</p>}
+              </div>
+
+              {/* Forgot */}
+              <div className="text-right -mt-1">
+                <Link href="/forgot-password"
+                      className="text-xs font-bold hover:underline"
+                      style={{ color: G, fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                  Forgot Password?
+                </Link>
               </div>
 
               {/* Submit */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 text-white font-black py-3.5 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{
-                  background: isLoading ? '#c2410c' : 'linear-gradient(135deg, #c2410c 0%, #ea580c 100%)',
-                  boxShadow: '0 6px 20px rgba(194,65,12,0.35)',
-                  fontFamily: 'Noto Sans Bengali, sans-serif',
-                }}
-              >
-                {isLoading ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> লগইন হচ্ছে...</>
-                ) : (
-                  <><LogIn className="w-5 h-5" /> লগইন করুন</>
-                )}
+              <button type="submit" disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 text-white font-black py-3.5 rounded-2xl transition-all active:scale-[0.98] disabled:opacity-60 text-sm"
+                style={{ background: `linear-gradient(135deg,${G},${G2})`, boxShadow: '0 4px 16px rgba(15,76,42,0.3)', fontFamily: 'Manrope, sans-serif' }}>
+                {isLoading
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> লগইন হচ্ছে...</>
+                  : <>Login <ArrowRight className="w-4 h-4" /></>
+                }
               </button>
             </form>
 
             {/* Divider */}
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-100" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-white px-3 text-xs text-gray-400" style={{ fontFamily: 'Manrope, sans-serif' }}>অথবা</span>
-              </div>
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-gray-100" />
+              <span className="text-xs text-gray-400" style={{ fontFamily: 'Manrope, sans-serif' }}>or</span>
+              <div className="flex-1 h-px bg-gray-100" />
             </div>
 
-            {/* Register CTA inside card */}
-            <Link href="/register"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-100 hover:border-[#ea580c]/20 hover:bg-[#fff7ed] text-gray-700 hover:text-[#c2410c] font-semibold text-sm transition-all duration-200 group"
-                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              নতুন অ্যাকাউন্ট তৈরি করুন
-              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-
-          {/* Test credentials */}
-          <div className="mt-4 bg-white border border-[#fed7aa] rounded-2xl p-4 shadow-sm">
-            <p className="text-[11px] font-black text-[#c2410c] uppercase tracking-[0.08em] mb-2"
-               style={{ fontFamily: 'Manrope, sans-serif' }}>🧪 টেস্ট অ্যাকাউন্ট</p>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <span className="w-4 text-center">📧</span>
-                <span style={{ fontFamily: 'Manrope, sans-serif' }}>rahim@test.com</span>
-                <span className="text-gray-300">•</span>
-                <span style={{ fontFamily: 'Manrope, sans-serif' }}>Customer@123</span>
+            {/* OTP section */}
+            <div className="rounded-2xl p-4 space-y-3" style={{ background: GL, border: `1px solid ${GB}` }}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: GB }}>
+                  <Smartphone className="w-5 h-5" style={{ color: G }} />
+                </div>
+                <div>
+                  <p className="text-sm font-black" style={{ color: G, fontFamily: 'Manrope, sans-serif' }}>Login with OTP</p>
+                  <p className="text-xs text-gray-500" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>Get a 6-digit code on your mobile number</p>
+                </div>
               </div>
-              <p className="text-gray-400 text-[10px] pl-6" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                বা: test@deshimoslar.com / Test@12345
-              </p>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <input type="tel" value={otpPhone} onChange={e => setOtpPhone(e.target.value)}
+                    placeholder="Mobile Number"
+                    inputMode="tel"
+                    className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2.5 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a] transition-all" />
+                </div>
+                <button type="button" onClick={handleSendOtp} disabled={otpLoad}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-white text-xs font-black transition-all active:scale-95 disabled:opacity-60"
+                  style={{ background: `linear-gradient(135deg,${G},${G2})`, boxShadow: '0 2px 8px rgba(15,76,42,0.25)', fontFamily: 'Manrope, sans-serif' }}>
+                  {otpLoad ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  Send OTP
+                </button>
+              </div>
+
+              {otpSent && (
+                <div className="space-y-2">
+                  <input type="text" value={otp} onChange={e => setOtp(e.target.value)}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6} inputMode="numeric"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-center tracking-[0.3em] font-bold placeholder:text-gray-400 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a] transition-all" />
+                  <button type="button" onClick={handleVerifyOtp} disabled={verLoad}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-60"
+                    style={{ background: GB, color: G, fontFamily: 'Manrope, sans-serif' }}>
+                    {verLoad && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Verify OTP
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Google */}
+            <div className="mt-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 h-px bg-gray-100" />
+                <span className="text-xs text-gray-400 whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>or sign in with</span>
+                <div className="flex-1 h-px bg-gray-100" />
+              </div>
+              <button type="button"
+                className="w-full flex items-center justify-center py-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+              <span className="text-xs text-gray-400" style={{ fontFamily: 'Manrope, sans-serif' }}>New to our platform?</span>
+              <Link href="/register"
+                    className="flex items-center gap-1 text-xs font-black hover:underline"
+                    style={{ color: G, fontFamily: 'Manrope, sans-serif' }}>
+                Create an Account <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
+        </div>
 
-          {/* Back to shop */}
-          <div className="text-center mt-5">
-            <Link href="/"
-                  className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              ← হোম পেজে ফিরুন
-            </Link>
-          </div>
+        {/* Test creds */}
+        <div className="mt-4 bg-white border border-gray-200 rounded-2xl px-4 py-3">
+          <p className="text-[10px] font-black uppercase tracking-[0.08em] mb-1" style={{ color: G, fontFamily: 'Manrope, sans-serif' }}>🧪 Test Account</p>
+          <p className="text-xs text-gray-500" style={{ fontFamily: 'Manrope, sans-serif' }}>rahim@test.com • Customer@123</p>
+        </div>
+
+        <div className="text-center mt-4">
+          <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+            ← হোম পেজে ফিরুন
+          </Link>
         </div>
       </div>
     </div>
