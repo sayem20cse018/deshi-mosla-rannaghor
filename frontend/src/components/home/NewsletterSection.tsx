@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Mail, Send, CheckCircle, Sparkles, Tag, BookOpen } from 'lucide-react';
 
 export function NewsletterSection() {
-  const [email, setEmail]     = useState('');
-  const [done, setDone]       = useState(false);
+  const [email,   setEmail]   = useState('');
+  const [done,    setDone]    = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -27,42 +27,38 @@ export function NewsletterSection() {
   return (
     <section className="py-10 px-4 bg-white">
       <div className="container mx-auto">
-        {/* Card */}
+        {/* Banner card */}
         <div
-          className="relative overflow-hidden rounded-3xl px-8 py-12 md:px-16 md:py-14"
-          style={{
-            background: 'linear-gradient(135deg, #7c1d06 0%, #c2410c 45%, #ea580c 100%)',
-          }}
+          className="relative overflow-hidden rounded-3xl px-8 py-12 md:px-16 md:py-14 flex flex-col md:flex-row items-center gap-10"
+          style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)', border: '1.5px solid #bbf7d0' }}
         >
-          {/* Decorative blobs */}
-          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-[0.08]"
-               style={{ background: 'radial-gradient(circle, #fff7ed, transparent)' }} />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-[0.06]"
-               style={{ background: 'radial-gradient(circle, #fed7aa, transparent)' }} />
-          {/* Decorative leaf / plant shape */}
-          <div className="absolute right-8 bottom-0 opacity-10 select-none pointer-events-none text-[140px] leading-none">
+          {/* Decorative plant emoji */}
+          <div className="absolute -right-4 -bottom-6 text-[160px] leading-none opacity-[0.12] select-none pointer-events-none rotate-12">
             🌿
           </div>
+          <div className="absolute right-24 top-4 text-[60px] leading-none opacity-[0.08] select-none pointer-events-none">
+            🌱
+          </div>
 
-          <div className="relative z-10 max-w-xl">
-            {/* Badge */}
-            <span className="inline-flex items-center gap-1.5 bg-white/15 border border-white/25 text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full mb-5"
-                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              নিউজলেটার সাবস্ক্রাইব করুন
+          {/* Left: text */}
+          <div className="relative z-10 flex-1 min-w-0">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] mb-4"
+                  style={{ color: '#0f4c2a', fontFamily: 'Manrope, sans-serif' }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#0f4c2a' }} />
+              নিউজলেটার
             </span>
 
-            <h2 className="text-white font-black text-2xl md:text-3xl leading-snug mb-2"
-                style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              সর্বশেষ অফার ও রেসিপি পান
+            <h2 className="font-black text-gray-900 leading-snug mb-2"
+                style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+              Subscribe to Deshi Moslar Rannaghar
             </h2>
-            <p className="text-white/70 text-sm mb-7 leading-relaxed"
+            <p className="text-gray-500 text-sm mb-7 leading-relaxed"
                style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-              নতুন পণ্য, বিশেষ ছাড় ও রান্নার টিপস সরাসরি আপনার ইমেইলে। কোনো স্প্যাম নেই।
+              Fresh groceries, straight to your door.
             </p>
 
             {done ? (
-              <div className="flex items-center gap-3 bg-white/15 border border-white/25 text-white rounded-2xl px-5 py-4 font-bold backdrop-blur-sm"
+              <div className="flex items-center gap-3 bg-white border border-green-200 text-[#0f4c2a] rounded-2xl px-5 py-4 font-bold max-w-md"
                    style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                 সাবস্ক্রিপশন সফল হয়েছে! ধন্যবাদ।
@@ -74,38 +70,38 @@ export function NewsletterSection() {
                   <input
                     type="email"
                     required
-                    placeholder="আপনার ইমেইল ঠিকানা"
+                    placeholder="Enter Your Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white rounded-xl pl-10 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/40 border-0 shadow-lg"
-                    style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/20 focus:border-[#0f4c2a] transition-all shadow-sm"
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-shrink-0 flex items-center gap-2 bg-white text-[#c2410c] font-black px-5 py-3.5 rounded-xl shadow-lg hover:bg-white/90 active:scale-95 transition-all text-sm disabled:opacity-70"
-                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
+                  className="flex-shrink-0 flex items-center gap-2 text-white font-black px-5 py-3.5 rounded-xl shadow-md hover:opacity-90 active:scale-95 transition-all text-sm disabled:opacity-70"
+                  style={{ background: 'linear-gradient(135deg, #0f4c2a, #1a6b3c)', fontFamily: 'Manrope, sans-serif', boxShadow: '0 4px 12px rgba(15,76,42,0.3)' }}
                 >
                   {loading
-                    ? <span className="w-4 h-4 border-2 border-[#c2410c]/30 border-t-[#c2410c] rounded-full animate-spin" />
+                    ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     : <Send className="w-4 h-4" />
                   }
-                  সাবস্ক্রাইব
+                  Subscribe
                 </button>
               </form>
             )}
 
             {/* Perks */}
-            <div className="flex flex-wrap items-center gap-5 mt-6">
+            <div className="flex flex-wrap items-center gap-5 mt-5">
               {[
                 { icon: Sparkles, text: 'এক্সক্লুসিভ অফার' },
                 { icon: BookOpen, text: 'সাপ্তাহিক রেসিপি' },
                 { icon: Tag,      text: 'বিশেষ ছাড়' },
               ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-1.5 text-white/70 text-xs"
-                     style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                  <Icon className="w-3.5 h-3.5 text-white/60" />
+                <div key={text} className="flex items-center gap-1.5 text-xs"
+                     style={{ color: '#166534', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                  <Icon className="w-3.5 h-3.5" />
                   {text}
                 </div>
               ))}
