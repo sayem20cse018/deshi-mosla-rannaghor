@@ -1,0 +1,117 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { useCategories } from '@/hooks/useCategories';
+import { cn } from '@/lib/utils';
+
+// Color palette per category slug — future: from Admin Panel
+const COLOR_MAP: Record<string, { from: string; to: string; border: string; text: string; iconBg: string }> = {
+  mosla:    { from: '#fff1f2', to: '#ffe4e6', border: '#fecdd3', text: '#9f1239', iconBg: '#ffe4e6' },
+  tel:      { from: '#fffbeb', to: '#fef3c7', border: '#fde68a', text: '#78350f', iconBg: '#fef3c7' },
+  chal:     { from: '#eff6ff', to: '#dbeafe', border: '#bfdbfe', text: '#1e3a8a', iconBg: '#dbeafe' },
+  dal:      { from: '#f0fdf4', to: '#dcfce7', border: '#bbf7d0', text: '#14532d', iconBg: '#dcfce7' },
+  ata:      { from: '#fffbeb', to: '#fef9c3', border: '#fde68a', text: '#713f12', iconBg: '#fef9c3' },
+  modhu:    { from: '#fffbeb', to: '#fef08a', border: '#fde047', text: '#854d0e', iconBg: '#fef08a' },
+  cha:      { from: '#fafaf9', to: '#f5f5f4', border: '#e7e5e4', text: '#44403c', iconBg: '#f5f5f4' },
+  snacks:   { from: '#fdf4ff', to: '#f3e8ff', border: '#e9d5ff', text: '#6b21a8', iconBg: '#f3e8ff' },
+  noodles:  { from: '#f0f9ff', to: '#e0f2fe', border: '#bae6fd', text: '#0c4a6e', iconBg: '#e0f2fe' },
+  sauce:    { from: '#f0fdf4', to: '#dcfce7', border: '#a7f3d0', text: '#065f46', iconBg: '#dcfce7' },
+  achar:    { from: '#fff7ed', to: '#ffedd5', border: '#fed7aa', text: '#7c2d12', iconBg: '#ffedd5' },
+  chini:    { from: '#fff1f2', to: '#ffe4e6', border: '#fecdd3', text: '#881337', iconBg: '#ffe4e6' },
+  superfood:{ from: '#f0fdf4', to: '#dcfce7', border: '#86efac', text: '#14532d', iconBg: '#dcfce7' },
+};
+
+const DEFAULT_COLOR = { from: '#f8fafc', to: '#f1f5f9', border: '#e2e8f0', text: '#1e293b', iconBg: '#f1f5f9' };
+
+const MOCK_CATEGORIES = [
+  { id:'1',  name:'মসলা',       nameEn:'Spices',    slug:'mosla',    icon:'🌶️', _count:{ products: 24 } },
+  { id:'2',  name:'তেল',        nameEn:'Oil',        slug:'tel',      icon:'🫙',  _count:{ products: 12 } },
+  { id:'3',  name:'চাল',        nameEn:'Rice',       slug:'chal',     icon:'🍚',  _count:{ products: 8  } },
+  { id:'4',  name:'ডাল',        nameEn:'Dal',        slug:'dal',      icon:'🫘',  _count:{ products: 15 } },
+  { id:'5',  name:'আটা',        nameEn:'Flour',      slug:'ata',      icon:'🌾',  _count:{ products: 10 } },
+  { id:'6',  name:'মধু',        nameEn:'Honey',      slug:'modhu',    icon:'🍯',  _count:{ products: 6  } },
+  { id:'7',  name:'চা',         nameEn:'Tea',        slug:'cha',      icon:'☕',  _count:{ products: 9  } },
+  { id:'8',  name:'স্ন্যাকস',  nameEn:'Snacks',     slug:'snacks',   icon:'🍿',  _count:{ products: 18 } },
+  { id:'9',  name:'নুডলস',     nameEn:'Noodles',    slug:'noodles',  icon:'🍜',  _count:{ products: 7  } },
+  { id:'10', name:'সস',         nameEn:'Sauce',      slug:'sauce',    icon:'🥫',  _count:{ products: 11 } },
+  { id:'11', name:'আচার',       nameEn:'Pickle',     slug:'achar',    icon:'🥒',  _count:{ products: 14 } },
+  { id:'12', name:'সুপারফুড',  nameEn:'Super Food', slug:'superfood',icon:'🌿',  _count:{ products: 5  } },
+];
+
+interface FeaturedCategoriesProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function FeaturedCategories({
+  title   = 'Featured Categories',
+  subtitle = 'পছন্দের ক্যাটাগরি থেকে বেছে নিন',
+}: FeaturedCategoriesProps) {
+  const { data: rawCats = [], isLoading } = useCategories();
+  const cats = (rawCats.length > 0 ? rawCats : MOCK_CATEGORIES) as any[];
+
+  return (
+    <section className="py-12 bg-white" style={{ fontFamily: 'Noto Sans Bengali, Manrope, sans-serif' }}>
+      <div className="container mx-auto px-4">
+
+        {/* Header */}
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.15em] mb-1.5" style={{ color: '#0f4c2a' }}>
+              ক্যাটাগরি
+            </p>
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900">{title}</h2>
+            <p className="text-gray-500 text-sm mt-1">{subtitle}</p>
+          </div>
+          <Link href="/categories"
+                className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:underline flex-shrink-0"
+                style={{ color: '#0f4c2a' }}>
+            সব দেখুন <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Category grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {cats.map((cat: any) => {
+              const c = COLOR_MAP[cat.slug] ?? DEFAULT_COLOR;
+              const count = cat._count?.products ?? 0;
+              return (
+                <Link key={cat.slug} href={`/category/${cat.slug}`}
+                  className="group flex flex-col items-center text-center p-4 rounded-2xl border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                  style={{ background: `linear-gradient(135deg, ${c.from}, ${c.to})`, borderColor: c.border }}>
+                  {/* Icon container */}
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200"
+                       style={{ background: c.iconBg }}>
+                    <span className="text-3xl leading-none">{cat.icon ?? '🛒'}</span>
+                  </div>
+                  <p className="font-bold text-xs leading-tight" style={{ color: c.text, fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                    {cat.name}
+                  </p>
+                  {count > 0 && (
+                    <p className="text-[10px] mt-0.5" style={{ color: c.text, opacity: 0.6 }}>{count} পণ্য</p>
+                  )}
+                </Link>
+              );
+            })}
+            {/* View all card */}
+            <Link href="/categories"
+              className="group flex flex-col items-center justify-center text-center p-4 rounded-2xl border border-dashed border-gray-200 hover:border-[#0f4c2a]/40 hover:bg-[#f0fdf4] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer bg-gray-50">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-200 group-hover:border-[#0f4c2a]/30 flex items-center justify-center mb-3 transition-colors">
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#0f4c2a] transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-gray-500 group-hover:text-[#0f4c2a] transition-colors">সব দেখুন</p>
+            </Link>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

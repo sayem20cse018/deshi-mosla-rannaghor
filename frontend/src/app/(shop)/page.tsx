@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
-import { HeroBanner } from '@/components/home/HeroBanner';
-import { TrustBadges } from '@/components/home/TrustBadges';
-import { CategorySection } from '@/components/home/CategorySection';
-import { BestSellingSection } from '@/components/home/BestSellingSection';
-import { SpecialOfferBanner } from '@/components/home/SpecialOfferBanner';
-import { FeaturedSection } from '@/components/home/FeaturedSection';
-import { CookingCollections } from '@/components/home/CookingCollections';
-import { RecipeSection } from '@/components/home/RecipeSection';
-import { NewArrivalsSection } from '@/components/home/NewArrivalsSection';
-import { BrandStorySection } from '@/components/home/BrandStorySection';
-import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { NewsletterSection } from '@/components/home/NewsletterSection';
+import { HeroBanner }           from '@/components/home/HeroBanner';
+import { TrustBadges }          from '@/components/home/TrustBadges';
+import { FeaturedCategories }   from '@/components/home/FeaturedCategories';
+import { TopSellingSection }    from '@/components/home/TopSellingSection';
+import { CollectionSection }    from '@/components/home/CollectionSection';
+import { SpecialOfferBanner }   from '@/components/home/SpecialOfferBanner';
+import { RecipeSection }        from '@/components/home/RecipeSection';
+import { TestimonialsSection }  from '@/components/home/TestimonialsSection';
+import { NewsletterSection }    from '@/components/home/NewsletterSection';
 
 export const metadata: Metadata = {
   title: 'দেশি মসলার রান্নাঘর | অনলাইন গ্রোসারি শপ',
@@ -24,43 +21,81 @@ export const metadata: Metadata = {
   },
 };
 
+// Future-ready: section config — can be moved to DB/CMS later
+export const HOME_SECTIONS = {
+  featuredCategories: { enabled: true, title: 'Featured Categories',   subtitle: 'পছন্দের ক্যাটাগরি থেকে বেছে নিন' },
+  topSelling:         { enabled: true, title: 'Top Selling Products',   subtitle: 'সবচেয়ে বেশি পছন্দের পণ্যগুলো',   limit: 10 },
+  atta:               { enabled: true, title: 'Natural Atta & Chatu',   subtitle: 'খাঁটি প্রাকৃতিক আটা ও ছাতু',       slug: 'ata',       limit: 8 },
+  mosla:              { enabled: true, title: 'Mosla / Spices',         subtitle: 'দেশি মসলার সেরা সংগ্রহ',           slug: 'mosla',     limit: 8 },
+  oil:                { enabled: true, title: 'Natural Oil',             subtitle: 'খাঁটি সরিষা ও নারিকেল তেল',      slug: 'tel',       limit: 8 },
+  superFood:          { enabled: true, title: 'Super Food',              subtitle: 'প্রকৃতির সেরা সুপারফুড',          slug: 'superfood', limit: 8 },
+};
+
 export default function HomePage() {
   return (
     <>
-      {/* 1. Hero Banner — 3-slide auto carousel */}
       <HeroBanner />
-
-      {/* 2. Trust badges */}
       <TrustBadges />
-
-      {/* 3. Shop by Category */}
-      <CategorySection />
-
-      {/* 4. Best Selling Products */}
-      <BestSellingSection />
-
-      {/* 5. Special Offer Banners */}
+      {HOME_SECTIONS.featuredCategories.enabled && (
+        <FeaturedCategories
+          title={HOME_SECTIONS.featuredCategories.title}
+          subtitle={HOME_SECTIONS.featuredCategories.subtitle}
+        />
+      )}
+      {HOME_SECTIONS.topSelling.enabled && (
+        <TopSellingSection
+          title={HOME_SECTIONS.topSelling.title}
+          subtitle={HOME_SECTIONS.topSelling.subtitle}
+          limit={HOME_SECTIONS.topSelling.limit}
+        />
+      )}
+      {HOME_SECTIONS.atta.enabled && (
+        <CollectionSection
+          title={HOME_SECTIONS.atta.title}
+          subtitle={HOME_SECTIONS.atta.subtitle}
+          categorySlug={HOME_SECTIONS.atta.slug}
+          limit={HOME_SECTIONS.atta.limit}
+          accentColor="#92400e"
+          accentBg="#fffbeb"
+          emoji="🌾"
+        />
+      )}
       <SpecialOfferBanner />
-
-      {/* 6. Featured Products */}
-      <FeaturedSection />
-
-      {/* 7. Cooking Collections */}
-      <CookingCollections />
-
-      {/* 8. Recipe-Based Shopping */}
+      {HOME_SECTIONS.mosla.enabled && (
+        <CollectionSection
+          title={HOME_SECTIONS.mosla.title}
+          subtitle={HOME_SECTIONS.mosla.subtitle}
+          categorySlug={HOME_SECTIONS.mosla.slug}
+          limit={HOME_SECTIONS.mosla.limit}
+          accentColor="#991b1b"
+          accentBg="#fff1f2"
+          emoji="🌶️"
+        />
+      )}
+      {HOME_SECTIONS.oil.enabled && (
+        <CollectionSection
+          title={HOME_SECTIONS.oil.title}
+          subtitle={HOME_SECTIONS.oil.subtitle}
+          categorySlug={HOME_SECTIONS.oil.slug}
+          limit={HOME_SECTIONS.oil.limit}
+          accentColor="#78350f"
+          accentBg="#fef3c7"
+          emoji="🫙"
+        />
+      )}
+      {HOME_SECTIONS.superFood.enabled && (
+        <CollectionSection
+          title={HOME_SECTIONS.superFood.title}
+          subtitle={HOME_SECTIONS.superFood.subtitle}
+          categorySlug={HOME_SECTIONS.superFood.slug}
+          limit={HOME_SECTIONS.superFood.limit}
+          accentColor="#166534"
+          accentBg="#f0fdf4"
+          emoji="🍯"
+        />
+      )}
       <RecipeSection />
-
-      {/* 9. New Arrivals */}
-      <NewArrivalsSection />
-
-      {/* 10. Brand Story */}
-      <BrandStorySection />
-
-      {/* 11. Testimonials */}
       <TestimonialsSection />
-
-      {/* 12. Newsletter */}
       <NewsletterSection />
     </>
   );
