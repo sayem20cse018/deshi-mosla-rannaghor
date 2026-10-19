@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Package, ChevronRight, Loader2, ShoppingBag, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
 import api from '@/lib/api';
 import { cn, formatPriceEn } from '@/lib/utils';
+import { DeliveryProviderBadge } from '@/components/orders/DeliveryProviderBadge';
 
 // ─── constants ────────────────────────────────────────────
 const TABS = [
@@ -90,6 +91,19 @@ function OrderCard({ order }: { order: any }) {
             </span>
           )}
         </p>
+
+        {/* Delivery provider */}
+        {(order.deliveryProviderName || order.delivery?.courierName) && (
+          <div className="mt-1.5">
+            <DeliveryProviderBadge
+              providerName={order.deliveryProviderName ?? order.delivery?.courierName}
+              providerEmoji={order.deliveryProviderEmoji}
+              trackingUrl={order.delivery?.trackingUrl}
+              deliveryStatus={order.delivery?.status}
+              compact
+            />
+          </div>
+        )}
 
         {/* Product thumbnails */}
         {order.items && order.items.length > 0 && (

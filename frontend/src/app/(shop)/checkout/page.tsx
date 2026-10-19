@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,12 @@ import {
   AlertCircle, ChevronDown, CreditCard, Smartphone,
   Shield, ExternalLink,
 } from 'lucide-react';
+import { DeliveryProviderSelector } from '@/components/checkout/DeliveryProviderSelector';
+import {
+  DeliveryProvider,
+  getAvailableProviders,
+  MOCK_DELIVERY_PROVIDERS,
+} from '@/lib/deliveryProviders';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import api from '@/lib/api';
@@ -118,6 +124,13 @@ export default function CheckoutPage() {
   const totals = getTotals();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodKey>('CASH_ON_DELIVERY');
+  const [selectedProvider, setSelectedProvider] = useState<DeliveryProvider>(
+    MOCK_DELIVERY_PROVIDERS.find((p) => p.available) ?? MOCK_DELIVERY_PROVIDERS[0],
+  );
+  const deliveryProviders = getAvailableProviders();
+  // Override delivery charge based on selected provider
+  const providerDeliveryFee = selectedProvider.fee;
+  const computedGrandTotal  = totals.subtotal - totals.itemDiscount - (totals.couponDiscount ?? 0) + providerDeliveryFee;
   const [form, setForm] = useState<FormData>({
     fullName: user?.name ?? '', phone: user?.phone ?? '', email: user?.email ?? '',
     division: '', district: '', area: '', fullAddress: '',
@@ -200,7 +213,9 @@ export default function CheckoutPage() {
           fullAddress: form.fullAddress.trim(),
           saveAddress: form.saveAddress,
         },
-        deliveryNote:  form.deliveryNote || undefined,
+        deliveryNote:      form.deliveryNote || undefined,
+        deliveryProviderId: selectedProvider.id,
+        deliveryProviderName: selectedProvider.name,
         couponCode:    appliedCoupon?.code || undefined,
         paymentMethod,
       };
@@ -389,10 +404,23 @@ export default function CheckoutPage() {
                 </div>
               </section>
 
-              {/* ── 3. Payment Method ── */}
+              {/* ── 3. Delivery Partner ── */}
               <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <h2 className="font-black text-gray-900 mb-4 flex items-center gap-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-[#0f4c2a] to-[#072d18] text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm">৩</div>
+                  ডেলিভারি পার্টনার নির্বাচন করুন
+                </h2>
+                <DeliveryProviderSelector
+                  providers={deliveryProviders}
+                  selectedId={selectedProvider.id}
+                  onSelect={(p) => setSelectedProvider(p)}
+                />
+              </section>
+
+              {/* ── 4. Payment Method ── */}
+              <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <h2 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#0f4c2a] to-[#072d18] text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm">৪</div>
                   পেমেন্ট পদ্ধতি
                 </h2>
 
@@ -558,14 +586,14 @@ export default function CheckoutPage() {
                     </div>
                   )}
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span className="flex items-center gap-1"><Truck className="w-3 h-3" />ডেলিভারি</span>
-                    <span className={cn('font-medium', totals.isFreeDelivery && 'text-brand-600')}>
-                      {totals.isFreeDelivery ? '🎉 ফ্রি' : formatPriceEn(totals.deliveryCharge)}
+                    <span className="flex items-center gap-1"><Truck className="w-3 h-3" />{selectedProvider.shortName}</span>
+                    <span className="font-medium">
+                      {providerDeliveryFee === 0 ? '🎉 ফ্রি' : formatPriceEn(providerDeliveryFee)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center font-black text-base border-t border-gray-100 pt-2 mt-2">
                     <span>সর্বমোট</span>
-                    <span className="text-[#0f4c2a] text-2xl font-black" style={{ fontFamily: 'Manrope, sans-serif' }}>{formatPriceEn(totals.grandTotal)}</span>
+                    <span className="text-[#0f4c2a] text-2xl font-black" style={{ fontFamily: 'Manrope, sans-serif' }}>{formatPriceEn(computedGrandTotal)}</span>
                   </div>
                 </div>
 
@@ -578,9 +606,9 @@ export default function CheckoutPage() {
                         {selectedOption.online ? 'গেটওয়েতে যাচ্ছে...' : 'অর্ডার দেওয়া হচ্ছে...'}</>
                     ) : selectedOption.online ? (
                       <><ExternalLink className="w-4 h-4" />
-                        {selectedOption.label}-এ পেমেন্ট করুন — {formatPriceEn(totals.grandTotal)}</>
+                        {selectedOption.label}-এ পেমেন্ট করুন — {formatPriceEn(computedGrandTotal)}</>
                     ) : (
-                      <>অর্ডার নিশ্চিত করুন — {formatPriceEn(totals.grandTotal)}</>
+                      <>অর্ডার নিশ্চিত করুন — {formatPriceEn(computedGrandTotal)}</>
                     )}
                   </button>
                   <p className="text-center text-xs text-gray-400 mt-2 flex items-center justify-center gap-1">
@@ -602,7 +630,7 @@ export default function CheckoutPage() {
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0f4c2a] to-[#1a6b3c] hover:from-[#0a3d22] hover:to-[#0f4c2a] disabled:opacity-60 text-white font-bold py-3 rounded-xl text-sm transition-all">
           {submitting
             ? <><Loader2 className="w-4 h-4 animate-spin" /> হচ্ছে...</>
-            : <>অর্ডার নিশ্চিত করুন — {formatPriceEn(totals.grandTotal)}</>
+            : <>অর্ডার নিশ্চিত করুন — {formatPriceEn(computedGrandTotal)}</>
           }
         </button>
       </div>
