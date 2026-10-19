@@ -36,7 +36,6 @@ export function CartDrawer() {
   const [couponInput, setCouponInput] = useState('');
   const [showCouponBox, setShowCouponBox] = useState(false);
   const [applying, setApplying] = useState(false);
-  const drawerRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const totals = getTotals();
@@ -49,14 +48,6 @@ export function CartDrawer() {
     if (isOpen) document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [isOpen, closeCart]);
-
-  // Lock body scroll
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
 
   // Focus coupon input when box opens
   useEffect(() => {
@@ -86,38 +77,56 @@ export function CartDrawer() {
 
   return (
     <>
-      {/* ── Backdrop ── */}
-      <div
-        onClick={closeCart}
-        aria-hidden="true"
-        className={cn(
-          'fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 transition-opacity duration-300',
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
-        )}
-      />
+      {/* -- Backdrop (click outside to close) -- */}
+      {isOpen && (
+        <div
+          onClick={closeCart}
+          aria-hidden="true"
+          className="fixed inset-0 z-[55] bg-black/30 backdrop-blur-[1px]"
+        />
+      )}
 
-      {/* ── Drawer ── */}
-      <aside
-        ref={drawerRef}
+      {/*
+       * -- Cart Panel --
+       * Positioned below the sticky header using `top-[146px]` (96px header + 50px category bar).
+       * On mobile it anchors below the 72px header.
+       * Uses `fixed` + right-aligned so it appears inline below the cart button.
+       * max-h + overflow-y-auto keeps it scrollable when full.
+       */}
+      <div
         role="dialog"
         aria-modal="true"
-        aria-label="শপিং কার্ট"
+        aria-label="Shopping Cart"
         className={cn(
-          'fixed top-0 right-0 h-full w-full max-w-[400px] bg-white z-50 shadow-2xl',
-          'flex flex-col transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full',
+          // positioning
+          'fixed z-[60] right-4',
+          // desktop: below header+category bar (96+50=146px); mobile: below 72px header
+          'top-[148px] lg:top-[148px]',
+          // sizing
+          'w-[calc(100vw-2rem)] max-w-[420px]',
+          // appearance
+          'bg-white rounded-2xl shadow-2xl border border-gray-100',
+          // max height with scroll
+          'max-h-[calc(100vh-170px)] flex flex-col',
+          // animation
+          'transition-all duration-300 ease-out origin-top-right',
+          isOpen
+            ? 'opacity-100 scale-100 pointer-events-auto'
+            : 'opacity-0 scale-95 pointer-events-none',
         )}
       >
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+        {/* -- Header -- */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-brand-700 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#0f4c2a] rounded-xl flex items-center justify-center">
               <ShoppingCart className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h2 className="font-bold text-gray-900 text-base leading-tight">আমার কার্ট</h2>
+              <h2 className="font-bold text-gray-900 text-base leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                Cart
+              </h2>
               {totals.itemCount > 0 && (
-                <p className="text-gray-400 text-xs">{totals.itemCount} টি পণ্য</p>
+                <p className="text-gray-400 text-xs">{totals.itemCount} items</p>
               )}
             </div>
           </div>
@@ -128,39 +137,38 @@ export function CartDrawer() {
                 onClick={clearCart}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1 rounded-lg hover:bg-red-50"
               >
-                সব সরান
+                Clear
               </button>
             )}
             <button
               onClick={closeCart}
               className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors"
-              aria-label="বন্ধ করুন"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* ── Free delivery progress ── */}
+        {/* -- Free delivery progress -- */}
         {items.length > 0 && (
-          <div className="px-5 py-3 bg-gradient-to-r from-brand-50 to-emerald-50 border-b border-brand-100">
+          <div className="px-5 py-3 bg-gradient-to-r from-[#f0fdf4] to-emerald-50 border-b border-green-100 flex-shrink-0">
             {totals.isFreeDelivery ? (
-              <div className="flex items-center gap-2 text-brand-700">
-                <div className="w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-2 text-[#0f4c2a]">
+                <div className="w-5 h-5 bg-[#0f4c2a] rounded-full flex items-center justify-center flex-shrink-0">
                   <Check className="w-3 h-3 text-white" />
                 </div>
-                <p className="text-xs font-semibold">🎉 আপনি ফ্রি ডেলিভারি পাচ্ছেন!</p>
+                <p className="text-xs font-semibold">Free delivery unlocked!</p>
               </div>
             ) : (
               <div>
-                <p className="text-xs text-brand-700 mb-1.5 flex items-center gap-1">
+                <p className="text-xs text-[#0f4c2a] mb-1.5 flex items-center gap-1">
                   <Truck className="w-3 h-3" />
-                  ফ্রি ডেলিভারির জন্য আরও{' '}
-                  <strong className="font-bold">{formatPriceEn(remaining)}</strong> কিনুন
+                  Add <strong className="font-bold">{formatPriceEn(remaining)}</strong> more for free delivery
                 </p>
-                <div className="w-full h-1.5 bg-brand-200 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-green-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-brand-500 to-brand-700 rounded-full transition-all duration-700"
+                    className="h-full bg-gradient-to-r from-[#0f4c2a] to-[#1a6b3c] rounded-full transition-all duration-700"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
@@ -169,41 +177,28 @@ export function CartDrawer() {
           </div>
         )}
 
-        {/* ── Cart items ── */}
+        {/* -- Cart items -- */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center h-40">
-              <Loader2 className="w-7 h-7 animate-spin text-brand-600" />
+              <Loader2 className="w-7 h-7 animate-spin text-[#0f4c2a]" />
             </div>
           ) : items.length === 0 ? (
-            /* Empty state */
-            <div className="flex flex-col items-center justify-center h-full gap-4 py-16 px-6 text-center">
-              <div className="w-24 h-24 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center">
-                <ShoppingBag className="w-12 h-12 text-gray-200" />
+            <div className="flex flex-col items-center justify-center h-full gap-4 py-12 px-6 text-center">
+              <div className="w-20 h-20 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center">
+                <ShoppingBag className="w-10 h-10 text-gray-200" />
               </div>
               <div>
-                <p className="font-bold text-gray-700 text-lg">কার্ট খালি আছে</p>
-                <p className="text-gray-400 text-sm mt-1">
-                  পণ্য যোগ করুন এবং আপনার পছন্দের পণ্য অর্ডার করুন
+                <p className="font-bold text-gray-700 text-base" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                  Cart is empty
+                </p>
+                <p className="text-gray-400 text-sm mt-1" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                  Add products to order
                 </p>
               </div>
-              <button onClick={closeCart} className="btn-primary px-8 py-2.5">
-                কেনাকাটা শুরু করুন
+              <button onClick={closeCart} className="btn-primary px-6 py-2.5">
+                Start shopping
               </button>
-
-              {/* Quick links */}
-              <div className="flex flex-wrap gap-2 justify-center mt-1">
-                {['মসলা', 'তেল', 'চাল', 'ডাল', 'মধু'].map((cat) => (
-                  <Link
-                    key={cat}
-                    href={`/shop?search=${cat}`}
-                    onClick={closeCart}
-                    className="chip text-xs"
-                  >
-                    {cat}
-                  </Link>
-                ))}
-              </div>
             </div>
           ) : (
             <ul className="px-5 py-4 space-y-2.5">
@@ -214,41 +209,35 @@ export function CartDrawer() {
           )}
         </div>
 
-        {/* ── Footer (only when items exist) ── */}
+        {/* -- Footer (only when items exist) -- */}
         {items.length > 0 && (
-          <div className="border-t border-gray-100 bg-white">
-            {/* ── Coupon section ── */}
+          <div className="border-t border-gray-100 bg-white flex-shrink-0 rounded-b-2xl">
+            {/* Coupon section */}
             <div className="px-5 pt-4 pb-2">
               {appliedCoupon ? (
-                /* Applied coupon chip */
-                <div className="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-3 py-2.5">
+                <div className="flex items-center justify-between bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-3 py-2.5">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 bg-[#0f4c2a] rounded-lg flex items-center justify-center flex-shrink-0">
                       <Check className="w-3.5 h-3.5 text-white" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-brand-700">{appliedCoupon.code}</p>
-                      <p className="text-[11px] text-brand-500">
-                        {formatPriceEn(appliedCoupon.discountAmount)} সাশ্রয়
+                      <p className="text-xs font-bold text-[#0f4c2a]">{appliedCoupon.code}</p>
+                      <p className="text-[11px] text-green-600">
+                        {formatPriceEn(appliedCoupon.discountAmount)} saved
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={handleRemoveCoupon}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
-                    aria-label="কুপন সরান"
-                  >
+                  <button onClick={handleRemoveCoupon} className="text-gray-400 hover:text-red-500 transition-colors" aria-label="Remove coupon">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               ) : showCouponBox ? (
-                /* Coupon input */
                 <div className="space-y-1.5">
                   <div className="flex gap-2">
                     <input
                       ref={inputRef}
                       type="text"
-                      placeholder="কুপন কোড (যেমন: WELCOME10)"
+                      placeholder="Coupon code"
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
@@ -259,7 +248,7 @@ export function CartDrawer() {
                       disabled={applying || !couponInput.trim()}
                       className="btn-primary px-4 py-2 text-sm flex-shrink-0 disabled:opacity-60"
                     >
-                      {applying ? <Loader2 className="w-4 h-4 animate-spin" /> : 'প্রয়োগ'}
+                      {applying ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Apply'}
                     </button>
                   </div>
                   {couponError && (
@@ -267,102 +256,81 @@ export function CartDrawer() {
                       <AlertCircle className="w-3 h-3" /> {couponError}
                     </p>
                   )}
-                  <button
-                    onClick={() => {
-                      setShowCouponBox(false);
-                      setCouponInput('');
-                    }}
-                    className="text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    বাতিল করুন
+                  <button onClick={() => { setShowCouponBox(false); setCouponInput(''); }} className="text-xs text-gray-400 hover:text-gray-600">
+                    Cancel
                   </button>
                 </div>
               ) : (
-                /* Show coupon toggle */
                 <button
                   onClick={() => setShowCouponBox(true)}
-                  className="w-full flex items-center gap-2 text-sm text-brand-600 hover:text-brand-800 font-medium py-1.5 transition-colors"
+                  className="w-full flex items-center gap-2 text-sm text-[#0f4c2a] hover:text-[#0a3d22] font-medium py-1.5 transition-colors"
                 >
                   <Tag className="w-4 h-4" />
-                  কুপন কোড আছে?
+                  Have a coupon?
                 </button>
               )}
             </div>
 
-            {/* ── Order summary ── */}
+            {/* Order summary */}
             <div className="px-5 py-3 space-y-2 border-t border-gray-50">
-              {/* Subtotal */}
               <div className="flex justify-between text-sm text-gray-600">
-                <span>সাবটোটাল ({totals.itemCount} পণ্য)</span>
+                <span>Subtotal ({totals.itemCount} items)</span>
                 <span className="font-medium text-gray-800">{formatPriceEn(totals.subtotal)}</span>
               </div>
-
-              {/* Item discount */}
               {totals.itemDiscount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>পণ্যে ছাড়</span>
-                  <span className="font-medium">−{formatPriceEn(totals.itemDiscount)}</span>
+                  <span>Discount</span>
+                  <span className="font-medium">-{formatPriceEn(totals.itemDiscount)}</span>
                 </div>
               )}
-
-              {/* Coupon discount */}
               {appliedCoupon && totals.couponDiscount > 0 && (
-                <div className="flex justify-between text-sm text-brand-600">
-                  <span className="flex items-center gap-1">
-                    <Tag className="w-3 h-3" /> {appliedCoupon.code}
-                  </span>
-                  <span className="font-medium">−{formatPriceEn(totals.couponDiscount)}</span>
+                <div className="flex justify-between text-sm text-[#0f4c2a]">
+                  <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> {appliedCoupon.code}</span>
+                  <span className="font-medium">-{formatPriceEn(totals.couponDiscount)}</span>
                 </div>
               )}
-
-              {/* Delivery */}
               <div className="flex justify-between text-sm text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Truck className="w-3 h-3" /> ডেলিভারি চার্জ
-                </span>
-                <span className={cn('font-medium', totals.isFreeDelivery && 'text-brand-600')}>
-                  {totals.isFreeDelivery ? '🎉 ফ্রি' : formatPriceEn(totals.deliveryCharge)}
+                <span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Delivery</span>
+                <span className={cn('font-medium', totals.isFreeDelivery && 'text-[#0f4c2a]')}>
+                  {totals.isFreeDelivery ? 'FREE' : formatPriceEn(totals.deliveryCharge)}
                 </span>
               </div>
-
-              {/* Divider + Grand total */}
               <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                <span className="font-bold text-gray-900">সর্বমোট</span>
-                <span className="text-xl font-black text-brand-700">
+                <span className="font-bold text-gray-900">Total</span>
+                <span className="text-xl font-black text-[#0f4c2a]" style={{ fontFamily: 'Manrope, sans-serif' }}>
                   {formatPriceEn(totals.grandTotal)}
                 </span>
               </div>
-
-              {/* Total savings */}
               {totals.itemDiscount + totals.couponDiscount > 0 && (
                 <p className="text-xs text-center text-green-600 font-semibold bg-green-50 rounded-lg py-1.5">
-                  🎉 মোট সাশ্রয়: {formatPriceEn(totals.itemDiscount + totals.couponDiscount)}
+                  You save: {formatPriceEn(totals.itemDiscount + totals.couponDiscount)}
                 </p>
               )}
             </div>
 
-            {/* ── CTA buttons ── */}
+            {/* CTA buttons */}
             <div className="px-5 pb-5 pt-1 space-y-2.5">
               <Link
                 href="/checkout"
                 onClick={closeCart}
-                className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold py-3.5 rounded-xl text-base transition-all active:scale-[0.98] shadow-lg shadow-brand-700/20"
+                className="w-full flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl text-base transition-all active:scale-[0.98] shadow-lg"
+                style={{ background: 'linear-gradient(135deg,#0f4c2a,#1a6b3c)', boxShadow: '0 4px 14px rgba(15,76,42,0.3)' }}
               >
-                অর্ডার করুন — {formatPriceEn(totals.grandTotal)}
+                Checkout - {formatPriceEn(totals.grandTotal)}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/cart"
                 onClick={closeCart}
-                className="w-full flex items-center justify-center gap-2 border border-gray-200 hover:border-brand-300 hover:bg-brand-50 text-gray-700 hover:text-brand-700 font-medium py-2.5 rounded-xl text-sm transition-all"
+                className="w-full flex items-center justify-center gap-2 border border-gray-200 hover:border-[#0f4c2a]/30 hover:bg-[#f0fdf4] text-gray-700 hover:text-[#0f4c2a] font-medium py-2.5 rounded-xl text-sm transition-all"
               >
                 <ShoppingCart className="w-4 h-4" />
-                কার্ট বিস্তারিত দেখুন
+                View full cart
               </Link>
             </div>
           </div>
         )}
-      </aside>
+      </div>
     </>
   );
 }
