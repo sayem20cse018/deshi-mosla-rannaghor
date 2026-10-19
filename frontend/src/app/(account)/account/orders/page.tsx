@@ -97,7 +97,6 @@ function OrderCard({ order }: { order: any }) {
           <div className="mt-1.5">
             <DeliveryProviderBadge
               providerName={order.deliveryProviderName ?? order.delivery?.courierName}
-              providerEmoji={order.deliveryProviderEmoji}
               trackingUrl={order.delivery?.trackingUrl}
               deliveryStatus={order.delivery?.status}
               compact
