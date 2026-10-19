@@ -96,18 +96,19 @@ export default function WishlistPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
+        <h2 className="text-lg font-black text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
           <Heart className="w-5 h-5 text-red-500 fill-red-500" />
           আমার উইশলিস্ট
         </h2>
         {items.length > 0 && (
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+            <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full" style={{ fontFamily: 'Manrope, sans-serif' }}>
               {items.length} টি পণ্য
             </span>
             <button
               onClick={handleClearAll}
-              className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 border border-red-200 px-2.5 py-1 rounded-xl transition-colors font-semibold"
+              className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 border border-red-200 px-3 py-1.5 rounded-xl transition-colors font-bold"
+              style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
             >
               সব সরান
             </button>
@@ -117,15 +118,17 @@ export default function WishlistPage() {
 
       {/* Empty state */}
       {items.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-14 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 py-16 px-8 text-center shadow-sm">
           <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-10 h-10 text-red-300" />
           </div>
-          <p className="text-gray-700 font-bold text-lg mb-2">উইশলিস্ট খালি</p>
-          <p className="text-gray-400 text-sm mb-6 max-w-xs mx-auto">
+          <p className="text-gray-800 font-black text-lg mb-2" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>উইশলিস্ট খালি</p>
+          <p className="text-gray-400 text-sm mb-6 max-w-xs mx-auto" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             পছন্দের পণ্যে ❤️ আইকন ক্লিক করে উইশলিস্টে যোগ করুন।
           </p>
-          <Link href="/shop" className="btn-primary px-8">
+          <Link href="/shop"
+            className="inline-flex items-center gap-2 text-sm font-black text-white px-6 py-3 rounded-xl transition-all active:scale-95"
+            style={{ background: 'linear-gradient(135deg,#0f4c2a,#1a6b3c)', boxShadow: '0 4px 12px rgba(15,76,42,0.25)', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             পণ্য দেখুন
           </Link>
         </div>
@@ -141,8 +144,8 @@ export default function WishlistPage() {
               <div
                 key={item.productId}
                 className={cn(
-                  'group bg-white rounded-2xl border border-gray-100 overflow-hidden',
-                  'hover:border-forest-200 hover:shadow-md transition-all duration-300',
+                  'group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden',
+                  'hover:border-[#0f4c2a]/20 hover:shadow-md transition-all duration-300',
                   isOOS && 'opacity-75',
                 )}
               >
@@ -211,7 +214,7 @@ export default function WishlistPage() {
 
                   {/* Price */}
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-forest-700 font-black text-base leading-none">
+                    <span className="text-[#0f4c2a] font-black text-base leading-none" style={{ fontFamily: 'Manrope, sans-serif' }}>
                       {formatPriceEn(effectivePrice)}
                     </span>
                     {hasDiscount && (
@@ -230,7 +233,7 @@ export default function WishlistPage() {
                         'flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all',
                         isOOS
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-forest-700 hover:bg-forest-800 text-white shadow-sm hover:shadow-md',
+                          : 'bg-[#0f4c2a] hover:bg-[#0a3d22] text-white shadow-sm hover:shadow-md',
                       )}
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
@@ -272,7 +275,8 @@ export default function WishlistPage() {
               }
               toast.success(`${count}টি পণ্য কার্টে যোগ হয়েছে`, { icon: '🛒' });
             }}
-            className="flex items-center gap-2 bg-spice-600 hover:bg-spice-700 text-white font-bold px-8 py-3 rounded-xl text-sm shadow-sm transition-all"
+            className="flex items-center gap-2 bg-[#ea580c] hover:bg-[#c2410c] text-white font-black px-8 py-3 rounded-xl text-sm shadow-sm transition-all active:scale-95"
+            style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
           >
             <ShoppingCart className="w-4 h-4" />
             সব পণ্য কার্টে যোগ করুন

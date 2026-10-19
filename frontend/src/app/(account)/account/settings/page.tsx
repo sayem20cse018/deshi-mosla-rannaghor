@@ -32,8 +32,8 @@ export default function SettingsPage() {
       {/* Notifications */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-5">
-          <Bell className="w-5 h-5 text-brand-600" />
-          <h2 className="text-base font-bold text-gray-900">নোটিফিকেশন সেটিংস</h2>
+          <Bell className="w-5 h-5 text-[#0f4c2a]" />
+          <h2 className="text-base font-black text-gray-900" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>নোটিফিকেশন সেটিংস</h2>
         </div>
         <div className="space-y-4">
           {[
@@ -54,7 +54,7 @@ export default function SettingsPage() {
                 onClick={() => toggleNotif(key as any)}
                 className={cn(
                   'relative w-11 h-6 rounded-full transition-colors duration-200',
-                  notifSettings[key as keyof typeof notifSettings] ? 'bg-brand-600' : 'bg-gray-200',
+                  notifSettings[key as keyof typeof notifSettings] ? 'bg-[#0f4c2a]' : 'bg-gray-200',
                 )}
                 role="switch"
                 aria-checked={notifSettings[key as keyof typeof notifSettings]}
@@ -85,12 +85,12 @@ export default function SettingsPage() {
             className="flex items-center justify-between py-3 border-b border-gray-50 group"
           >
             <div>
-              <p className="text-sm font-semibold text-gray-800 group-hover:text-brand-700 transition-colors">
+              <p className="text-sm font-semibold text-gray-800 group-hover:text-[#0f4c2a] transition-colors">
                 পাসওয়ার্ড পরিবর্তন
               </p>
               <p className="text-xs text-gray-400 mt-0.5">নিরাপদ পাসওয়ার্ড ব্যবহার করুন</p>
             </div>
-            <span className="text-xs text-brand-600 font-medium">পরিবর্তন করুন →</span>
+            <span className="text-xs font-bold" style={{ color: "#0f4c2a" }}>পরিবর্তন করুন →</span>
           </a>
           <div className="flex items-center justify-between py-3">
             <div>
@@ -104,7 +104,7 @@ export default function SettingsPage() {
 
       {/* Logout */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-        <h2 className="text-base font-bold text-gray-900 mb-4">সেশন</h2>
+        <h2 className="text-base font-black text-gray-900 mb-4">সেশন</h2>
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-5 py-2.5 rounded-xl transition-colors"
@@ -118,7 +118,7 @@ export default function SettingsPage() {
       <div className="bg-white rounded-2xl border border-red-100 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <AlertTriangle className="w-5 h-5 text-red-500" />
-          <h2 className="text-base font-bold text-red-700">বিপদ অঞ্চল</h2>
+          <h2 className="text-base font-black text-red-700">বিপদ অঞ্চল</h2>
         </div>
         {!showDeleteConfirm ? (
           <button

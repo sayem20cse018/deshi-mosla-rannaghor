@@ -102,7 +102,7 @@ export default function AddressesPage() {
   if (isLoading)
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#0f4c2a]" />
       </div>
     );
 
@@ -123,7 +123,7 @@ export default function AddressesPage() {
         <h2 className="text-base font-bold text-gray-900">সংরক্ষিত ঠিকানা</h2>
         <button
           onClick={openAdd}
-          className="btn-primary text-sm py-2 px-4 flex items-center gap-1.5"
+          className="inline-flex items-center gap-1.5 text-sm font-black text-white py-2 px-4 rounded-xl transition-all active:scale-95" style={{ background: "linear-gradient(135deg,#0f4c2a,#1a6b3c)" }}
         >
           <Plus className="w-4 h-4" /> নতুন ঠিকানা
         </button>
@@ -145,13 +145,13 @@ export default function AddressesPage() {
               key={addr.id}
               className={cn(
                 'bg-white rounded-2xl border p-5 shadow-sm',
-                addr.isDefault ? 'border-brand-200' : 'border-gray-100',
+                addr.isDefault ? 'border-[#0f4c2a]/30 ring-1 ring-[#0f4c2a]/10' : 'border-gray-100',
               )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-4 h-4 text-brand-600" />
+                  <div className="w-9 h-9 rounded-xl bg-[#f0fdf4] flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-[#0f4c2a]" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -162,7 +162,7 @@ export default function AddressesPage() {
                         </span>
                       )}
                       {addr.isDefault && (
-                        <span className="text-xs bg-brand-50 text-brand-600 border border-brand-200 px-2 py-0.5 rounded-full font-semibold">
+                        <span className="text-xs bg-[#f0fdf4] text-[#0f4c2a] border border-[#0f4c2a]/20 px-2 py-0.5 rounded-full font-semibold">
                           ডিফল্ট
                         </span>
                       )}
@@ -187,7 +187,7 @@ export default function AddressesPage() {
                   )}
                   <button
                     onClick={() => openEdit(addr)}
-                    className="btn-icon text-gray-400 hover:text-brand-600"
+                    className="btn-icon text-gray-400 hover:text-[#0f4c2a] hover:bg-[#f0fdf4]"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -294,7 +294,7 @@ export default function AddressesPage() {
                   type="checkbox"
                   checked={form.isDefault}
                   onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))}
-                  className="w-4 h-4 rounded border-gray-300 text-brand-600"
+                  className="w-4 h-4 rounded border-gray-300 text-[#0f4c2a] accent-[#0f4c2a]"
                 />
                 <span className="text-sm text-gray-700 font-medium">
                   ডিফল্ট ঠিকানা হিসেবে সেট করুন
@@ -305,7 +305,7 @@ export default function AddressesPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn-primary flex items-center gap-2 flex-1 justify-center"
+                  className="inline-flex items-center justify-center gap-2 flex-1 text-sm font-black text-white py-3 rounded-xl transition-all active:scale-[0.98]" style={{ background: "linear-gradient(135deg,#0f4c2a,#1a6b3c)" }}
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

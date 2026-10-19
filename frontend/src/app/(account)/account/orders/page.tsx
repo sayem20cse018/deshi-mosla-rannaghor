@@ -47,24 +47,24 @@ function OrderCard({ order }: { order: any }) {
   return (
     <Link
       href={`/account/orders/${order.id}`}
-      className="group bg-white rounded-2xl border border-gray-100 hover:border-forest-200 hover:shadow-md transition-all p-4 flex items-center gap-4"
+      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-[#0f4c2a]/25 hover:shadow-md hover:shadow-[#0f4c2a]/5 transition-all p-4 flex items-center gap-4"
     >
       {/* Status icon */}
       <div className={cn(
         'w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0',
-        order.status === 'DELIVERED' ? 'bg-green-50'
-          : order.status === 'CANCELLED' ? 'bg-red-50'
-          : order.status === 'SHIPPED' ? 'bg-orange-50'
-          : 'bg-forest-50',
+        order.status === 'DELIVERED' ? 'bg-[#f0fdf4]'
+          : order.status === 'CANCELLED' ? 'bg-[#fff1f2]'
+          : order.status === 'SHIPPED'   ? 'bg-[#fff7ed]'
+          : 'bg-[#f0fdf4]',
       )}>
         {order.status === 'DELIVERED' ? (
-          <CheckCircle className="w-5 h-5 text-green-600" />
+          <CheckCircle className="w-5 h-5 text-[#15803d]" />
         ) : order.status === 'CANCELLED' ? (
-          <XCircle className="w-5 h-5 text-red-500" />
+          <XCircle className="w-5 h-5 text-[#dc2626]" />
         ) : order.status === 'SHIPPED' ? (
-          <Truck className="w-5 h-5 text-orange-500" />
+          <Truck className="w-5 h-5 text-[#ea580c]" />
         ) : (
-          <Package className="w-5 h-5 text-forest-600" />
+          <Package className="w-5 h-5 text-[#0f4c2a]" />
         )}
       </div>
 
@@ -113,7 +113,7 @@ function OrderCard({ order }: { order: any }) {
 
       {/* Right */}
       <div className="text-right flex-shrink-0 space-y-1">
-        <p className="font-black text-forest-700">{formatPriceEn(order.totalAmount)}</p>
+        <p className="font-black text-[#0f4c2a]" style={{ fontFamily: 'Manrope, sans-serif' }}>{formatPriceEn(order.totalAmount)}</p>
         <p className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
           {PAY_METHOD_LABEL[order.paymentMethod] ?? order.paymentMethod}
         </p>
@@ -152,7 +152,7 @@ export default function OrdersPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-black text-gray-900">আমার অর্ডার</h2>
+        <h2 className="text-lg font-black text-gray-900" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>আমার অর্ডার</h2>
         {meta && (
           <p className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
             মোট {meta.total} টি
@@ -169,8 +169,8 @@ export default function OrdersPage() {
             className={cn(
               'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 border',
               activeTab === key
-                ? 'bg-forest-700 text-white border-forest-700 shadow-sm shadow-forest-700/20'
-                : 'bg-white text-gray-600 border-gray-100 hover:border-forest-200 hover:text-forest-700',
+                ? 'bg-[#0f4c2a] text-white border-[#0f4c2a]'
+                : 'bg-white text-gray-600 border-gray-100 hover:border-[#0f4c2a]/30 hover:text-[#0f4c2a]',
             )}
           >
             <Icon className="w-3.5 h-3.5" />
@@ -185,12 +185,12 @@ export default function OrdersPage() {
           <Loader2 className="w-7 h-7 animate-spin text-forest-600" />
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-14 text-center">
-          <ShoppingBag className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <p className="text-gray-700 font-bold text-lg mb-2">
+        <div className="bg-white rounded-2xl border border-gray-100 py-16 px-8 text-center">
+          <ShoppingBag className="w-20 h-20 text-gray-200 mx-auto mb-4" />
+          <p className="text-gray-700 font-bold text-lg mb-2" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             {activeTab ? `কোনো "${STATUS_LABEL[activeTab]}" অর্ডার নেই` : 'কোনো অর্ডার নেই'}
           </p>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="text-gray-400 text-sm mb-6" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             {activeTab ? 'অন্য ক্যাটাগরি দেখুন' : 'এখনো কোনো অর্ডার করা হয়নি।'}
           </p>
           {!activeTab && (
@@ -222,7 +222,7 @@ export default function OrdersPage() {
                   <button key={p} onClick={() => setPage(p)}
                     className={cn('w-8 h-8 rounded-lg text-sm font-bold transition-all',
                       p === meta.page
-                        ? 'bg-forest-700 text-white'
+                        ? 'bg-[#0f4c2a] text-white'
                         : 'text-gray-500 hover:bg-gray-100')}>
                     {p}
                   </button>

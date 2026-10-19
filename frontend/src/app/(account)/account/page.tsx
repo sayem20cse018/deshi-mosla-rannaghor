@@ -29,13 +29,13 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className={`rounded-2xl p-4 border ${color} flex items-center gap-4`}>
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center bg-white/60`}>
+    <div className={`rounded-2xl p-4 border ${color} flex items-center gap-3 shadow-sm`}>
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/80 shadow-sm flex-shrink-0">
         <Icon className="w-5 h-5" />
       </div>
       <div>
-        <p className="text-2xl font-black">{value ?? '—'}</p>
-        <p className="text-xs font-medium opacity-70">{label}</p>
+        <p className="text-2xl font-black leading-none" style={{ fontFamily: 'Manrope, sans-serif' }}>{value ?? '—'}</p>
+        <p className="text-xs font-medium opacity-70 mt-0.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{label}</p>
       </div>
     </div>
   );
@@ -67,9 +67,13 @@ export default function AccountDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
-      <div className="bg-gradient-to-br from-brand-700 to-brand-800 rounded-2xl p-6 text-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center flex-shrink-0">
+      <div className="rounded-2xl p-6 text-white overflow-hidden relative"
+           style={{ background: 'linear-gradient(135deg, #0f4c2a 0%, #0a3d22 60%, #072d18 100%)' }}>
+        {/* decorative circle */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-[0.07]"
+             style={{ background: 'radial-gradient(circle, #4ade80, transparent)' }} />
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
             {user?.avatar ? (
               <Image
                 src={user.avatar}
@@ -79,19 +83,20 @@ export default function AccountDashboard() {
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <span className="text-2xl font-bold">{user?.name?.charAt(0) ?? 'গ'}</span>
+              <span className="text-2xl font-bold" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{user?.name?.charAt(0) ?? 'গ'}</span>
             )}
           </div>
-          <div>
-            <p className="text-brand-200 text-sm">স্বাগতম!</p>
-            <h2 className="text-xl font-bold">{user?.name}</h2>
-            <p className="text-brand-300 text-xs mt-0.5">{user?.email}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-white/60 text-xs" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>স্বাগতম!</p>
+            <h2 className="text-xl font-black text-white truncate" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{user?.name}</h2>
+            <p className="text-white/50 text-xs mt-0.5 truncate" style={{ fontFamily: 'Manrope, sans-serif' }}>{user?.email}</p>
           </div>
           <Link
             href="/account/profile"
-            className="ml-auto bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+            className="flex-shrink-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors"
+            style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
           >
-            <User className="w-3.5 h-3.5" /> প্রোফাইল সম্পাদনা
+            <User className="w-3.5 h-3.5" /> প্রোফাইল
           </Link>
         </div>
       </div>
@@ -102,25 +107,25 @@ export default function AccountDashboard() {
           icon={ShoppingBag}
           label="মোট অর্ডার"
           value={counts?.orders ?? 0}
-          color="bg-blue-50 border-blue-100 text-blue-700"
+          color="bg-[#eff6ff] border-[#bfdbfe] text-[#1d4ed8]"
         />
         <StatCard
           icon={Star}
           label="মোট রিভিউ"
           value={counts?.reviews ?? 0}
-          color="bg-amber-50 border-amber-100 text-amber-700"
+          color="bg-[#fffbeb] border-[#fde68a] text-[#92400e]"
         />
         <StatCard
           icon={MapPin}
           label="সংরক্ষিত ঠিকানা"
           value={counts?.addresses ?? 0}
-          color="bg-green-50 border-green-100 text-green-700"
+          color="bg-[#f0fdf4] border-[#bbf7d0] text-[#0f4c2a]"
         />
       </div>
 
       {/* Quick links */}
       <div>
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">
+        <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.12em] mb-3">
           দ্রুত অ্যাক্সেস
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -128,31 +133,33 @@ export default function AccountDashboard() {
             <Link
               key={href}
               href={href}
-              className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-3 hover:border-brand-300 hover:shadow-sm transition-all group"
+              className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-3 hover:border-[#0f4c2a]/30 hover:shadow-sm transition-all group"
             >
-              <div className="w-10 h-10 rounded-xl bg-brand-50 group-hover:bg-brand-100 flex items-center justify-center transition-colors flex-shrink-0">
-                <Icon className="w-5 h-5 text-brand-600" />
+              <div className="w-10 h-10 rounded-xl bg-[#f0fdf4] group-hover:bg-[#dcfce7] flex items-center justify-center transition-colors flex-shrink-0">
+                <Icon className="w-5 h-5 text-[#0f4c2a]" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-800 text-sm leading-tight">{label}</p>
-                <p className="text-gray-400 text-xs mt-0.5 truncate">{sub}</p>
+                <p className="font-semibold text-gray-800 text-sm leading-tight" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{label}</p>
+                <p className="text-gray-400 text-xs mt-0.5 truncate" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{sub}</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-500 ml-auto transition-colors flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#0f4c2a] ml-auto transition-colors flex-shrink-0" />
             </Link>
           ))}
         </div>
       </div>
 
       {/* Track order shortcut */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-4">
-        <div className="w-11 h-11 rounded-xl bg-spice-50 flex items-center justify-center flex-shrink-0">
-          <Package className="w-5 h-5 text-spice-600" />
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-4 shadow-sm">
+        <div className="w-11 h-11 rounded-xl bg-[#fff7ed] flex items-center justify-center flex-shrink-0">
+          <Package className="w-5 h-5 text-[#ea580c]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-800 text-sm">অর্ডার ট্র্যাক করুন</p>
-          <p className="text-gray-400 text-xs mt-0.5">আপনার অর্ডারের বর্তমান অবস্থা দেখুন</p>
+          <p className="font-semibold text-gray-800 text-sm" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>অর্ডার ট্র্যাক করুন</p>
+          <p className="text-gray-400 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>আপনার অর্ডারের বর্তমান অবস্থা দেখুন</p>
         </div>
-        <Link href="/order-tracking" className="btn-primary text-xs py-2 px-4 flex-shrink-0">
+        <Link href="/order-tracking"
+          className="flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-black py-2 px-4 rounded-xl text-white transition-all active:scale-95"
+          style={{ background: 'linear-gradient(135deg,#0f4c2a,#1a6b3c)', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
           ট্র্যাক করুন
         </Link>
       </div>
