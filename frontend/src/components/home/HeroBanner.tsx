@@ -183,29 +183,6 @@ export function HeroBanner() {
         </div>
       </div>
 
-      {/* Trust bar */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
-            {[
-              { e: '🌿', t: '১০০% খাঁটি পণ্য',  s: 'কোনো কৃত্রিম উপাদান নেই' },
-              { e: '🚚', t: 'দ্রুত ডেলিভারি',    s: 'সারাদেশে হোম ডেলিভারি' },
-              { e: '🔒', t: 'নিরাপদ পেমেন্ট',   s: 'bKash • Nagad • COD' },
-              { e: '💬', t: '২৪/৭ সাপোর্ট',    s: 'WhatsApp সহায়তা' },
-            ].map(({ e, t, s }) => (
-              <div key={t} className="flex items-center gap-3 py-3.5 px-4">
-                <span className="text-2xl flex-shrink-0">{e}</span>
-                <div className="min-w-0">
-                  <p className="text-gray-800 font-bold text-xs leading-tight"
-                     style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{t}</p>
-                  <p className="text-gray-400 text-[11px] mt-0.5 truncate"
-                     style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>{s}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </section>
   );
 }

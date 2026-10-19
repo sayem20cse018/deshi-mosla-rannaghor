@@ -46,7 +46,7 @@ export function AnnouncementBar() {
       {/* Subtle top shimmer */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
 
-      <div className="container mx-auto px-4 h-full flex items-center gap-2">
+      <div className="container mx-auto px-4 h-full flex items-center gap-2 overflow-hidden">
 
         {/* Sliding message area */}
         <div className="flex-1 flex items-center justify-center overflow-hidden min-w-0">

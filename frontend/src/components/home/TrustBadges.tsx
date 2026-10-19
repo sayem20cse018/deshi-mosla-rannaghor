@@ -1,30 +1,70 @@
-import { Leaf, Shield, Truck, MessageCircle } from 'lucide-react';
+import { ShieldCheck, Truck, Star, Banknote } from 'lucide-react';
 
-const BADGES = [
-  { icon: Leaf,          title: '১০০% খাঁটি পণ্য',    sub: 'কৃত্রিম উপাদান ছাড়া',    bg: 'bg-green-50',  color: 'text-green-700'  },
-  { icon: Shield,        title: 'নিরাপদ পেমেন্ট',      sub: 'bKash • Nagad • COD',    bg: 'bg-blue-50',   color: 'text-blue-700'   },
-  { icon: Truck,         title: 'দ্রুত ডেলিভারি',       sub: 'সারাদেশে হোম ডেলিভারি',  bg: 'bg-purple-50', color: 'text-purple-700' },
-  { icon: MessageCircle, title: '২৪/৭ সাপোর্ট',        sub: 'WhatsApp সহায়তা',        bg: 'bg-spice-50',  color: 'text-spice-700'  },
+const CARDS = [
+  {
+    icon:    ShieldCheck,
+    titleBn: '১০০% খাঁটি পণ্য',
+    sub:     'কোনো কৃত্রিম উপাদান নেই',
+    accent:  '#0f4c2a',
+    bg:      '#f0fdf4',
+  },
+  {
+    icon:    Truck,
+    titleBn: 'দ্রুত ডেলিভারি',
+    sub:     'সারাদেশে হোম ডেলিভারি',
+    accent:  '#0369a1',
+    bg:      '#f0f9ff',
+  },
+  {
+    icon:    Star,
+    titleBn: 'বিশ্বস্ত মান',
+    sub:     '১০,০০০+ সন্তুষ্ট গ্রাহক',
+    accent:  '#92400e',
+    bg:      '#fffbeb',
+  },
+  {
+    icon:    Banknote,
+    titleBn: 'ক্যাশ অন ডেলিভারি',
+    sub:     'bKash • Nagad • COD',
+    accent:  '#5b21b6',
+    bg:      '#f5f3ff',
+  },
 ];
 
 export function TrustBadges() {
   return (
-    <div className="bg-white border-b border-gray-100">
-      <div className="container mx-auto px-4 py-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {BADGES.map(({ icon: Icon, title, sub, bg, color }) => (
-            <div key={title} className="flex items-center gap-3 py-1">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${bg}`}>
-                <Icon className={`w-5 h-5 ${color}`} />
+    <section className="bg-white border-b border-gray-100 py-4">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {CARDS.map(({ icon: Icon, titleBn, sub, accent, bg }) => (
+            <div
+              key={titleBn}
+              className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-3.5 shadow-sm hover:shadow-md transition-shadow duration-200"
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: bg }}
+              >
+                <Icon className="w-5 h-5" style={{ color: accent }} strokeWidth={1.75} />
               </div>
               <div className="min-w-0">
-                <p className="text-gray-800 font-bold text-xs leading-tight">{title}</p>
-                <p className="text-gray-400 text-[11px] leading-tight mt-0.5">{sub}</p>
+                <p
+                  className="text-gray-900 font-black text-[12px] leading-tight"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
+                >
+                  {titleBn}
+                </p>
+                <p
+                  className="text-gray-400 text-[11px] leading-tight mt-0.5 truncate"
+                  style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}
+                >
+                  {sub}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
