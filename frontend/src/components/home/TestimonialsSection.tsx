@@ -84,7 +84,7 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#0f4c2a' }}>
+            <p className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#ea580c' }}>
               গ্রাহকদের মতামত
             </p>
             <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-snug">
@@ -95,11 +95,11 @@ export function TestimonialsSection() {
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={() => setIdx(i => Math.max(0, i - VISIBLE))} disabled={!canPrev}
-              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#0f4c2a] hover:text-[#0f4c2a] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#ea580c] hover:text-[#ea580c] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button onClick={() => setIdx(i => Math.min(TESTIMONIALS.length - VISIBLE, i + VISIBLE))} disabled={!canNext}
-              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#0f4c2a] hover:text-[#0f4c2a] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#ea580c] hover:text-[#ea580c] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -115,8 +115,8 @@ export function TestimonialsSection() {
               {/* Quote icon + stars */}
               <div className="flex items-start justify-between">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                     style={{ background: '#f0fdf4' }}>
-                  <Quote className="w-4 h-4" style={{ color: '#0f4c2a' }} />
+                     style={{ background: '#fff7ed' }}>
+                  <Quote className="w-4 h-4" style={{ color: '#ea580c' }} />
                 </div>
                 <div className="flex gap-0.5">
                   {[1,2,3,4,5].map(s => (
@@ -154,7 +154,7 @@ export function TestimonialsSection() {
           {Array.from({ length: pages }).map((_, i) => (
             <button key={i} onClick={() => setIdx(i * VISIBLE)}
               className="h-1.5 rounded-full transition-all duration-300"
-              style={{ width: i === curPage ? '24px' : '6px', background: i === curPage ? '#0f4c2a' : '#d1d5db' }} />
+              style={{ width: i === curPage ? '24px' : '6px', background: i === curPage ? '#ea580c' : '#d1d5db' }} />
           ))}
         </div>
 

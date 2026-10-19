@@ -30,7 +30,7 @@ export function NewsletterSection() {
         {/* Banner card */}
         <div
           className="relative overflow-hidden rounded-3xl px-8 py-12 md:px-16 md:py-14 flex flex-col md:flex-row items-center gap-10"
-          style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)', border: '1.5px solid #bbf7d0' }}
+          style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%)', border: '1.5px solid #fed7aa' }}
         >
           {/* Decorative plant emoji */}
           <div className="absolute -right-4 -bottom-6 text-[160px] leading-none opacity-[0.12] select-none pointer-events-none rotate-12">
@@ -43,8 +43,8 @@ export function NewsletterSection() {
           {/* Left: text */}
           <div className="relative z-10 flex-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] mb-4"
-                  style={{ color: '#0f4c2a', fontFamily: 'Manrope, sans-serif' }}>
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#0f4c2a' }} />
+                  style={{ color: '#ea580c', fontFamily: 'Manrope, sans-serif' }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#ea580c' }} />
               নিউজলেটার
             </span>
 
@@ -58,7 +58,7 @@ export function NewsletterSection() {
             </p>
 
             {done ? (
-              <div className="flex items-center gap-3 bg-white border border-green-200 text-[#0f4c2a] rounded-2xl px-5 py-4 font-bold max-w-md"
+              <div className="flex items-center gap-3 bg-white border border-green-200 text-[#ea580c] rounded-2xl px-5 py-4 font-bold max-w-md"
                    style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                 সাবস্ক্রিপশন সফল হয়েছে! ধন্যবাদ।
@@ -73,7 +73,7 @@ export function NewsletterSection() {
                     placeholder="Enter Your Email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/20 focus:border-[#0f4c2a] transition-all shadow-sm"
+                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ea580c]/20 focus:border-[#ea580c] transition-all shadow-sm"
                     style={{ fontFamily: 'Manrope, sans-serif' }}
                   />
                 </div>
@@ -81,7 +81,7 @@ export function NewsletterSection() {
                   type="submit"
                   disabled={loading}
                   className="flex-shrink-0 flex items-center gap-2 text-white font-black px-5 py-3.5 rounded-xl shadow-md hover:opacity-90 active:scale-95 transition-all text-sm disabled:opacity-70"
-                  style={{ background: 'linear-gradient(135deg, #0f4c2a, #1a6b3c)', fontFamily: 'Manrope, sans-serif', boxShadow: '0 4px 12px rgba(15,76,42,0.3)' }}
+                  style={{ background: 'linear-gradient(135deg, #ea580c, #ea580c)', fontFamily: 'Manrope, sans-serif', boxShadow: '0 4px 12px rgba(15,76,42,0.3)' }}
                 >
                   {loading
                     ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -100,7 +100,7 @@ export function NewsletterSection() {
                 { icon: Tag,      text: 'বিশেষ ছাড়' },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-1.5 text-xs"
-                     style={{ color: '#166534', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                     style={{ color: '#c2410c', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                   <Icon className="w-3.5 h-3.5" />
                   {text}
                 </div>

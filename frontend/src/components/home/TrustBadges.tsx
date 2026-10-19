@@ -5,8 +5,8 @@ const CARDS = [
     icon:    ShieldCheck,
     titleBn: '১০০% খাঁটি পণ্য',
     sub:     'কোনো কৃত্রিম উপাদান নেই',
-    accent:  '#0f4c2a',
-    bg:      '#f0fdf4',
+    accent:  '#ea580c',
+    bg:      '#fff7ed',
   },
   {
     icon:    Truck,

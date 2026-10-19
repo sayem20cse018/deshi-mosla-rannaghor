@@ -15,12 +15,12 @@ export function FloatingCart() {
   const [prevCount, setPrevCount] = useState(itemCount);
   const [show,      setShow]      = useState(false);
 
-  // Pulse animation on item add
+  // Pulse on item add
   useEffect(() => {
     if (itemCount > prevCount) {
       setPulse(true);
       setDismissed(false);
-      const t = setTimeout(() => setPulse(false), 700);
+      const t = setTimeout(() => setPulse(false), 600);
       return () => clearTimeout(t);
     }
     setPrevCount(itemCount);
@@ -38,94 +38,59 @@ export function FloatingCart() {
 
   if (itemCount === 0 || dismissed) return null;
 
-  const FREE_THRESHOLD = 1000;
-  const progressPct   = Math.min(100, (totals.subtotal / FREE_THRESHOLD) * 100);
-  const remaining     = Math.max(0, FREE_THRESHOLD - totals.subtotal);
-
   return (
     <div
-      className={`hidden md:block fixed right-0 top-1/2 -translate-y-1/2 z-40 transition-all duration-500 ease-out ${
-        show ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-      }`}
+      className={[
+        'hidden md:block fixed right-4 bottom-8 z-40',
+        'transition-all duration-500 ease-out',
+        show ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
+      ].join(' ')}
     >
-      {/* Dismiss X above the tab */}
+      {/* Dismiss button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setDismissed(true); setShow(false); }}
-        className="absolute -top-2.5 right-0 w-5 h-5 bg-gray-500 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-colors shadow z-10 border border-white/30"
+        onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
+        className="absolute -top-2 -right-2 w-5 h-5 bg-gray-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-colors shadow-md z-10 border border-white/30"
         aria-label="Close"
       >
         <X className="w-2.5 h-2.5" />
       </button>
 
-      {/* Main tab */}
+      {/* Card button */}
       <button
         onClick={openCart}
-        className={`group relative flex flex-col items-center gap-2 pl-3.5 pr-2.5 py-5 rounded-l-3xl bg-[#0f4c2a] hover:bg-[#0a3d22] active:bg-[#072d18] text-white transition-all duration-200 hover:pl-5 border border-r-0 border-[#072d18] shadow-xl shadow-[#0f4c2a]/40 ${
-          pulse ? 'scale-110' : 'scale-100'
-        }`}
-        style={{ transition: 'transform 200ms ease, padding 200ms ease' }}
-        aria-label={`কার্ট — ${itemCount} পণ্য`}
+        aria-label={itemCount + ' items in cart'}
+        className={[
+          'flex flex-col items-center overflow-hidden',
+          'rounded-2xl shadow-2xl',
+          'border border-gray-700/50',
+          'transition-transform duration-200 active:scale-95',
+          pulse ? 'scale-105' : 'scale-100 hover:scale-105',
+        ].join(' ')}
+        style={{ width: '80px' }}
       >
-        {/* Shopping bag icon */}
-        <div className="relative">
+        {/* Top  orange/red section */}
+        <div
+          className="w-full flex flex-col items-center justify-center gap-1 py-3"
+          style={{ background: 'linear-gradient(160deg,#ea580c,#c2410c)' }}
+        >
           <ShoppingBag
-            className={`w-6 h-6 transition-transform duration-200 group-hover:scale-110 ${pulse ? 'scale-125' : ''}`}
+            className={['w-7 h-7 text-white transition-transform duration-200', pulse ? 'scale-125' : ''].join(' ')}
             strokeWidth={1.75}
           />
-          {/* Item count badge */}
-          <span
-            className={`absolute -top-2.5 -right-2.5 min-w-[18px] h-[18px] px-0.5 flex items-center justify-center text-[9px] font-black text-white bg-[#ea580c] rounded-full border-[1.5px] border-white leading-none shadow-sm transition-transform duration-200 ${
-              pulse ? 'scale-125' : ''
-            }`}
-          >
-            {itemCount > 9 ? '9+' : itemCount}
+          <span className="text-white font-black text-[11px] leading-none" style={{ fontFamily: 'Manrope,sans-serif' }}>
+            {itemCount} {itemCount === 1 ? 'item' : 'items'}
           </span>
         </div>
 
-        {/* Price */}
-        <div className="text-center leading-none">
-          <p className="text-[12px] font-black tracking-tight whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {formatPriceEn(totals.grandTotal)}
-          </p>
-        </div>
-
-        {/* Free delivery progress bar */}
-        <div className="flex flex-col items-center gap-1">
-          <div className="w-2 h-12 bg-[#072d18] rounded-full overflow-hidden">
-            <div
-              className="w-full rounded-full transition-all duration-700 ease-out"
-              style={{
-                height:    `${progressPct}%`,
-                marginTop: `${100 - progressPct}%`,
-                background: progressPct >= 100 ? '#34d399' : '#6ee7b7',
-              }}
-            />
-          </div>
-          {progressPct < 100 && (
-            <span
-              className="text-[8px] text-white/50 writing-mode-vertical leading-none rotate-180"
-              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontFamily: 'Manrope, sans-serif' }}
-            >
-              -{formatPriceEn(remaining)}
-            </span>
-          )}
-          {progressPct >= 100 && (
-            <span
-              className="text-[8px] text-emerald-300 leading-none"
-              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontFamily: 'Manrope, sans-serif' }}
-            >
-              FREE
-            </span>
-          )}
-        </div>
-
-        {/* কার্ট label */}
-        <span
-          className="text-[9.5px] font-bold opacity-60 leading-none tracking-wide"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontFamily: 'Noto Sans Bengali, sans-serif' }}
+        {/* Bottom  dark section */}
+        <div
+          className="w-full flex items-center justify-center py-2.5"
+          style={{ background: '#1c1c1e' }}
         >
-          কার্ট
-        </span>
+          <span className="text-white font-black text-[13px] leading-none" style={{ fontFamily: 'Manrope,sans-serif' }}>
+            {formatPriceEn(totals.grandTotal)}
+          </span>
+        </div>
       </button>
     </div>
   );

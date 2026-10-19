@@ -14,12 +14,12 @@ const RECIPES = [
 
 export function RecipeSection() {
   return (
-    <section className="section-wrap bg-gradient-to-br from-[#f0fdf4] to-[#ecfdf5]">
+    <section className="section-wrap bg-gradient-to-br from-[#fff7ed] to-[#ecfdf5]">
       <div className="container mx-auto px-4">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-2 bg-[#f0fdf4] border border-[#bbf7d0] text-[#0f4c2a] text-xs font-semibold px-3 py-1.5 rounded-full mb-3"
+          <span className="inline-flex items-center gap-2 bg-[#fff7ed] border border-[#fed7aa] text-[#ea580c] text-xs font-semibold px-3 py-1.5 rounded-full mb-3"
                 style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
             <ChefHat className="w-3.5 h-3.5" /> রেসিপি শপিং
           </span>
@@ -37,7 +37,7 @@ export function RecipeSection() {
               className="group bg-white rounded-2xl border border-gray-100 hover:border-[#ea580c]/30 hover:shadow-lg transition-all duration-200 overflow-hidden"
             >
               {/* Emoji area */}
-              <div className="bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] p-4 flex items-center justify-center">
+              <div className="bg-gradient-to-br from-[#fff7ed] to-[#ffedd5] p-4 flex items-center justify-center">
                 <span className="text-5xl group-hover:scale-110 transition-transform duration-300 leading-none">
                   {r.emoji}
                 </span>
@@ -45,7 +45,7 @@ export function RecipeSection() {
 
               {/* Info */}
               <div className="p-3">
-                <p className="text-gray-800 font-bold text-sm leading-tight group-hover:text-[#0f4c2a] transition-colors"
+                <p className="text-gray-800 font-bold text-sm leading-tight group-hover:text-[#ea580c] transition-colors"
                    style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
                   {r.name}
                 </p>
@@ -62,7 +62,7 @@ export function RecipeSection() {
                   {r.difficulty}
                 </span>
                 {/* span instead of button (was nested button inside Link — invalid HTML) */}
-                <span className="mt-2 w-full flex items-center justify-center gap-1 bg-[#f0fdf4] hover:bg-[#dcfce7] text-[#0f4c2a] text-[10px] font-semibold py-1.5 rounded-lg transition-colors cursor-pointer"
+                <span className="mt-2 w-full flex items-center justify-center gap-1 bg-[#fff7ed] hover:bg-[#ffedd5] text-[#ea580c] text-[10px] font-semibold py-1.5 rounded-lg transition-colors cursor-pointer"
                       style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
                   <ShoppingCart className="w-2.5 h-2.5" /> উপকরণ কিনুন
                 </span>
@@ -74,7 +74,7 @@ export function RecipeSection() {
         {/* Bottom CTA */}
         <div className="text-center mt-6">
           <Link href="/blog"
-            className="inline-flex items-center gap-2 bg-[#0f4c2a] hover:bg-[#0a3d22] text-white font-bold px-6 py-2.5 rounded-xl transition-colors text-sm"
+            className="inline-flex items-center gap-2 bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold px-6 py-2.5 rounded-xl transition-colors text-sm"
             style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
             ব্লগ ও রেসিপি দেখুন <ArrowRight className="w-4 h-4" />
           </Link>

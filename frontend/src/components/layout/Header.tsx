@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -84,12 +84,12 @@ export function Header() {
       ══════════════════════════════════ */}
       <div className="hidden lg:block">
         {/* Sticky wrapper — z-[60] ensures More dropdown appears above hero */}
-        <div className="sticky top-0 z-[60]">
+        <div className="sticky top-0">
 
           {/* ── Main Header 96px ── */}
           <div
             className={cn(
-              'bg-white transition-all duration-350 ease-in-out will-change-transform',
+              'bg-white transition-all duration-350 ease-in-out will-change-transform z-[60] relative',
               mainHidden
                 ? '-translate-y-full shadow-none'
                 : 'translate-y-0',
@@ -287,7 +287,7 @@ export function Header() {
           </div>
 
           {/* ── Category Nav 50px — ORANGE — always visible ── */}
-          <div className="bg-[#ea580c] shadow-sm shadow-[#c2410c]/30"
+          <div className="bg-[#ea580c] shadow-sm shadow-[#c2410c]/30 relative z-[60]"
                style={{height:'50px'}}>
             <div className="container mx-auto px-4 xl:px-6 h-full flex items-stretch overflow-x-auto scrollbar-hide">
 
@@ -341,7 +341,7 @@ export function Header() {
                     <ChevronDown className={cn('w-4 h-4 transition-transform duration-200', moreOpen && 'rotate-180')} />
                   </button>
                   {moreOpen && (
-                    <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl shadow-black/15 border border-gray-100 py-1.5 z-[200] w-[204px] animate-fade-down">
+                    <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl shadow-black/15 border border-gray-100 py-1.5 w-[204px] animate-fade-down" style={{zIndex:99999,position:'absolute'}}>
                       {overflowCats.map(cat => (
                         <Link key={cat.slug} href={`/category/${cat.slug}`} onClick={() => setMoreOpen(false)}
                           className={cn('flex items-center gap-3 px-4 py-2.5 text-[13.5px] transition-colors',
@@ -352,7 +352,7 @@ export function Header() {
                       ))}
                       <div className="border-t border-gray-100 mt-1 pt-1 mx-2">
                         <Link href="/categories" onClick={() => setMoreOpen(false)}
-                          className="flex items-center gap-1.5 px-2 py-1.5 text-[12px] text-[#0f4c2a] font-semibold hover:text-[#072d18] transition-colors">
+                          className="flex items-center gap-1.5 px-2 py-1.5 text-[12px] text-[#ea580c] font-semibold hover:text-[#c2410c] transition-colors">
                           {T('viewAllCats')} <ChevronRight className="w-3.5 h-3.5" />
                         </Link>
                       </div>
