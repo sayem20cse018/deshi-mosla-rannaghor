@@ -1,114 +1,111 @@
-// -- Delivery Provider System -------------------------------------------------
-// Future: This data will come from Admin Panel API.
+// Delivery Provider System
+// Future: data will come from Admin Panel API.
 // For now, mock data is used. Structure is future-ready.
 
 export type DeliveryType = 'STANDARD' | 'EXPRESS' | 'SAME_DAY' | 'SCHEDULED';
 
 export interface DeliveryProvider {
-  id:           string;         // unique ID
-  name:         string;         // Display name e.g. "Foodpanda Express"
-  shortName:    string;         // Short name e.g. "Foodpanda"
-  emoji:        string;         // Logo emoji (until real logos available)
-  logoColor:    string;         // Brand color for logo bg
+  id:           string;
+  name:         string;
+  shortName:    string;
+  emoji:        string;
+  logoColor:    string;
   deliveryType: DeliveryType;
-  typeLabel:    string;         // Bengali label
-  estimatedMin: number;         // minutes (min)
-  estimatedMax: number;         // minutes (max)
-  fee:          number;         // BDT
-  available:    boolean;        // Can Admin disable a provider
-  trackingUrl?: string;         // Deep link template e.g. "https://..."
-  note?:        string;         // Optional note shown to customer
+  typeLabel:    string;
+  estimatedMin: number;
+  estimatedMax: number;
+  fee:          number;
+  available:    boolean;
+  trackingUrl?: string;
+  note?:        string;
 }
 
-// -- Mock providers � replace with API call later ------------------------------
 export const MOCK_DELIVERY_PROVIDERS: DeliveryProvider[] = [
   {
     id:           'self',
-    name:         '?????? ????????',
-    shortName:    '??????',
-    emoji:        '??',
+    name:         'Nijo Delivery',
+    shortName:    'Nijo',
+    emoji:        '🚚',
     logoColor:    '#0f4c2a',
     deliveryType: 'STANDARD',
-    typeLabel:    '?????? ????????',
-    estimatedMin: 1440,   // 1 day
-    estimatedMax: 4320,   // 3 days
+    typeLabel:    'Standard',
+    estimatedMin: 1440,
+    estimatedMax: 4320,
     fee:          60,
     available:    true,
-    note:         '????? ????? ?-? ?????????',
+    note:         'Dhaka r bahire 2-3 din',
   },
   {
     id:           'foodpanda',
     name:         'Foodpanda Express',
     shortName:    'Foodpanda',
-    emoji:        '??',
+    emoji:        '🐼',
     logoColor:    '#d70f64',
     deliveryType: 'EXPRESS',
-    typeLabel:    '????????? ????????',
+    typeLabel:    'Express',
     estimatedMin: 30,
     estimatedMax: 60,
     fee:          80,
     available:    true,
-    note:         '???? ????? ?????',
+    note:         'Dhaka city only',
     trackingUrl:  'https://www.foodpanda.com.bd',
   },
   {
     id:           'pathao',
     name:         'Pathao Courier',
     shortName:    'Pathao',
-    emoji:        '??',
+    emoji:        '🛵',
     logoColor:    '#e8192c',
     deliveryType: 'EXPRESS',
-    typeLabel:    '????????? ????????',
+    typeLabel:    'Express',
     estimatedMin: 45,
     estimatedMax: 90,
     fee:          70,
     available:    true,
-    note:         '????, ?????????, ?????',
+    note:         'Dhaka, Ctg, Sylhet',
     trackingUrl:  'https://merchant.pathao.com',
   },
   {
     id:           'shohoz',
     name:         'Shohoz Delivery',
     shortName:    'Shohoz',
-    emoji:        '?',
+    emoji:        '⚡',
     logoColor:    '#f7941d',
     deliveryType: 'SAME_DAY',
-    typeLabel:    '???? ?? ????????',
+    typeLabel:    'Same Day',
     estimatedMin: 120,
     estimatedMax: 240,
     fee:          90,
     available:    true,
-    note:         '????? ?????? ??? ?????',
+    note:         'Order today, get today',
     trackingUrl:  'https://shohoz.com',
   },
   {
     id:           'redx',
     name:         'RedX Courier',
     shortName:    'RedX',
-    emoji:        '??',
+    emoji:        '📦',
     logoColor:    '#e53e3e',
     deliveryType: 'STANDARD',
-    typeLabel:    '?????? ????????',
+    typeLabel:    'Standard',
     estimatedMin: 720,
     estimatedMax: 2880,
     fee:          50,
     available:    true,
-    note:         '???????? ????????',
+    note:         'Saradeshe delivery',
     trackingUrl:  'https://redx.com.bd',
   },
 ];
 
-// -- Helper: format estimated time ---------------------------------------------
 export function formatEstimatedTime(minMinutes: number, maxMinutes: number): string {
-  const fmt = (m: number) => {
-    if (m < 60)   return `${m} ?????`;
-    if (m < 1440) return `${Math.round(m / 60)} ?????`;
-    return `${Math.round(m / 1440)} ???`;
+  const fmt = (m: number): string => {
+    if (m < 60)   return `${m} min`;
+    if (m < 1440) return `${Math.round(m / 60)} hr`;
+    return `${Math.round(m / 1440)} day`;
   };
-  return `${fmt(minMinutes)} � ${fmt(maxMinutes)}`;
+  return `${fmt(minMinutes)} - ${fmt(maxMinutes)}`;
 }
 
-// -- Helper: get available providers ------------------------------------------
 export function getAvailableProviders(): DeliveryProvider[] {
   return MOCK_DELIVERY_PROVIDERS.filter((p) => p.available);
 }
