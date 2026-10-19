@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { HeroBanner }           from '@/components/home/HeroBanner';
 import { TrustBadges }          from '@/components/home/TrustBadges';
 import { FeaturedCategories }   from '@/components/home/FeaturedCategories';
@@ -89,8 +89,8 @@ export default function HomePage() {
           subtitle={HOME_SECTIONS.superFood.subtitle}
           categorySlug={HOME_SECTIONS.superFood.slug}
           limit={HOME_SECTIONS.superFood.limit}
-          accentColor="#166534"
-          accentBg="#f0fdf4"
+          accentColor="#ea580c"
+          accentBg="#fff7ed"
           emoji="🍯"
         />
       )}

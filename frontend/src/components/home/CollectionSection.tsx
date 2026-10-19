@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -21,8 +21,8 @@ export function CollectionSection({
   subtitle,
   categorySlug,
   limit       = 8,
-  accentColor = '#0f4c2a',
-  accentBg    = '#f0fdf4',
+  accentColor = '#ea580c',
+  accentBg    = '#fff7ed',
   emoji       = '🌿',
 }: CollectionSectionProps) {
   const { data, isLoading } = useProducts({ category: categorySlug, limit, sortBy: 'best_selling' });

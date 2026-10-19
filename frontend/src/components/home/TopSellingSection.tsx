@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { ArrowRight, TrendingUp } from 'lucide-react';
@@ -29,7 +29,7 @@ export function TopSellingSection({
         <div className="flex items-end justify-between mb-8">
           <div>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.15em] mb-1.5"
-                  style={{ color: '#0f4c2a' }}>
+                  style={{ color: '#ea580c' }}>
               <TrendingUp className="w-3.5 h-3.5" /> বেস্ট সেলার
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-gray-900">{title}</h2>
@@ -37,7 +37,7 @@ export function TopSellingSection({
           </div>
           <Link href="/shop?sort=best_selling"
                 className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:underline flex-shrink-0"
-                style={{ color: '#0f4c2a' }}>
+                style={{ color: '#ea580c' }}>
             সব দেখুন <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -72,7 +72,7 @@ export function TopSellingSection({
         <div className="mt-5 flex justify-center sm:hidden">
           <Link href="/shop?sort=best_selling"
                 className="inline-flex items-center gap-1.5 text-xs font-bold border px-4 py-2 rounded-xl transition-all"
-                style={{ color: '#0f4c2a', borderColor: '#0f4c2a', background: '#f0fdf4' }}>
+                style={{ color: '#ea580c', borderColor: '#ea580c', background: '#fff7ed' }}>
             সব দেখুন <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
