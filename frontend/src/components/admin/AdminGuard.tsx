@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { Loader2 } from 'lucide-react';
@@ -8,21 +8,26 @@ import { Loader2 } from 'lucide-react';
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, fetchUser } = useAuthStore();
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    fetchUser();
+    fetchUser().then(() => setChecked(true));
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!checked) return; // wait until fetchUser completes
+
+    if (!isAuthenticated) {
       router.replace('/login?redirect=/admin');
+      return;
     }
-    if (!isLoading && isAuthenticated && user && user.role === 'CUSTOMER') {
+    if (user && user.role === 'CUSTOMER') {
       router.replace('/');
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [checked, isAuthenticated, user, router]);
 
-  if (isLoading) {
+  // Show loader while checking auth
+  if (!checked || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#020817' }}>
         <div className="flex flex-col items-center gap-3">

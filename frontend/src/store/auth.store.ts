@@ -97,15 +97,16 @@ export const useAuthStore = create<AuthStore>()(
       fetchUser: async () => {
         const token = Cookies.get('access_token');
         if (!token) {
-          set({ user: null, isAuthenticated: false });
+          set({ user: null, isAuthenticated: false, isLoading: false });
           return;
         }
+        set({ isLoading: true });
         try {
           const res = await api.get('/auth/me');
-          set({ user: res.data.data, isAuthenticated: true });
+          set({ user: res.data.data, isAuthenticated: true, isLoading: false });
         } catch {
           Cookies.remove('access_token');
-          set({ user: null, isAuthenticated: false });
+          set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
 
