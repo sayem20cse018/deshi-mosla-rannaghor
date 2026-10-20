@@ -108,4 +108,61 @@ export class ProductsController {
   ) {
     return this.productsService.toggleFlag(id, flag);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Get('admin/list')
+  @ApiOperation({ summary: '[Admin] List all products including inactive' })
+  adminFindAll(@Query() query: QueryProductDto) {
+    return this.productsService.adminFindAll(query);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Post('admin/bulk-delete')
+  @ApiOperation({ summary: '[Admin] Bulk delete products' })
+  bulkDelete(@Body() body: { ids: string[] }) {
+    return this.productsService.bulkDelete(body.ids);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Post('admin/bulk-status')
+  @ApiOperation({ summary: '[Admin] Bulk update product status' })
+  bulkStatus(@Body() body: { ids: string[]; isActive: boolean }) {
+    return this.productsService.bulkStatus(body.ids, body.isActive);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Post(':id/images')
+  @ApiOperation({ summary: '[Admin] Add product image' })
+  addImage(
+    @Param('id') id: string,
+    @Body() body: { url: string; altText?: string; isPrimary?: boolean },
+  ) {
+    return this.productsService.addImage(id, body.url, body.altText, body.isPrimary);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Delete('images/:imageId')
+  @ApiOperation({ summary: '[Admin] Delete product image' })
+  deleteImage(@Param('imageId') imageId: string) {
+    return this.productsService.deleteImage(imageId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN' as any, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('access-token')
+  @Patch(':id/images/:imageId/primary')
+  @ApiOperation({ summary: '[Admin] Set primary image' })
+  setPrimaryImage(@Param('id') id: string, @Param('imageId') imageId: string) {
+    return this.productsService.setPrimaryImage(id, imageId);
+  }
 }
