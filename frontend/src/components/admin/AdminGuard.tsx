@@ -1,21 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { Loader2 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const { user, isAuthenticated, isLoading, fetchUser } = useAuthStore();
-  const [checked, setChecked] = useState(false);
+  const router  = useRouter();
+  const { user, isAuthenticated, fetchUser } = useAuthStore();
+  const [ready, setReady] = useState(false);
+  const fetched = useRef(false);
 
   useEffect(() => {
-    fetchUser().then(() => setChecked(true));
+    if (fetched.current) return;
+    fetched.current = true;
+
+    const token = Cookies.get('access_token');
+
+    if (!token) {
+      // No token -- go to login immediately
+      router.replace('/login?redirect=/admin');
+      return;
+    }
+
+    // Token exists -- fetch user to confirm role
+    fetchUser().finally(() => setReady(true));
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (!checked) return; // wait until fetchUser completes
+    if (!ready) return;
 
     if (!isAuthenticated) {
       router.replace('/login?redirect=/admin');
@@ -24,20 +38,24 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     if (user && user.role === 'CUSTOMER') {
       router.replace('/');
     }
-  }, [checked, isAuthenticated, user, router]);
+  }, [ready, isAuthenticated, user, router]);
 
-  // Show loader while checking auth
-  if (!checked || isLoading) {
+  // Loading
+  if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#020817' }}>
-        <div className="flex flex-col items-center gap-3">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: '#020817' }}
+      >
+        <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-          <p className="text-slate-400 text-sm">Loading admin panel...</p>
+          <p className="text-slate-400 text-sm font-medium">Loading admin panel...</p>
         </div>
       </div>
     );
   }
 
+  // Not authorised
   if (!isAuthenticated || (user && user.role === 'CUSTOMER')) return null;
 
   return <>{children}</>;

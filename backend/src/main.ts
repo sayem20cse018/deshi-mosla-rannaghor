@@ -14,48 +14,57 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 5000);
-  const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
-  const frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
-  const nodeEnv = configService.get<string>('NODE_ENV', 'development');
+  const port         = configService.get<number>('PORT', 5000);
+  const apiPrefix    = configService.get<string>('API_PREFIX', 'api/v1');
+  const frontendUrl  = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  const corsOrigins  = configService.get<string>('CORS_ORIGINS', frontendUrl);
+  const nodeEnv      = configService.get<string>('NODE_ENV', 'development');
 
-  // Security headers
-  app.use(helmet());
+  // Security headers -- relax for API use
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
 
-  // Compression
   app.use(compression());
-
-  // Cookie parser
   app.use(cookieParser());
 
-  // CORS
+  // CORS -- allow all configured origins
+  const allowedOrigins = corsOrigins
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: frontendUrl.split(',').map((url) => url.trim()),
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // In development allow localhost
+      if (nodeEnv !== 'production' && origin.includes('localhost')) return callback(null, true);
+      return callback(null, false);
+    },
+    credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['Authorization'],
+    maxAge: 86400,
   });
 
-  // Global prefix
   app.setGlobalPrefix(apiPrefix);
 
-  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
 
-  // Swagger documentation (only in development)
   if (nodeEnv !== 'production') {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('দেশি মসলার রান্নাঘর API')
-      .setDescription('Deshi Moslar Rannaghar — Complete E-commerce REST API Documentation')
+      .setTitle('Deshi Moslar Rannaghar API')
+      .setDescription('Complete E-commerce REST API Documentation')
       .setVersion('1.0')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
@@ -68,23 +77,21 @@ async function bootstrap() {
       .addTag('Orders', 'Order management')
       .addTag('Payments', 'Payment processing')
       .addTag('Reviews', 'Product reviews')
-      .addTag('Recipes', 'Recipe management')
       .addTag('Admin', 'Admin panel endpoints')
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup(`${apiPrefix}/docs`, app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-      },
+    SwaggerModule.setup(apiPrefix + '/docs', app, document, {
+      swaggerOptions: { persistAuthorization: true },
     });
 
-    logger.log(`Swagger docs: http://localhost:${port}/${apiPrefix}/docs`);
+    logger.log('Swagger docs: http://localhost:' + port + '/' + apiPrefix + '/docs');
   }
 
-  await app.listen(port);
-  logger.log(`Application running on: http://localhost:${port}/${apiPrefix}`);
-  logger.log(`Environment: ${nodeEnv}`);
+  await app.listen(port, '0.0.0.0');
+  logger.log('Application running on port: ' + port);
+  logger.log('Environment: ' + nodeEnv);
+  logger.log('CORS allowed origins: ' + allowedOrigins.join(', '));
 }
 
 bootstrap();
