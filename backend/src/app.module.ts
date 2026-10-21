@@ -24,6 +24,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { CollectionsModule } from './modules/collections/collections.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { CollectionsModule } from './modules/collections/collections.module';
     ReportsModule,
     SettingsModule,
     CollectionsModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

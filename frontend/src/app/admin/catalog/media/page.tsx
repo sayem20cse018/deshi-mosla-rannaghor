@@ -1,10 +1,16 @@
 'use client';
-import { PageHeader, EmptyState } from '@/components/admin/ui';
+
+import { MediaLibrary } from '@/components/admin/media/MediaLibrary';
+import { PageHeader } from '@/components/admin/ui';
+
 export default function MediaPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Media Library" description="Manage uploaded media files." />
-      <EmptyState title="Coming soon" description="This section is under construction." />
+      <PageHeader
+        title="Media Library"
+        description="Upload and manage all images."
+      />
+      <MediaLibrary mode="page" />
     </div>
   );
 }
