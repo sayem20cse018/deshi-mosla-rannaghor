@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
-// ── Date range helpers ────────────────────────────────────────────────────
+// - Date range helpers -
 function getDateRange(period: string, from?: string, to?: string): { start: Date; end: Date } {
   const now = new Date();
   const end = new Date(now);
@@ -55,7 +55,7 @@ function getDateRange(period: string, from?: string, to?: string): { start: Date
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // ── Main dashboard stats ─────────────────────────────────────────────────
+  // - Main dashboard stats -
   async getDashboardStats(period = '30days', from?: string, to?: string) {
     const { start, end } = getDateRange(period, from, to);
     const dateFilter = { createdAt: { gte: start, lte: end } };
@@ -144,7 +144,7 @@ export class AdminService {
     };
   }
 
-  // ── Sales chart (daily breakdown) ────────────────────────────────────────
+  // - Sales chart (daily breakdown) -
   async getSalesChart(period = '30days', from?: string, to?: string) {
     const { start, end } = getDateRange(period, from, to);
 
@@ -172,7 +172,7 @@ export class AdminService {
     };
   }
 
-  // ── Recent orders ─────────────────────────────────────────────────────────
+  // - Recent orders -
   async getRecentOrders(limit = 10) {
     const orders = await this.prisma.order.findMany({
       take: limit,
@@ -211,7 +211,7 @@ export class AdminService {
     };
   }
 
-  // ── Top products ──────────────────────────────────────────────────────────
+  // - Top products -
   async getTopProducts(period = '30days', limit = 5) {
     const { start, end } = getDateRange(period);
 
@@ -251,7 +251,7 @@ export class AdminService {
     };
   }
 
-  // ── Recent customers ─────────────────────────────────────────────────────
+  // - Recent customers -
   async getRecentCustomers(limit = 6) {
     const customers = await this.prisma.user.findMany({
       where: { role: 'CUSTOMER' },
@@ -267,7 +267,7 @@ export class AdminService {
     return { success: true, data: customers };
   }
 
-  // ── Recent reviews ────────────────────────────────────────────────────────
+  // - Recent reviews -
   async getRecentReviews(limit = 5) {
     const reviews = await this.prisma.review.findMany({
       take: limit,
@@ -281,7 +281,7 @@ export class AdminService {
     return { success: true, data: reviews };
   }
 
-  // ── Low stock products ────────────────────────────────────────────────────
+  // - Low stock products -
   async getLowStockProducts(limit = 8) {
     const products = await this.prisma.product.findMany({
       where: { stockStatus: { in: ['LOW_STOCK', 'OUT_OF_STOCK'] }, isActive: true },
@@ -295,5 +295,278 @@ export class AdminService {
     });
 
     return { success: true, data: products };
+  }
+
+
+  // -
+  // ADMIN ORDER MANAGEMENT
+  // -
+
+  // - List all orders with filters -
+  async adminGetOrders(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    paymentStatus?: string;
+    paymentMethod?: string;
+    from?: string;
+    to?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }) {
+    const {
+      page = 1, limit = 20,
+      search, status, paymentStatus, paymentMethod,
+      from, to,
+      sortBy = 'createdAt', sortOrder = 'desc',
+    } = params;
+
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+
+    if (status && status !== 'ALL') {
+      where.status = status;
+    }
+    if (paymentStatus) {
+      where.paymentStatus = paymentStatus;
+    }
+    if (paymentMethod) {
+      where.paymentMethod = paymentMethod;
+    }
+    if (from || to) {
+      const dateFilter: Record<string, Date> = {};
+      if (from) { const d = new Date(from); d.setHours(0,0,0,0); dateFilter.gte = d; }
+      if (to)   { const d = new Date(to);   d.setHours(23,59,59,999); dateFilter.lte = d; }
+      where.createdAt = dateFilter;
+    }
+    if (search) {
+      where.OR = [
+        { orderNumber: { contains: search, mode: 'insensitive' } },
+        { user: { name:  { contains: search, mode: 'insensitive' } } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { user: { phone: { contains: search, mode: 'insensitive' } } },
+        { address: { phone: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    const [orders, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+        include: {
+          user: { select: { id: true, name: true, email: true, phone: true, avatar: true } },
+          address: { select: { fullName: true, phone: true, district: true, division: true, area: true, fullAddress: true } },
+          items: {
+            take: 3,
+            select: {
+              productName: true, productImage: true, quantity: true, unitPrice: true, totalPrice: true,
+            },
+          },
+          payment: { select: { paymentStatus: true, paymentMethod: true, codStatus: true, paidAt: true, transactionId: true } },
+          delivery: { select: { status: true, courierName: true, trackingNumber: true, estimatedDate: true, deliveredAt: true } },
+          _count: { select: { items: true } },
+        },
+      }),
+      this.prisma.order.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: orders.map((o) => ({
+        ...o,
+        subtotal:       Number(o.subtotal),
+        totalAmount:    Number(o.totalAmount),
+        deliveryCharge: Number(o.deliveryCharge),
+        discountAmount: Number(o.discountAmount),
+        couponDiscount: Number(o.couponDiscount),
+        itemCount: o._count.items,
+      })),
+      meta: {
+        page, limit, total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  // - Get single order detail (admin) -
+  async adminGetOrder(orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { id: true, name: true, email: true, phone: true, avatar: true } },
+        address: true,
+        items: {
+          select: {
+            id: true, productId: true, productName: true, productImage: true,
+            productSku: true, quantity: true, unitPrice: true, discountPrice: true, totalPrice: true,
+          },
+        },
+        payment: true,
+        delivery: true,
+        statusHistory: { orderBy: { createdAt: 'asc' } },
+        coupon: { select: { code: true, discountType: true, discountValue: true } },
+      },
+    });
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    return {
+      success: true,
+      data: {
+        ...order,
+        subtotal:       Number(order.subtotal),
+        totalAmount:    Number(order.totalAmount),
+        deliveryCharge: Number(order.deliveryCharge),
+        discountAmount: Number(order.discountAmount),
+        couponDiscount: Number(order.couponDiscount),
+        items: order.items.map((i) => ({
+          ...i,
+          unitPrice:     Number(i.unitPrice),
+          discountPrice: i.discountPrice ? Number(i.discountPrice) : null,
+          totalPrice:    Number(i.totalPrice),
+        })),
+      },
+    };
+  }
+
+  // - Update order status (admin) -
+  async adminUpdateOrderStatus(
+    orderId: string,
+    status: string,
+    note?: string,
+    courierName?: string,
+    trackingNumber?: string,
+  ) {
+    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error('Order not found');
+
+    const updateData: Record<string, unknown> = { status };
+
+    // Set timestamp fields based on new status
+    if (status === 'CONFIRMED')  updateData.confirmedAt = new Date();
+    if (status === 'PACKED')     updateData.packedAt    = new Date();
+    if (status === 'SHIPPED')    updateData.shippedAt   = new Date();
+    if (status === 'DELIVERED') {
+      updateData.deliveredAt   = new Date();
+      updateData.paymentStatus = 'PAID';
+    }
+    if (status === 'CANCELLED') {
+      updateData.cancelledAt   = new Date();
+      updateData.cancelReason  = note ?? 'Admin cancelled';
+    }
+    if (status === 'RETURNED') {
+      updateData.returnedAt   = new Date();
+      updateData.returnReason = note ?? 'Admin returned';
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // Update order
+      await tx.order.update({
+        where: { id: orderId },
+        data: updateData as any,
+      });
+
+      // Status history
+      await tx.orderStatusHistory.create({
+        data: {
+          orderId,
+          status: status as any,
+          note:   note ?? '',
+          createdBy: 'ADMIN',
+        },
+      });
+
+      // Update delivery record
+      if (status === 'SHIPPED' || status === 'DELIVERED') {
+        const deliveryStatus = status === 'SHIPPED' ? 'IN_TRANSIT' : 'DELIVERED';
+        await tx.delivery.updateMany({
+          where: { orderId },
+          data: {
+            status: deliveryStatus as any,
+            ...(courierName    ? { courierName }    : {}),
+            ...(trackingNumber ? { trackingNumber } : {}),
+            ...(status === 'DELIVERED' ? { deliveredAt: new Date() } : {}),
+          },
+        });
+      }
+
+      // Update payment if delivered
+      if (status === 'DELIVERED') {
+        await tx.payment.updateMany({
+          where: { orderId },
+          data: { paymentStatus: 'PAID', paidAt: new Date(), codStatus: 'COLLECTED' },
+        });
+      }
+
+      // Restore stock on cancel/return
+      if (status === 'CANCELLED' || status === 'RETURNED') {
+        const fullOrder = await tx.order.findUnique({
+          where: { id: orderId },
+          include: { items: { include: { product: { include: { inventory: true } } } } },
+        });
+        if (fullOrder) {
+          for (const item of fullOrder.items) {
+            if (!item.product?.inventory) continue;
+            const inv = item.product.inventory;
+            await tx.inventory.update({
+              where: { productId: item.productId },
+              data: {
+                availableStock: { increment: item.quantity },
+                soldQuantity:   { decrement: item.quantity },
+              },
+            });
+            await tx.inventoryLog.create({
+              data: {
+                inventoryId: inv.id,
+                changeQty:   +item.quantity,
+                type:        'ADJUSTMENT',
+                reason:      `Order #${order.orderNumber} ${status.toLowerCase()} by admin`,
+                reference:   orderId,
+              },
+            });
+          }
+        }
+      }
+    });
+
+    return { success: true, message: `Order status updated to ${status}` };
+  }
+
+  // - Bulk update order status -
+  async adminBulkUpdateStatus(orderIds: string[], status: string) {
+    await this.prisma.order.updateMany({
+      where: { id: { in: orderIds } },
+      data: { status: status as any },
+    });
+
+    const historyEntries = orderIds.map((orderId) => ({
+      orderId,
+      status: status as any,
+      note: 'Bulk status update by admin',
+      createdBy: 'ADMIN',
+    }));
+    await this.prisma.orderStatusHistory.createMany({ data: historyEntries });
+
+    return { success: true, message: `${orderIds.length} orders updated to ${status}` };
+  }
+
+  // - Order stats by status -
+  async adminGetOrderStatusCounts() {
+    const statuses = ['PENDING','CONFIRMED','PROCESSING','PACKED','SHIPPED','DELIVERED','CANCELLED','RETURNED','REFUNDED'];
+    const counts = await Promise.all(
+      statuses.map((s) => this.prisma.order.count({ where: { status: s as any } })),
+    );
+    const result: Record<string, number> = { ALL: 0 };
+    statuses.forEach((s, i) => {
+      result[s] = counts[i];
+      result.ALL += counts[i];
+    });
+    return { success: true, data: result };
   }
 }
