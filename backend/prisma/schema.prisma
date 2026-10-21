@@ -1,21 +1,12 @@
-// ============================================================
-// DESHI MOSLAR RANNAGHAR — Prisma Schema
-// Version: 2.0 (Production-ready)
-// Database: PostgreSQL
-// ============================================================
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// ============================================================
-// ENUMS
-// ============================================================
 
 enum Role {
   CUSTOMER
@@ -140,10 +131,6 @@ enum TransactionStatus {
   REFUNDED
 }
 
-// ============================================================
-// 1. USER
-// ============================================================
-
 model User {
   id              String    @id @default(uuid())
   name            String    @db.VarChar(100)
@@ -165,14 +152,13 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  // Relations
-  addresses    Address[]
-  cart         Cart?
-  wishlists    Wishlist[]
-  orders       Order[]
-  reviews      Review[]
+  addresses     Address[]
+  cart          Cart?
+  wishlists     Wishlist[]
+  orders        Order[]
+  reviews       Review[]
   notifications Notification[]
-  couponUsages CouponUsage[]
+  couponUsages  CouponUsage[]
 
   @@index([email])
   @@index([phone])
@@ -180,24 +166,19 @@ model User {
   @@map("users")
 }
 
-// ============================================================
-// 2. ADMIN
-// ============================================================
-
 model Admin {
-  id          String    @id @default(uuid())
-  name        String    @db.VarChar(100)
-  email       String    @unique @db.VarChar(255)
-  password    String    @db.VarChar(255)
-  role        AdminRole @default(ADMIN)
-  avatar      String?   @db.VarChar(500)
-  isActive    Boolean   @default(true)
-  refreshToken String?  @db.Text
-  lastLoginAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(uuid())
+  name         String    @db.VarChar(100)
+  email        String    @unique @db.VarChar(255)
+  password     String    @db.VarChar(255)
+  role         AdminRole @default(ADMIN)
+  avatar       String?   @db.VarChar(500)
+  isActive     Boolean   @default(true)
+  refreshToken String?   @db.Text
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  // Relations
   activityLogs AdminActivityLog[]
 
   @@index([email])
@@ -215,17 +196,12 @@ model AdminActivityLog {
   ipAddress String?  @db.VarChar(45)
   createdAt DateTime @default(now())
 
-  // FK
   admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId])
   @@index([createdAt])
   @@map("admin_activity_logs")
 }
-
-// ============================================================
-// 3. ADDRESS
-// ============================================================
 
 model Address {
   id          String   @id @default(uuid())
@@ -242,7 +218,6 @@ model Address {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // FK
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders Order[]
 
@@ -250,10 +225,6 @@ model Address {
   @@index([userId, isDefault])
   @@map("addresses")
 }
-
-// ============================================================
-// 4. CATEGORY
-// ============================================================
 
 model Category {
   id          String   @id @default(uuid())
@@ -273,11 +244,8 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Self-referential FK (for subcategories)
   parent   Category?  @relation("SubCategories", fields: [parentId], references: [id])
   children Category[] @relation("SubCategories")
-
-  // Relations
   products Product[]
 
   @@index([slug])
@@ -286,10 +254,6 @@ model Category {
   @@index([showInNav, navOrder])
   @@map("categories")
 }
-
-// ============================================================
-// 5. BRAND
-// ============================================================
 
 model Brand {
   id          String   @id @default(uuid())
@@ -303,17 +267,12 @@ model Brand {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
   products Product[]
 
   @@index([slug])
   @@index([isActive])
   @@map("brands")
 }
-
-// ============================================================
-// 6. PRODUCT
-// ============================================================
 
 model Product {
   id              String      @id @default(uuid())
@@ -346,11 +305,9 @@ model Product {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
-  // FK
   category Category  @relation(fields: [categoryId], references: [id])
   brand    Brand?    @relation(fields: [brandId], references: [id])
 
-  // Relations
   images            ProductImage[]
   cartItems         CartItem[]
   wishlistItems     WishlistItem[]
@@ -371,10 +328,6 @@ model Product {
   @@map("products")
 }
 
-// ============================================================
-// 7. PRODUCT IMAGE
-// ============================================================
-
 model ProductImage {
   id        String   @id @default(uuid())
   productId String
@@ -384,17 +337,12 @@ model ProductImage {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 
-  // FK
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([productId, isPrimary])
   @@map("product_images")
 }
-
-// ============================================================
-// 8. INVENTORY
-// ============================================================
 
 model Inventory {
   id             String   @id @default(uuid())
@@ -407,11 +355,8 @@ model Inventory {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  // FK
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  // Relations
-  logs InventoryLog[]
+  product Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  logs    InventoryLog[]
 
   @@index([availableStock])
   @@index([productId])
@@ -422,12 +367,11 @@ model InventoryLog {
   id          String   @id @default(uuid())
   inventoryId String
   changeQty   Int
-  type        String   @db.VarChar(50) // "RESTOCK" | "SALE" | "RETURN" | "ADJUSTMENT"
+  type        String   @db.VarChar(50)
   reason      String?  @db.VarChar(255)
   reference   String?  @db.VarChar(100)
   createdAt   DateTime @default(now())
 
-  // FK
   inventory Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   @@index([inventoryId])
@@ -435,29 +379,18 @@ model InventoryLog {
   @@map("inventory_logs")
 }
 
-// ============================================================
-// 9. CART
-// ============================================================
-
 model Cart {
   id        String   @id @default(uuid())
   userId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // FK
   user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Relations
   items CartItem[]
 
   @@index([userId])
   @@map("carts")
 }
-
-// ============================================================
-// 10. CART ITEM
-// ============================================================
 
 model CartItem {
   id        String   @id @default(uuid())
@@ -467,7 +400,6 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // FK
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -477,29 +409,18 @@ model CartItem {
   @@map("cart_items")
 }
 
-// ============================================================
-// 11. WISHLIST
-// ============================================================
-
 model Wishlist {
   id        String   @id @default(uuid())
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // FK
   user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Relations
   items WishlistItem[]
 
   @@index([userId])
   @@map("wishlists")
 }
-
-// ============================================================
-// 12. WISHLIST ITEM
-// ============================================================
 
 model WishlistItem {
   id         String   @id @default(uuid())
@@ -507,7 +428,6 @@ model WishlistItem {
   productId  String
   createdAt  DateTime @default(now())
 
-  // FK
   wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -516,10 +436,6 @@ model WishlistItem {
   @@index([productId])
   @@map("wishlist_items")
 }
-
-// ============================================================
-// 13. COUPON
-// ============================================================
 
 model Coupon {
   id             String       @id @default(uuid())
@@ -538,7 +454,6 @@ model Coupon {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  // Relations
   usages CouponUsage[]
   orders Order[]
 
@@ -554,7 +469,6 @@ model CouponUsage {
   orderId  String?  @db.VarChar(100)
   usedAt   DateTime @default(now())
 
-  // FK
   coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -564,43 +478,37 @@ model CouponUsage {
   @@map("coupon_usages")
 }
 
-// ============================================================
-// 14. ORDER
-// ============================================================
-
 model Order {
-  id              String        @id @default(uuid())
-  orderNumber     String        @unique @db.VarChar(30)
-  userId          String
-  addressId       String
-  couponId        String?
-  status          OrderStatus   @default(PENDING)
-  subtotal        Decimal       @db.Decimal(10, 2)
-  discountAmount  Decimal       @default(0) @db.Decimal(10, 2)
-  couponDiscount  Decimal       @default(0) @db.Decimal(10, 2)
-  deliveryCharge  Decimal       @default(0) @db.Decimal(10, 2)
-  totalAmount     Decimal       @db.Decimal(10, 2)
-  paymentMethod   PaymentMethod
-  paymentStatus   PaymentStatus @default(PENDING)
-  deliveryNote    String?       @db.VarChar(500)
+  id                String        @id @default(uuid())
+  orderNumber       String        @unique @db.VarChar(30)
+  userId            String
+  addressId         String
+  couponId          String?
+  status            OrderStatus   @default(PENDING)
+  subtotal          Decimal       @db.Decimal(10, 2)
+  discountAmount    Decimal       @default(0) @db.Decimal(10, 2)
+  couponDiscount    Decimal       @default(0) @db.Decimal(10, 2)
+  deliveryCharge    Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount       Decimal       @db.Decimal(10, 2)
+  paymentMethod     PaymentMethod
+  paymentStatus     PaymentStatus @default(PENDING)
+  deliveryNote      String?       @db.VarChar(500)
   estimatedDelivery DateTime?
-  confirmedAt     DateTime?
-  packedAt        DateTime?
-  shippedAt       DateTime?
-  deliveredAt     DateTime?
-  cancelledAt     DateTime?
-  cancelReason    String?       @db.VarChar(500)
-  returnedAt      DateTime?
-  returnReason    String?       @db.VarChar(500)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  confirmedAt       DateTime?
+  packedAt          DateTime?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  cancelledAt       DateTime?
+  cancelReason      String?       @db.VarChar(500)
+  returnedAt        DateTime?
+  returnReason      String?       @db.VarChar(500)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
-  // FK
   user    User     @relation(fields: [userId], references: [id])
   address Address  @relation(fields: [addressId], references: [id])
   coupon  Coupon?  @relation(fields: [couponId], references: [id])
 
-  // Relations
   items         OrderItem[]
   payment       Payment?
   delivery      Delivery?
@@ -615,10 +523,6 @@ model Order {
   @@map("orders")
 }
 
-// ============================================================
-// 15. ORDER ITEM
-// ============================================================
-
 model OrderItem {
   id            String   @id @default(uuid())
   orderId       String
@@ -632,7 +536,6 @@ model OrderItem {
   totalPrice    Decimal  @db.Decimal(10, 2)
   createdAt     DateTime @default(now())
 
-  // FK
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
@@ -649,17 +552,12 @@ model OrderStatusHistory {
   createdBy String?     @db.VarChar(100)
   createdAt DateTime    @default(now())
 
-  // FK
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
   @@index([createdAt])
   @@map("order_status_history")
 }
-
-// ============================================================
-// 16. PAYMENT
-// ============================================================
 
 model Payment {
   id              String        @id @default(uuid())
@@ -685,10 +583,7 @@ model Payment {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  // FK
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  // Relations
+  order        Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   transactions PaymentTransaction[]
 
   @@index([orderId])
@@ -698,10 +593,6 @@ model Payment {
   @@index([createdAt])
   @@map("payments")
 }
-
-// ============================================================
-// 17. PAYMENT TRANSACTION
-// ============================================================
 
 model PaymentTransaction {
   id          String            @id @default(uuid())
@@ -715,7 +606,6 @@ model PaymentTransaction {
   ipnData     Json?
   createdAt   DateTime          @default(now())
 
-  // FK
   payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 
   @@index([paymentId])
@@ -723,10 +613,6 @@ model PaymentTransaction {
   @@index([createdAt])
   @@map("payment_transactions")
 }
-
-// ============================================================
-// 18. DELIVERY
-// ============================================================
 
 model Delivery {
   id             String         @id @default(uuid())
@@ -741,7 +627,6 @@ model Delivery {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  // FK
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
@@ -766,16 +651,12 @@ model DeliveryCharge {
   @@map("delivery_charges")
 }
 
-// ============================================================
-// 19. REVIEW
-// ============================================================
-
 model Review {
   id        String       @id @default(uuid())
   userId    String
   productId String
   orderId   String?      @db.VarChar(100)
-  rating    Int          // 1–5
+  rating    Int
   title     String?      @db.VarChar(200)
   comment   String?      @db.Text
   images    String[]     @default([])
@@ -784,7 +665,6 @@ model Review {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  // FK
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -796,10 +676,6 @@ model Review {
   @@map("reviews")
 }
 
-// ============================================================
-// 20. RECIPE
-// ============================================================
-
 model Recipe {
   id                  String   @id @default(uuid())
   name                String   @db.VarChar(200)
@@ -808,28 +684,23 @@ model Recipe {
   coverImage          String?  @db.VarChar(500)
   description         String?  @db.Text
   cookingInstructions String?  @db.Text
-  preparationTime     Int?     // minutes
-  cookingTime         Int?     // minutes
+  preparationTime     Int?
+  cookingTime         Int?
   servingSize         Int?
   category            String?  @db.VarChar(100)
-  difficulty          String?  @db.VarChar(50) // "সহজ" | "মাঝারি" | "কঠিন"
+  difficulty          String?  @db.VarChar(50)
   tags                String[] @default([])
   isActive            Boolean  @default(true)
   viewCount           Int      @default(0)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  // Relations
   ingredients RecipeIngredient[]
 
   @@index([slug])
   @@index([isActive])
   @@map("recipes")
 }
-
-// ============================================================
-// 21. RECIPE INGREDIENT
-// ============================================================
 
 model RecipeIngredient {
   id         String   @id @default(uuid())
@@ -842,7 +713,6 @@ model RecipeIngredient {
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
 
-  // FK
   recipe  Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   product Product? @relation(fields: [productId], references: [id])
 
@@ -850,10 +720,6 @@ model RecipeIngredient {
   @@index([productId])
   @@map("recipe_ingredients")
 }
-
-// ============================================================
-// 22. NOTIFICATION
-// ============================================================
 
 model Notification {
   id        String           @id @default(uuid())
@@ -866,7 +732,6 @@ model Notification {
   readAt    DateTime?
   createdAt DateTime         @default(now())
 
-  // FK
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -875,54 +740,42 @@ model Notification {
   @@map("notifications")
 }
 
-// ============================================================
-// 23. BANNER
-// ============================================================
-
 model Banner {
-  id          String         @id @default(uuid())
-  title       String?        @db.VarChar(200)
-  titleEn     String?        @db.VarChar(200)
-  subtitle    String?        @db.VarChar(300)
-  image       String         @db.VarChar(500)
-  link        String?        @db.VarChar(300)
-  buttonText  String?        @db.VarChar(50)
-  position    BannerPosition @default(HERO)
-  isActive    Boolean        @default(true)
-  sortOrder   Int            @default(0)
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id         String         @id @default(uuid())
+  title      String?        @db.VarChar(200)
+  titleEn    String?        @db.VarChar(200)
+  subtitle   String?        @db.VarChar(300)
+  image      String         @db.VarChar(500)
+  link       String?        @db.VarChar(300)
+  buttonText String?        @db.VarChar(50)
+  position   BannerPosition @default(HERO)
+  isActive   Boolean        @default(true)
+  sortOrder  Int            @default(0)
+  startDate  DateTime?
+  endDate    DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   @@index([position, isActive])
   @@index([sortOrder])
   @@map("banners")
 }
 
-// ============================================================
-// 24. TESTIMONIAL
-// ============================================================
-
 model Testimonial {
-  id         String   @id @default(uuid())
-  name       String   @db.VarChar(100)
-  role       String?  @db.VarChar(100)
-  avatar     String?  @db.VarChar(500)
-  rating     Int      @default(5)
-  comment    String   @db.Text
-  isActive   Boolean  @default(true)
-  sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  role      String?  @db.VarChar(100)
+  avatar    String?  @db.VarChar(500)
+  rating    Int      @default(5)
+  comment   String   @db.Text
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([isActive, sortOrder])
   @@map("testimonials")
 }
-
-// ============================================================
-// SITE SETTINGS (key-value store)
-// ============================================================
 
 model SiteSettings {
   id          String   @id @default(uuid())
