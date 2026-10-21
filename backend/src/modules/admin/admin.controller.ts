@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Patch, Query, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Query, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto/create-category.dto';
+import { CreateBrandDto, UpdateBrandDto } from './dto/create-brand.dto';
+import { CreateVariantDto, UpdateVariantDto } from './dto/create-variant.dto';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -13,6 +16,10 @@ import { Roles } from '../../common/decorators/roles.decorator';
 @ApiBearerAuth('access-token')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  // ---------------------------------------------------------------------------
+  // DASHBOARD
+  // ---------------------------------------------------------------------------
 
   @Get('stats')
   @ApiQuery({ name: 'period', required: false, enum: ['today','yesterday','7days','30days','month','year','custom'] })
@@ -72,8 +79,10 @@ export class AdminController {
     return this.adminService.getLowStockProducts(limit ? Number(limit) : 8);
   }
 
+  // ---------------------------------------------------------------------------
+  // ADMIN ORDER MANAGEMENT
+  // ---------------------------------------------------------------------------
 
-  // - Admin Order Management -
   @Get('orders')
   @ApiQuery({ name: 'page',          required: false })
   @ApiQuery({ name: 'limit',         required: false })
@@ -130,5 +139,124 @@ export class AdminController {
   @Post('orders/bulk-status')
   adminBulkUpdateStatus(@Body() body: { orderIds: string[]; status: string }) {
     return this.adminService.adminBulkUpdateStatus(body.orderIds, body.status);
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN CATEGORIES
+  // ---------------------------------------------------------------------------
+
+  @Get('categories')
+  @ApiQuery({ name: 'page',     required: false })
+  @ApiQuery({ name: 'limit',    required: false })
+  @ApiQuery({ name: 'search',   required: false })
+  @ApiQuery({ name: 'parentId', required: false })
+  adminGetCategories(
+    @Query('page')     page?:     string,
+    @Query('limit')    limit?:    string,
+    @Query('search')   search?:   string,
+    @Query('parentId') parentId?: string,
+  ) {
+    return this.adminService.adminGetCategories({
+      page:  page  ? Number(page)  : 1,
+      limit: limit ? Number(limit) : 50,
+      search,
+      parentId,
+    });
+  }
+
+  @Get('categories/:id')
+  adminGetCategory(@Param('id') id: string) {
+    return this.adminService.adminGetCategory(id);
+  }
+
+  @Post('categories/reorder')
+  adminReorderCategories(@Body() body: { items: Array<{ id: string; sortOrder: number }> }) {
+    return this.adminService.adminReorderCategories(body.items);
+  }
+
+  @Post('categories')
+  adminCreateCategory(@Body() dto: CreateCategoryDto) {
+    return this.adminService.adminCreateCategory(dto);
+  }
+
+  @Patch('categories/:id')
+  adminUpdateCategory(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
+    return this.adminService.adminUpdateCategory(id, dto);
+  }
+
+  @Delete('categories/:id')
+  adminDeleteCategory(@Param('id') id: string) {
+    return this.adminService.adminDeleteCategory(id);
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN BRANDS
+  // ---------------------------------------------------------------------------
+
+  @Get('brands')
+  @ApiQuery({ name: 'page',   required: false })
+  @ApiQuery({ name: 'limit',  required: false })
+  @ApiQuery({ name: 'search', required: false })
+  adminGetBrands(
+    @Query('page')   page?:   string,
+    @Query('limit')  limit?:  string,
+    @Query('search') search?: string,
+  ) {
+    return this.adminService.adminGetBrands({
+      page:  page  ? Number(page)  : 1,
+      limit: limit ? Number(limit) : 50,
+      search,
+    });
+  }
+
+  @Get('brands/:id')
+  adminGetBrand(@Param('id') id: string) {
+    return this.adminService.adminGetBrand(id);
+  }
+
+  @Post('brands')
+  adminCreateBrand(@Body() dto: CreateBrandDto) {
+    return this.adminService.adminCreateBrand(dto);
+  }
+
+  @Patch('brands/:id')
+  adminUpdateBrand(@Param('id') id: string, @Body() dto: UpdateBrandDto) {
+    return this.adminService.adminUpdateBrand(id, dto);
+  }
+
+  @Delete('brands/:id')
+  adminDeleteBrand(@Param('id') id: string) {
+    return this.adminService.adminDeleteBrand(id);
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN PRODUCT VARIANTS
+  // ---------------------------------------------------------------------------
+
+  @Get('products/:id/variants')
+  adminGetVariants(@Param('id') id: string) {
+    return this.adminService.adminGetVariants(id);
+  }
+
+  @Post('products/:id/variants')
+  adminCreateVariant(@Param('id') id: string, @Body() dto: CreateVariantDto) {
+    return this.adminService.adminCreateVariant(id, dto);
+  }
+
+  @Patch('products/:productId/variants/:variantId')
+  adminUpdateVariant(
+    @Param('productId') productId: string,
+    @Param('variantId') variantId: string,
+    @Body() dto: UpdateVariantDto,
+  ) {
+    return this.adminService.adminUpdateVariant(productId, variantId, dto);
+  }
+
+  @Delete('products/:productId/variants/:variantId')
+  adminDeleteVariant(
+    @Param('productId') productId: string,
+    @Param('variantId') variantId: string,
+  ) {
+    return this.adminService.adminDeleteVariant(productId, variantId);
   }
 }

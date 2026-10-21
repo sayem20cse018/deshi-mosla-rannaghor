@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Save, ArrowLeft, Package, Tag, DollarSign,
-  Image as ImageIcon, Star, CheckSquare, X, Plus,
+  Image as ImageIcon, Star, CheckSquare, X, Plus, Layers, Pencil, Trash2,
 } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useAdminProducts';
 import { useCategories } from '@/hooks/useCategories';
-import { AdminBtn } from '@/components/admin/ui';
+import { AdminBtn, ConfirmDialog } from '@/components/admin/ui';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
@@ -32,7 +32,7 @@ function generateSku(): string {
   return 'SKU-' + Date.now().toString(36).toUpperCase();
 }
 
-type TabKey = 'basic' | 'pricing' | 'inventory' | 'flags' | 'images';
+type TabKey = 'basic' | 'pricing' | 'inventory' | 'flags' | 'images' | 'variants';
 
 const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: 'basic',     label: 'Basic Info',  icon: Package },
@@ -40,6 +40,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: 'inventory', label: 'Inventory',   icon: Tag },
   { key: 'flags',     label: 'Flags & SEO', icon: Star },
   { key: 'images',    label: 'Images',      icon: ImageIcon },
+  { key: 'variants',  label: 'Variants',    icon: Layers },
 ];
 
 export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
@@ -52,6 +53,27 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   const [saving,   setSaving]   = useState(false);
   const [brands,   setBrands]   = useState<Array<{ id: string; name: string }>>([]);
   const [tagInput, setTagInput] = useState('');
+
+  // Variants state
+  interface Variant {
+    id?:         string;
+    name:        string;
+    sku:         string;
+    price:       string;
+    salePrice:   string;
+    stock:       string;
+    weight:      string;
+    isActive:    boolean;
+    sortOrder:   string;
+  }
+  const [variants,       setVariants]       = useState<Variant[]>([]);
+  const [variantLoaded,  setVariantLoaded]  = useState(false);
+  const [editingVariant, setEditingVariant] = useState<number | null>(null);
+  const [deletingVariant, setDeletingVariant] = useState<string | null>(null);
+  const [variantForm, setVariantForm] = useState<Variant>({
+    name: '', sku: '', price: '', salePrice: '', stock: '0', weight: '', isActive: true, sortOrder: '0',
+  });
+  const [showVariantForm, setShowVariantForm] = useState(false);
 
   const [form, setForm] = useState({
     name:          (initialData?.name as string)         ?? '',
@@ -81,6 +103,33 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     api.get('/brands').then(r => setBrands(r.data.data ?? [])).catch(() => {});
   }, []);
 
+  // Load existing variants when editing
+  useEffect(() => {
+    if (isEdit && initialData?.id && !variantLoaded) {
+      api.get('/admin/products/' + initialData.id + '/variants')
+        .then((r) => {
+          const raw = r.data.data ?? [];
+          setVariants(raw.map((v: {
+            id?: string; name: string; sku: string; price: number;
+            salePrice?: number | null; stock?: number; weight?: string | null;
+            isActive?: boolean; sortOrder?: number;
+          }) => ({
+            id:         v.id,
+            name:       v.name,
+            sku:        v.sku,
+            price:      String(v.price),
+            salePrice:  v.salePrice ? String(v.salePrice) : '',
+            stock:      String(v.stock ?? 0),
+            weight:     v.weight ?? '',
+            isActive:   v.isActive ?? true,
+            sortOrder:  String(v.sortOrder ?? 0),
+          })));
+          setVariantLoaded(true);
+        })
+        .catch(() => { setVariantLoaded(true); });
+    }
+  }, [isEdit, initialData, variantLoaded]);
+
   function set(k: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const val = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
@@ -108,6 +157,70 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
   function removeTag(t: string) {
     setForm(f => ({ ...f, tags: f.tags.filter(x => x !== t) }));
+  }
+
+  function setVF(k: keyof typeof variantForm) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+      setVariantForm((f) => ({ ...f, [k]: val }));
+    };
+  }
+
+  function resetVariantForm() {
+    setVariantForm({ name: '', sku: '', price: '', salePrice: '', stock: '0', weight: '', isActive: true, sortOrder: '0' });
+    setEditingVariant(null);
+    setShowVariantForm(false);
+  }
+
+  async function handleSaveVariant() {
+    if (!variantForm.name.trim()) { toast.error('Variant name required'); return; }
+    if (!variantForm.sku.trim())  { toast.error('Variant SKU required'); return; }
+    if (!variantForm.price || Number(variantForm.price) <= 0) { toast.error('Valid price required'); return; }
+
+    if (!isEdit || !initialData?.id) {
+      toast.error('Save the product first before adding variants');
+      return;
+    }
+
+    const payload = {
+      name:      variantForm.name,
+      sku:       variantForm.sku,
+      price:     Number(variantForm.price),
+      salePrice: variantForm.salePrice ? Number(variantForm.salePrice) : undefined,
+      stock:     Number(variantForm.stock) || 0,
+      weight:    variantForm.weight || undefined,
+      isActive:  variantForm.isActive,
+      sortOrder: Number(variantForm.sortOrder) || 0,
+    };
+
+    try {
+      if (editingVariant !== null && variants[editingVariant]?.id) {
+        const variantId = variants[editingVariant].id as string;
+        await api.patch('/admin/products/' + initialData.id + '/variants/' + variantId, payload);
+        setVariants((prev) => prev.map((v, i) => i === editingVariant ? { ...variantForm, id: variantId } : v));
+        toast.success('Variant updated');
+      } else {
+        const res = await api.post('/admin/products/' + initialData.id + '/variants', payload);
+        setVariants((prev) => [...prev, { ...variantForm, id: res.data.data?.id }]);
+        toast.success('Variant added');
+      }
+      resetVariantForm();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || 'Failed to save variant');
+    }
+  }
+
+  async function handleDeleteVariant(variantId: string, index: number) {
+    if (!isEdit || !initialData?.id) return;
+    try {
+      await api.delete('/admin/products/' + initialData.id + '/variants/' + variantId);
+      setVariants((prev) => prev.filter((_, i) => i !== index));
+      toast.success('Variant deleted');
+      setDeletingVariant(null);
+    } catch {
+      toast.error('Failed to delete variant');
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -408,6 +521,140 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               </p>
             </div>
           )}
+
+          {/* Variants */}
+          {tab === 'variants' && (
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                <h3 className="font-black text-gray-900 text-sm">Product Variants</h3>
+                {isEdit && (
+                  <AdminBtn
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    icon={<Plus className="w-3.5 h-3.5" />}
+                    onClick={() => { resetVariantForm(); setShowVariantForm(true); }}
+                  >
+                    Add Variant
+                  </AdminBtn>
+                )}
+              </div>
+
+              {!isEdit && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <p className="text-xs font-semibold text-amber-800">Save the product first to manage variants.</p>
+                </div>
+              )}
+
+              {/* Inline variant form */}
+              {showVariantForm && (
+                <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 space-y-3">
+                  <p className="text-sm font-black text-gray-800">{editingVariant !== null ? 'Edit Variant' : 'New Variant'}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Name *</label>
+                      <input value={variantForm.name} onChange={setVF('name')} placeholder="e.g. 500g Pack"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">SKU *</label>
+                      <input value={variantForm.sku} onChange={setVF('sku')} placeholder="SKU-VAR-001"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Price *</label>
+                      <input type="number" min="0" step="0.01" value={variantForm.price} onChange={setVF('price')} placeholder="0.00"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Sale Price</label>
+                      <input type="number" min="0" step="0.01" value={variantForm.salePrice} onChange={setVF('salePrice')} placeholder="0.00"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Stock</label>
+                      <input type="number" min="0" value={variantForm.stock} onChange={setVF('stock')} placeholder="0"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">Weight</label>
+                      <input value={variantForm.weight} onChange={setVF('weight')} placeholder="e.g. 500g"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={variantForm.isActive}
+                        onChange={(e) => setVariantForm((f) => ({ ...f, isActive: e.target.checked }))}
+                        className="w-4 h-4 rounded"
+                      />
+                      Active
+                    </label>
+                    <div className="ml-auto flex gap-2">
+                      <AdminBtn type="button" size="sm" variant="secondary" onClick={resetVariantForm}>Cancel</AdminBtn>
+                      <AdminBtn type="button" size="sm" onClick={handleSaveVariant}>
+                        {editingVariant !== null ? 'Update' : 'Add'}
+                      </AdminBtn>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Variants list */}
+              {variants.length === 0 && !showVariantForm ? (
+                <div className="text-center py-8 text-gray-400">
+                  <Layers className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+                  <p className="text-sm">No variants yet. Add variants for different sizes, weights, or options.</p>
+                </div>
+              ) : (
+                <div className="space-y-0 divide-y divide-gray-100">
+                  {variants.map((v, i) => (
+                    <div key={v.id ?? i} className="flex items-center gap-3 py-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 text-sm">{v.name}</p>
+                        <p className="text-[11px] font-mono text-gray-400">{v.sku}</p>
+                      </div>
+                      <div className="text-right hidden sm:block">
+                        <p className="text-sm font-black text-orange-600" style={{ fontFamily: 'Manrope,sans-serif' }}>
+                          {formatPriceEn(Number(v.salePrice) || Number(v.price))}
+                        </p>
+                        {v.salePrice && (
+                          <p className="text-[11px] text-gray-400 line-through">{formatPriceEn(Number(v.price))}</p>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500 hidden md:block">Stock: {v.stock}</span>
+                      <span className={cn(
+                        'text-[10px] font-bold px-2 py-0.5 rounded-full',
+                        v.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500',
+                      )}>
+                        {v.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVariantForm({ ...v });
+                          setEditingVariant(i);
+                          setShowVariantForm(true);
+                        }}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => v.id && setDeletingVariant(v.id + '|' + i)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right: quick status sidebar */}
@@ -453,6 +700,21 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
           )}
         </div>
       </div>
+
+      {/* Confirm variant delete */}
+      <ConfirmDialog
+        open={!!deletingVariant}
+        onClose={() => setDeletingVariant(null)}
+        onConfirm={() => {
+          if (deletingVariant) {
+            const [varId, idx] = deletingVariant.split('|');
+            handleDeleteVariant(varId, Number(idx));
+          }
+        }}
+        title="Delete Variant"
+        message="This variant will be permanently deleted."
+        danger
+      />
     </form>
   );
 }

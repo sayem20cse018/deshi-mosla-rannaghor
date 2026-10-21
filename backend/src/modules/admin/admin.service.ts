@@ -569,4 +569,348 @@ export class AdminService {
     });
     return { success: true, data: result };
   }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN CATEGORIES CRUD
+  // ---------------------------------------------------------------------------
+
+  async adminGetCategories(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    parentId?: string;
+  }) {
+    const { page = 1, limit = 50, search, parentId } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (search) {
+      where.OR = [
+        { name:   { contains: search, mode: 'insensitive' } },
+        { nameEn: { contains: search, mode: 'insensitive' } },
+        { slug:   { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    if (parentId === 'null' || parentId === '') {
+      where.parentId = null;
+    } else if (parentId) {
+      where.parentId = parentId;
+    }
+
+    const [categories, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+        include: {
+          parent: { select: { id: true, name: true } },
+          _count: { select: { products: true, children: true } },
+        },
+      }),
+      this.prisma.category.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: categories,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminGetCategory(id: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      include: {
+        parent: { select: { id: true, name: true } },
+        children: { orderBy: { sortOrder: 'asc' } },
+        _count: { select: { products: true } },
+      },
+    });
+    if (!category) throw new Error('Category not found');
+    return { success: true, data: category };
+  }
+
+  async adminCreateCategory(dto: {
+    name: string;
+    nameEn?: string;
+    slug: string;
+    description?: string;
+    image?: string;
+    icon?: string;
+    parentId?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+    showInNav?: boolean;
+    navOrder?: number;
+    metaTitle?: string;
+    metaDesc?: string;
+  }) {
+    const category = await this.prisma.category.create({
+      data: {
+        name:        dto.name,
+        nameEn:      dto.nameEn,
+        slug:        dto.slug,
+        description: dto.description,
+        image:       dto.image,
+        icon:        dto.icon,
+        parentId:    dto.parentId || null,
+        isActive:    dto.isActive ?? true,
+        sortOrder:   dto.sortOrder ?? 0,
+        showInNav:   dto.showInNav ?? false,
+        navOrder:    dto.navOrder ?? 0,
+        metaTitle:   dto.metaTitle,
+        metaDesc:    dto.metaDesc,
+      },
+    });
+    return { success: true, message: 'Category created', data: category };
+  }
+
+  async adminUpdateCategory(id: string, dto: {
+    name?: string;
+    nameEn?: string;
+    slug?: string;
+    description?: string;
+    image?: string;
+    icon?: string;
+    parentId?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+    showInNav?: boolean;
+    navOrder?: number;
+    metaTitle?: string;
+    metaDesc?: string;
+  }) {
+    const existing = await this.prisma.category.findUnique({ where: { id } });
+    if (!existing) throw new Error('Category not found');
+
+    const updateData: Record<string, unknown> = {};
+    if (dto.name        !== undefined) updateData.name        = dto.name;
+    if (dto.nameEn      !== undefined) updateData.nameEn      = dto.nameEn;
+    if (dto.slug        !== undefined) updateData.slug        = dto.slug;
+    if (dto.description !== undefined) updateData.description = dto.description;
+    if (dto.image       !== undefined) updateData.image       = dto.image;
+    if (dto.icon        !== undefined) updateData.icon        = dto.icon;
+    if (dto.isActive    !== undefined) updateData.isActive    = dto.isActive;
+    if (dto.sortOrder   !== undefined) updateData.sortOrder   = dto.sortOrder;
+    if (dto.showInNav   !== undefined) updateData.showInNav   = dto.showInNav;
+    if (dto.navOrder    !== undefined) updateData.navOrder    = dto.navOrder;
+    if (dto.metaTitle   !== undefined) updateData.metaTitle   = dto.metaTitle;
+    if (dto.metaDesc    !== undefined) updateData.metaDesc    = dto.metaDesc;
+    // Allow clearing parentId
+    if ('parentId' in dto) updateData.parentId = dto.parentId || null;
+
+    const category = await this.prisma.category.update({
+      where: { id },
+      data: updateData as any,
+    });
+    return { success: true, message: 'Category updated', data: category };
+  }
+
+  async adminDeleteCategory(id: string) {
+    const existing = await this.prisma.category.findUnique({ where: { id } });
+    if (!existing) throw new Error('Category not found');
+    await this.prisma.category.delete({ where: { id } });
+    return { success: true, message: 'Category deleted' };
+  }
+
+  async adminReorderCategories(items: Array<{ id: string; sortOrder: number }>) {
+    await Promise.all(
+      items.map((item) =>
+        this.prisma.category.update({
+          where: { id: item.id },
+          data: { sortOrder: item.sortOrder },
+        }),
+      ),
+    );
+    return { success: true, message: 'Categories reordered' };
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN BRANDS CRUD
+  // ---------------------------------------------------------------------------
+
+  async adminGetBrands(params: { page?: number; limit?: number; search?: string }) {
+    const { page = 1, limit = 50, search } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (search) {
+      where.OR = [
+        { name:   { contains: search, mode: 'insensitive' } },
+        { nameEn: { contains: search, mode: 'insensitive' } },
+        { slug:   { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [brands, total] = await Promise.all([
+      this.prisma.brand.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { name: 'asc' },
+        include: {
+          _count: { select: { products: true } },
+        },
+      }),
+      this.prisma.brand.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: brands,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminGetBrand(id: string) {
+    const brand = await this.prisma.brand.findUnique({
+      where: { id },
+      include: { _count: { select: { products: true } } },
+    });
+    if (!brand) throw new Error('Brand not found');
+    return { success: true, data: brand };
+  }
+
+  async adminCreateBrand(dto: {
+    name: string;
+    nameEn?: string;
+    slug: string;
+    logo?: string;
+    description?: string;
+    website?: string;
+    isActive?: boolean;
+  }) {
+    const brand = await this.prisma.brand.create({
+      data: {
+        name:        dto.name,
+        nameEn:      dto.nameEn,
+        slug:        dto.slug,
+        logo:        dto.logo,
+        description: dto.description,
+        website:     dto.website,
+        isActive:    dto.isActive ?? true,
+      },
+    });
+    return { success: true, message: 'Brand created', data: brand };
+  }
+
+  async adminUpdateBrand(id: string, dto: {
+    name?: string;
+    nameEn?: string;
+    slug?: string;
+    logo?: string;
+    description?: string;
+    website?: string;
+    isActive?: boolean;
+  }) {
+    const existing = await this.prisma.brand.findUnique({ where: { id } });
+    if (!existing) throw new Error('Brand not found');
+
+    const brand = await this.prisma.brand.update({
+      where: { id },
+      data: dto as any,
+    });
+    return { success: true, message: 'Brand updated', data: brand };
+  }
+
+  async adminDeleteBrand(id: string) {
+    const existing = await this.prisma.brand.findUnique({ where: { id } });
+    if (!existing) throw new Error('Brand not found');
+    await this.prisma.brand.delete({ where: { id } });
+    return { success: true, message: 'Brand deleted' };
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN PRODUCT VARIANTS CRUD
+  // ---------------------------------------------------------------------------
+
+  async adminGetVariants(productId: string) {
+    const variants = await this.prisma.productVariant.findMany({
+      where: { productId },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    });
+    return {
+      success: true,
+      data: variants.map((v) => ({
+        ...v,
+        price:     Number(v.price),
+        salePrice: v.salePrice ? Number(v.salePrice) : null,
+      })),
+    };
+  }
+
+  async adminCreateVariant(productId: string, dto: {
+    name: string;
+    sku: string;
+    price: number;
+    salePrice?: number;
+    stock?: number;
+    weight?: string;
+    image?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+    attributes?: Record<string, unknown>;
+  }) {
+    const product = await this.prisma.product.findUnique({ where: { id: productId } });
+    if (!product) throw new Error('Product not found');
+
+    const variant = await this.prisma.productVariant.create({
+      data: {
+        productId,
+        name:       dto.name,
+        sku:        dto.sku,
+        price:      dto.price,
+        salePrice:  dto.salePrice,
+        stock:      dto.stock ?? 0,
+        weight:     dto.weight,
+        image:      dto.image,
+        isActive:   dto.isActive ?? true,
+        sortOrder:  dto.sortOrder ?? 0,
+        attributes: (dto.attributes ?? {}) as any,
+      },
+    });
+    return {
+      success: true,
+      message: 'Variant created',
+      data: { ...variant, price: Number(variant.price), salePrice: variant.salePrice ? Number(variant.salePrice) : null },
+    };
+  }
+
+  async adminUpdateVariant(productId: string, variantId: string, dto: {
+    name?: string;
+    sku?: string;
+    price?: number;
+    salePrice?: number;
+    stock?: number;
+    weight?: string;
+    image?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+    attributes?: Record<string, unknown>;
+  }) {
+    const existing = await this.prisma.productVariant.findFirst({
+      where: { id: variantId, productId },
+    });
+    if (!existing) throw new Error('Variant not found');
+
+    const variant = await this.prisma.productVariant.update({
+      where: { id: variantId },
+      data: dto as any,
+    });
+    return {
+      success: true,
+      message: 'Variant updated',
+      data: { ...variant, price: Number(variant.price), salePrice: variant.salePrice ? Number(variant.salePrice) : null },
+    };
+  }
+
+  async adminDeleteVariant(productId: string, variantId: string) {
+    const existing = await this.prisma.productVariant.findFirst({
+      where: { id: variantId, productId },
+    });
+    if (!existing) throw new Error('Variant not found');
+    await this.prisma.productVariant.delete({ where: { id: variantId } });
+    return { success: true, message: 'Variant deleted' };
+  }
 }

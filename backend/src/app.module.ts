@@ -23,6 +23,7 @@ import { BannersModule } from './modules/banners/banners.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { CollectionsModule } from './modules/collections/collections.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     AdminModule,
     ReportsModule,
     SettingsModule,
+    CollectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
