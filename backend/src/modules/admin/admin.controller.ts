@@ -259,4 +259,79 @@ export class AdminController {
   ) {
     return this.adminService.adminDeleteVariant(productId, variantId);
   }
+
+  // ── Homepage CMS ──────────────────────────────────────────
+  @Get('homepage/slides')
+  adminGetHeroSlides() {
+    return this.adminService.adminGetHeroSlides();
+  }
+
+  @Post('homepage/slides')
+  adminCreateHeroSlide(@Body() dto: Record<string, unknown>) {
+    return this.adminService.adminCreateHeroSlide(dto as any);
+  }
+
+  @Patch('homepage/slides/reorder')
+  adminReorderHeroSlides(@Body() body: { items: { id: string; sortOrder: number }[] }) {
+    return this.adminService.adminReorderHeroSlides(body.items);
+  }
+
+  @Patch('homepage/slides/:id')
+  adminUpdateHeroSlide(@Param('id') id: string, @Body() dto: Record<string, unknown>) {
+    return this.adminService.adminUpdateHeroSlide(id, dto);
+  }
+
+  @Delete('homepage/slides/:id')
+  adminDeleteHeroSlide(@Param('id') id: string) {
+    return this.adminService.adminDeleteHeroSlide(id);
+  }
+
+  @Get('homepage/sections')
+  adminGetHomepageSections() {
+    return this.adminService.adminGetHomepageSections();
+  }
+
+  @Post('homepage/sections/reorder')
+  adminReorderHomepageSections(@Body() body: { items: { key: string; sortOrder: number }[] }) {
+    return this.adminService.adminReorderHomepageSections(body.items);
+  }
+
+  @Post('homepage/sections/:key/toggle')
+  adminToggleHomepageSection(@Param('key') key: string, @Body() body: { isEnabled: boolean }) {
+    return this.adminService.adminToggleHomepageSection(key, body.isEnabled);
+  }
+
+  @Post('homepage/sections/:key')
+  adminUpsertHomepageSection(@Param('key') key: string, @Body() dto: Record<string, unknown>) {
+    return this.adminService.adminUpsertHomepageSection(key, dto as any);
+  }
+
+  // ── Testimonials CRUD ─────────────────────────────────────
+  @Get('testimonials')
+  adminGetTestimonials(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.adminService.adminGetTestimonials({
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+      search,
+    });
+  }
+
+  @Post('testimonials')
+  adminCreateTestimonial(@Body() dto: Record<string, unknown>) {
+    return this.adminService.adminCreateTestimonial(dto as any);
+  }
+
+  @Patch('testimonials/:id')
+  adminUpdateTestimonial(@Param('id') id: string, @Body() dto: Record<string, unknown>) {
+    return this.adminService.adminUpdateTestimonial(id, dto);
+  }
+
+  @Delete('testimonials/:id')
+  adminDeleteTestimonial(@Param('id') id: string) {
+    return this.adminService.adminDeleteTestimonial(id);
+  }
 }

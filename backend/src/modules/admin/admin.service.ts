@@ -913,4 +913,125 @@ export class AdminService {
     await this.prisma.productVariant.delete({ where: { id: variantId } });
     return { success: true, message: 'Variant deleted' };
   }
+
+  // =========================================================
+  // HOMEPAGE CMS
+  // =========================================================
+
+  // -- Hero Slides ------------------------------------------
+  async adminGetHeroSlides() {
+    const slides = await this.prisma.heroSlide.findMany({
+      orderBy: { sortOrder: 'asc' },
+    });
+    return { success: true, data: slides };
+  }
+
+  async adminCreateHeroSlide(dto: {
+    title?: string; titleEn?: string;
+    subtitle?: string; subtitleEn?: string;
+    tag?: string; tagEn?: string;
+    badge?: string; badgeEn?: string;
+    image?: string; imageMobile?: string;
+    ctaLabel?: string; ctaLabelEn?: string; ctaUrl?: string;
+    cta2Label?: string; cta2LabelEn?: string; cta2Url?: string;
+    bgColor?: string; emoji?: string;
+    isActive?: boolean; sortOrder?: number;
+    startDate?: string; endDate?: string;
+  }) {
+    const slide = await this.prisma.heroSlide.create({ data: { ...dto, startDate: dto.startDate ? new Date(dto.startDate) : undefined, endDate: dto.endDate ? new Date(dto.endDate) : undefined } });
+    return { success: true, data: slide };
+  }
+
+  async adminUpdateHeroSlide(id: string, dto: Record<string, unknown>) {
+    const data: Record<string, unknown> = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate as string);
+    if (dto.endDate)   data.endDate   = new Date(dto.endDate as string);
+    const slide = await this.prisma.heroSlide.update({ where: { id }, data: data as any });
+    return { success: true, data: slide };
+  }
+
+  async adminDeleteHeroSlide(id: string) {
+    await this.prisma.heroSlide.delete({ where: { id } });
+    return { success: true, message: 'Slide deleted' };
+  }
+
+  async adminReorderHeroSlides(items: { id: string; sortOrder: number }[]) {
+    await Promise.all(items.map(({ id, sortOrder }) =>
+      this.prisma.heroSlide.update({ where: { id }, data: { sortOrder } }),
+    ));
+    return { success: true };
+  }
+
+  // -- Homepage Sections ------------------------------------
+  async adminGetHomepageSections() {
+    const sections = await this.prisma.homepageSection.findMany({
+      orderBy: { sortOrder: 'asc' },
+    });
+    return { success: true, data: sections };
+  }
+
+  async adminUpsertHomepageSection(key: string, dto: {
+    title?: string; titleEn?: string;
+    subtitle?: string; subtitleEn?: string;
+    description?: string;
+    image?: string; imageMobile?: string;
+    buttonLabel?: string; buttonLabelEn?: string; buttonUrl?: string;
+    extraData?: Record<string, unknown> | null;
+    isEnabled?: boolean; sortOrder?: number;
+  }) {
+    const section = await this.prisma.homepageSection.upsert({
+      where: { key },
+      update: { ...dto, extraData: dto.extraData as any, updatedAt: new Date() },
+      create: { key, ...dto, extraData: dto.extraData as any, updatedAt: new Date() },
+    });
+    return { success: true, data: section };
+  }
+
+  async adminReorderHomepageSections(items: { key: string; sortOrder: number }[]) {
+    await Promise.all(items.map(({ key, sortOrder }) =>
+      this.prisma.homepageSection.updateMany({ where: { key }, data: { sortOrder, updatedAt: new Date() } }),
+    ));
+    return { success: true };
+  }
+
+  async adminToggleHomepageSection(key: string, isEnabled: boolean) {
+    await this.prisma.homepageSection.upsert({
+      where: { key },
+      update: { isEnabled, updatedAt: new Date() },
+      create: { key, isEnabled, updatedAt: new Date() },
+    });
+    return { success: true };
+  }
+
+  // -- Testimonials CRUD ------------------------------------
+  async adminGetTestimonials(params: { page?: number; limit?: number; search?: string }) {
+    const page  = Math.max(1, params.page ?? 1);
+    const limit = Math.min(100, params.limit ?? 20);
+    const skip  = (page - 1) * limit;
+    const where: any = {};
+    if (params.search) where.OR = [
+      { name:    { contains: params.search, mode: 'insensitive' } },
+      { comment: { contains: params.search, mode: 'insensitive' } },
+    ];
+    const [data, total] = await Promise.all([
+      this.prisma.testimonial.findMany({ where, skip, take: limit, orderBy: { sortOrder: 'asc' } }),
+      this.prisma.testimonial.count({ where }),
+    ]);
+    return { success: true, data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async adminCreateTestimonial(dto: { name: string; role?: string; avatar?: string; rating?: number; comment: string; isActive?: boolean; sortOrder?: number }) {
+    const t = await this.prisma.testimonial.create({ data: { ...dto } });
+    return { success: true, data: t };
+  }
+
+  async adminUpdateTestimonial(id: string, dto: Record<string, unknown>) {
+    const t = await this.prisma.testimonial.update({ where: { id }, data: dto as any });
+    return { success: true, data: t };
+  }
+
+  async adminDeleteTestimonial(id: string) {
+    await this.prisma.testimonial.delete({ where: { id } });
+    return { success: true, message: 'Testimonial deleted' };
+  }
 }

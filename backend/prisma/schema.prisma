@@ -830,6 +830,28 @@ model CollectionProduct {
   @@map("collection_products")
 }
 
+model MediaFile {
+  id           String   @id @default(uuid())
+  publicId     String   @unique @db.VarChar(300)
+  url          String   @db.VarChar(500)
+  secureUrl    String   @db.VarChar(500)
+  originalName String   @db.VarChar(255)
+  altText      String?  @db.VarChar(255)
+  width        Int?
+  height       Int?
+  bytes        Int?
+  format       String?  @db.VarChar(20)
+  folder       String?  @db.VarChar(100)
+  resourceType String   @default("image") @db.VarChar(20)
+  uploadedBy   String?  @db.VarChar(100)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([folder])
+  @@index([createdAt])
+  @@map("media_files")
+}
+
 model ProductVariant {
   id        String   @id @default(uuid())
   productId String
@@ -851,4 +873,58 @@ model ProductVariant {
   @@index([productId])
   @@index([sku])
   @@map("product_variants")
+}
+
+model HeroSlide {
+  id            String   @id @default(uuid())
+  title         String?  @db.VarChar(200)
+  titleEn       String?  @db.VarChar(200)
+  subtitle      String?  @db.VarChar(300)
+  subtitleEn    String?  @db.VarChar(300)
+  tag           String?  @db.VarChar(100)
+  tagEn         String?  @db.VarChar(100)
+  badge         String?  @db.VarChar(100)
+  badgeEn       String?  @db.VarChar(100)
+  image         String?  @db.VarChar(500)
+  imageMobile   String?  @db.VarChar(500)
+  ctaLabel      String?  @db.VarChar(100)
+  ctaLabelEn    String?  @db.VarChar(100)
+  ctaUrl        String?  @db.VarChar(300)
+  cta2Label     String?  @db.VarChar(100)
+  cta2LabelEn   String?  @db.VarChar(100)
+  cta2Url       String?  @db.VarChar(300)
+  bgColor       String?  @db.VarChar(200)
+  emoji         String?  @db.VarChar(10)
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("hero_slides")
+}
+
+model HomepageSection {
+  id            String   @id @default(uuid())
+  key           String   @unique @db.VarChar(80)
+  title         String?  @db.VarChar(200)
+  titleEn       String?  @db.VarChar(200)
+  subtitle      String?  @db.VarChar(300)
+  subtitleEn    String?  @db.VarChar(300)
+  description   String?  @db.Text
+  image         String?  @db.VarChar(500)
+  imageMobile   String?  @db.VarChar(500)
+  buttonLabel   String?  @db.VarChar(100)
+  buttonLabelEn String?  @db.VarChar(100)
+  buttonUrl     String?  @db.VarChar(300)
+  extraData     Json?
+  isEnabled     Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@index([key])
+  @@index([isEnabled, sortOrder])
+  @@map("homepage_sections")
 }
