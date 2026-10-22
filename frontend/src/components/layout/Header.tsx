@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   ShoppingCart, Heart, User, Menu, X, ChevronDown,
-  Package, LayoutDashboard, Loader2, Search,
+  Package, Loader2, Search,
   LogOut, Settings, ChevronRight, Home, BookOpen,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -234,13 +234,6 @@ export function Header() {
                                 <ChevronRight className="w-3.5 h-3.5 text-gray-300 ml-auto" />
                               </Link>
                             ))}
-                            {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                              <Link href="/admin" onClick={() => setAccountOpen(false)}
-                                className="flex items-center gap-3 px-4 py-2.5 text-[13.5px] text-[#ea580c] hover:bg-orange-50 transition-colors">
-                                <LayoutDashboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
-                                <span>{T('adminPanel')}</span>
-                              </Link>
-                            )}
                           </div>
                           <div className="border-t border-gray-100">
                             <button type="button" onClick={handleLogout}
@@ -552,14 +545,6 @@ export function Header() {
                     <span className="text-base w-6 text-center flex-shrink-0">🚪</span>
                     <span className="flex-1 text-left">{T('logout')}</span>
                   </button>
-                  {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                    <Link href="/admin" onClick={() => setDrawerOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-[13.5px] text-orange-600 bg-orange-50 border-t border-orange-100 transition-colors"
-                      style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
-                      <LayoutDashboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
-                      <span className="flex-1">{T('adminPanel')}</span>
-                    </Link>
-                  )}
                 </>
               )}
             </nav>
