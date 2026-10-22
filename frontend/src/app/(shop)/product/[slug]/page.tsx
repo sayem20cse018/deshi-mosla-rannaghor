@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -17,6 +17,8 @@ import {
   Plus,
   Check,
   Info,
+  Phone,
+  MessageCircle,
 } from 'lucide-react';
 import { cn, formatPriceEn, calcDiscount } from '@/lib/utils';
 import { useProduct } from '@/hooks/useProducts';
@@ -46,6 +48,29 @@ export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [addingCart, setAddingCart] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+
+  // Load variants
+  const [variants, setVariants] = useState<any[]>([]);
+  useEffect(() => {
+    if (!product?.id) return;
+    import('@/lib/api').then(({ default: api }) => {
+      api.get('/admin/products/' + product.id + '/variants')
+        .then(r => setVariants(r.data.data ?? []))
+        .catch(() => {});
+    });
+  }, [product?.id]);
+
+  const selectedVariant = variants.find(v => v.id === selectedVariantId) ?? null;
+
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '+8801700000000';
+  function openWhatsApp() {
+    const msg = encodeURIComponent('I am interested in: ' + (product?.name ?? '') + ' - ' + (typeof window !== 'undefined' ? window.location.href : ''));
+    window.open('https://wa.me/' + whatsappNumber.replace(/\D/g, '') + '?text=' + msg, '_blank', 'noopener,noreferrer');
+  }
+  function callNow() {
+    window.open('tel:' + whatsappNumber, '_self');
+  }
 
   function buildProductArg() {
     return {
@@ -218,109 +243,142 @@ export default function ProductDetailPage() {
               <span className="chip text-gray-400">SKU: {product.sku}</span>
             </div>
 
-            {/* Quantity selector */}
-            {!isOOS && (
+            {/* Pack size / variant selector */}
+            {variants.length > 0 && (
               <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2 block">পরিমাণ</label>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setQty((q) => Math.max(product.minOrderQty ?? 1, q - 1))}
-                      disabled={qty <= (product.minOrderQty ?? 1)}
-                      className="w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-14 text-center font-black text-lg text-gray-900">{qty}</span>
-                    <button
-                      onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
-                      disabled={qty >= maxQty}
-                      className="w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    মোট:{' '}
-                    <strong className="text-orange-600">
-                      {formatPriceEn(effectivePrice * qty)}
-                    </strong>
-                  </span>
+                <p className="text-sm font-bold text-gray-700 mb-2">Select Pack Size</p>
+                <div className="flex flex-wrap gap-2">
+                  {variants.map((v) => {
+                    const sel = selectedVariantId === v.id;
+                    const vPrice = Number(v.salePrice ?? v.price);
+                    const vOrig  = Number(v.price);
+                    const vSave  = vOrig - vPrice;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setSelectedVariantId(sel ? null : v.id)}
+                        className={cn(
+                          'relative flex flex-col items-start px-3.5 py-2.5 rounded-xl border-2 transition-all min-w-[90px] text-left',
+                          sel
+                            ? 'border-orange-500 bg-orange-500 text-white shadow-lg shadow-orange-500/25'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300',
+                        )}
+                      >
+                        {v.isBestSeller && (
+                          <span className="absolute -top-2 left-2 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">Best Seller</span>
+                        )}
+                        <span className={cn('text-xs font-bold', sel ? 'text-white/90' : 'text-gray-500')}>{v.name}</span>
+                        <span className={cn('text-base font-black leading-tight mt-0.5', sel ? 'text-white' : 'text-gray-900')}>{formatPriceEn(vPrice)}</span>
+                        {vSave > 0 && (
+                          <span className={cn('text-[10px] font-semibold mt-0.5', sel ? 'text-white/80' : 'text-orange-500')}>
+                            Save {formatPriceEn(vSave)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-                {product.minOrderQty > 1 && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    সর্বনিম্ন অর্ডার: {product.minOrderQty} টি
-                  </p>
-                )}
               </div>
             )}
 
-            {/* CTA buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleAddToCart}
-                disabled={isOOS || addingCart}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] transition-all',
-                  isOOS
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-orange-500 hover:bg-orange-600 text-white active:scale-95 shadow-lg shadow-orange-500/25',
-                )}
-              >
-                {addingCart ? (
-                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <ShoppingCart className="w-4 h-4" />
-                )}
-                {isOOS ? 'স্টক নেই' : 'কার্টে যোগ করুন'}
-              </button>
+            {/* Quantity selector */}
+            {!isOOS && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
+                  <button onClick={() => setQty((q) => Math.max(product.minOrderQty ?? 1, q - 1))} disabled={qty <= (product.minOrderQty ?? 1)}
+                    className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors">
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-12 text-center font-black text-lg text-gray-900 select-none">{qty}</span>
+                  <button onClick={() => setQty((q) => Math.min(maxQty, q + 1))} disabled={qty >= maxQty}
+                    className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors">
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <span className="text-sm text-gray-500">
+                  Total: <strong className="text-orange-600 font-black">{formatPriceEn((selectedVariant ? Number(selectedVariant.salePrice ?? selectedVariant.price) : effectivePrice) * qty)}</strong>
+                </span>
+                {/* Wishlist heart */}
+                <button
+                  onClick={async () => {
+                    if (!isAuthenticated) { toast('Login to wishlist', { icon: '🔐' }); router.push('/login'); return; }
+                    const isW = isWishlisted(product.id);
+                    if (isW) { await removeFromWishlist(product.id); toast('Removed from wishlist', { icon: '💔' }); }
+                    else { await addToWishlist(product.id); toast.success('Added to wishlist'); }
+                  }}
+                  className={cn('w-10 h-10 rounded-xl border flex items-center justify-center transition-all ml-auto',
+                    isWishlisted(product?.id ?? '') ? 'bg-red-50 border-red-200 text-red-500' : 'border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-400'
+                  )}
+                >
+                  <Heart className={cn('w-5 h-5', isWishlisted(product?.id ?? '') && 'fill-current')} />
+                </button>
+              </div>
+            )}
 
-              {!isOOS && (
+            {/* ── CTA Buttons — amadere.com style ── */}
+            <div className="space-y-2.5">
+              {/* Row 1: Add to Cart + Buy Now */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isOOS || addingCart}
+                  className={cn(
+                    'flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] border-2 transition-all active:scale-[0.98]',
+                    isOOS
+                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                      : 'border-orange-500 bg-white text-orange-500 hover:bg-orange-50 shadow-sm',
+                  )}
+                >
+                  {addingCart
+                    ? <span className="w-5 h-5 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
+                    : <ShoppingCart className="w-5 h-5" />
+                  }
+                  {isOOS ? 'Out of Stock' : 'ADD TO CART'}
+                </button>
+
                 <button
                   onClick={handleBuyNow}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] bg-gray-900 hover:bg-gray-800 text-white active:scale-95 transition-all shadow-lg shadow-gray-900/20"
+                  disabled={isOOS}
+                  className={cn(
+                    'flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] transition-all active:scale-[0.98] shadow-lg',
+                    isOOS
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30',
+                  )}
                 >
-                  <Zap className="w-4 h-4" /> এখনই কিনুন
+                  <Zap className="w-5 h-5" /> BUY NOW
                 </button>
-              )}
+              </div>
 
-              <button
-                onClick={async () => {
-                  if (!isAuthenticated) {
-                    toast('উইশলিস্টে যোগ করতে লগইন করুন', { icon: '🔐' });
-                    router.push('/login');
-                    return;
-                  }
-                  const isW = isWishlisted(product.id);
-                  if (isW) {
-                    await removeFromWishlist(product.id);
-                    toast('উইশলিস্ট থেকে সরানো হয়েছে', { icon: '💔' });
-                  } else {
-                    await addToWishlist(product.id);
-                    toast.success('উইশলিস্টে যোগ হয়েছে');
-                  }
-                }}
-                className={cn(
-                  'w-[54px] h-[54px] flex-shrink-0 rounded-xl border flex items-center justify-center transition-all',
-                  isWishlisted(product?.id ?? '')
-                    ? 'bg-red-50 border-red-200 text-red-500'
-                    : 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-400',
-                )}
-                aria-label="উইশলিস্ট"
-              >
-                <Heart className={cn('w-5 h-5', isWishlisted(product?.id ?? '') && 'fill-current')} />
-              </button>
+              {/* Row 2: WhatsApp + Call Now */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  onClick={openWhatsApp}
+                  className="flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-[14px] bg-[#25D366] hover:bg-[#1ebe5d] text-white transition-all active:scale-[0.98] shadow-sm shadow-[#25D366]/20"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  WhatsApp
+                </button>
 
+                <button
+                  onClick={callNow}
+                  className="flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-[14px] bg-gray-800 hover:bg-gray-900 text-white transition-all active:scale-[0.98] shadow-sm shadow-gray-900/20"
+                >
+                  <Phone className="w-4 h-4 flex-shrink-0" /> Call Now
+                </button>
+              </div>
+            </div>
+
+            {/* Share */}
+            <div className="flex justify-end">
               <button
-                onClick={() =>
-                  navigator.clipboard
-                    .writeText(window.location.href)
-                    .then(() => toast.success('লিংক কপি হয়েছে'))
-                }
-                className="w-[54px] h-[54px] flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-orange-200 hover:text-orange-500 transition-colors"
-                aria-label="শেয়ার"
+                onClick={() => navigator.clipboard.writeText(window.location.href).then(() => toast.success('Link copied'))}
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="w-3.5 h-3.5" /> Share
               </button>
             </div>
 
