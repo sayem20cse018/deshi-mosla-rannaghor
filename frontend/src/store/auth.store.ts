@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       user: null,
-      isAuthenticated: false,
+      isAuthenticated: false, // NEVER persisted — always starts false, set only after real API verify
       isLoading: false,
 
       // ── Login ─────────────────────────────────────────
@@ -151,7 +151,12 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: 'dmr-auth',
-      partialize: (s) => ({ user: s.user, isAuthenticated: s.isAuthenticated }),
+      // IMPORTANT: Never persist isAuthenticated.
+      // Only persist the user object (display name, role for UI hints).
+      // isAuthenticated is always re-derived by AdminGuard via fetchUser() on mount,
+      // which hits /auth/me and verifies the actual JWT token.
+      // This prevents auto-login without a valid cookie.
+      partialize: (s) => ({ user: s.user }),
     },
   ),
 );

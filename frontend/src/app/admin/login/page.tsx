@@ -15,7 +15,9 @@ export default function AdminLoginPage() {
   const [showPw,     setShowPw]     = useState(false);
   const [error,      setError]      = useState('');
 
-  // If already authenticated as admin, redirect immediately
+  // Only redirect if BOTH conditions are true AND login was just performed in this session.
+  // DO NOT auto-redirect on page load — user must enter credentials first.
+  // isAuthenticated is not persisted so this only fires after a successful login() call.
   useEffect(() => {
     if (isAuthenticated && user && user.role !== 'CUSTOMER') {
       router.replace('/admin');
