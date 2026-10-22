@@ -39,12 +39,13 @@ export function FloatingCart() {
   return (
     <div
       className={[
-        // desktop only, above WhatsApp button (WhatsApp is bottom-20, cart sits at bottom-[92px])
+        // desktop only, above WhatsApp button
+        // WhatsApp is at bottom-20 (80px), cart sits higher to avoid overlap
         'hidden md:block fixed right-4 z-40',
         'transition-all duration-500 ease-out',
         show ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
       ].join(' ')}
-      style={{ bottom: '94px' }}
+      style={{ bottom: '148px' }}
     >
       {/* Dismiss */}
       <button

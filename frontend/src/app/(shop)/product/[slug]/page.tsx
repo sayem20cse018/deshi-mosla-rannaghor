@@ -23,6 +23,7 @@ import { useProduct } from '@/hooks/useProducts';
 import { useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
 import { useAuthStore } from '@/store/auth.store';
+import { QuickCheckout } from '@/components/shop/QuickCheckout';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ReviewSection } from '@/components/product/ReviewSection';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
@@ -44,6 +45,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
   const [addingCart, setAddingCart] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
 
   function buildProductArg() {
     return {
@@ -67,12 +69,9 @@ export default function ProductDetailPage() {
     setAddingCart(false);
   }
 
-  async function handleBuyNow() {
+  function handleBuyNow() {
     if (!product) return;
-    setAddingCart(true);
-    await addItem(buildProductArg(), qty);
-    setAddingCart(false);
-    openCart();
+    setQuickOpen(true);
   }
 
   // ── Loading ────────────────────────────────────────────
@@ -265,7 +264,7 @@ export default function ProductDetailPage() {
                   'flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] transition-all',
                   isOOS
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-forest-700 hover:bg-forest-800 text-white active:scale-95 shadow-lg shadow-forest-700/20',
+                    : 'bg-orange-500 hover:bg-orange-600 text-white active:scale-95 shadow-lg shadow-orange-500/25',
                 )}
               >
                 {addingCart ? (
@@ -279,7 +278,7 @@ export default function ProductDetailPage() {
               {!isOOS && (
                 <button
                   onClick={handleBuyNow}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] bg-spice-500 hover:bg-spice-600 text-white active:scale-95 transition-all shadow-lg shadow-spice-600/25"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] bg-gray-900 hover:bg-gray-800 text-white active:scale-95 transition-all shadow-lg shadow-gray-900/20"
                 >
                   <Zap className="w-4 h-4" /> এখনই কিনুন
                 </button>
