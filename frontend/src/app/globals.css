@@ -248,6 +248,12 @@
   50%       { transform: translateY(-6px); }
 }
 
+/* Hero fade-up — used by HeroBanner slide content */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .animate-fade-up       { animation: fade-up 0.4s ease-out forwards; }
 .animate-fade-down     { animation: fade-down 0.3s ease-out forwards; }
 .animate-slide-left    { animation: slide-left 0.35s ease-out forwards; }

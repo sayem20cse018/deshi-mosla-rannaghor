@@ -7,6 +7,7 @@ import {
   RefreshCw, X, Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
 import { UploadButton } from '@/components/admin/media/UploadButton';
 import {
   useAdminHomepageSections, useUpsertHomepageSection,
@@ -313,12 +314,18 @@ export default function HomepageCmsPage() {
     const enabled = current?.isEnabled ?? true;
     setTogglingKey(key);
     await toggle.mutateAsync({ key, isEnabled: !enabled });
+      toast.success(enabled ? 'Section disabled' : 'Section enabled');
     setTogglingKey(null);
   }
 
   async function handleSave(dto: Partial<HomepageSection> & { key: string }) {
-    await upsert.mutateAsync(dto);
-    setSaved(dto.key);
+    try {
+      await upsert.mutateAsync(dto);
+      setSaved(dto.key);
+      toast.success('Section saved');
+    } catch {
+      toast.error('Failed to save section');
+    }
     setTimeout(() => setSaved(null), 2000);
     setEditing(null);
   }

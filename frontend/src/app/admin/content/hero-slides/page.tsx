@@ -16,6 +16,7 @@ import {
   LoadingState, ErrorState, EmptyState, Badge,
 } from '@/components/admin/ui';
 import { UploadButton } from '@/components/admin/media/UploadButton';
+import toast from 'react-hot-toast';
 
 // ── Slide Form ────────────────────────────────────────────────────────────────
 
@@ -190,18 +191,33 @@ export default function HeroSlidesPage() {
 
   // ── Save handlers ────────────────────────────────────────
   async function handleCreate(dto: Partial<HeroSlide>) {
-    await createSlide.mutateAsync(dto);
-    setShowCreate(false);
+    try {
+      await createSlide.mutateAsync(dto);
+      toast.success('Slide created');
+      setShowCreate(false);
+    } catch {
+      toast.error('Failed to create slide');
+    }
   }
 
   async function handleUpdate(dto: Partial<HeroSlide>) {
     if (!editSlide) return;
-    await updateSlide.mutateAsync({ id: editSlide.id, ...dto });
-    setEditSlide(null);
+    try {
+      await updateSlide.mutateAsync({ id: editSlide.id, ...dto });
+      toast.success('Slide updated');
+      setEditSlide(null);
+    } catch {
+      toast.error('Failed to update slide');
+    }
   }
 
   async function handleToggle(slide: HeroSlide) {
-    await updateSlide.mutateAsync({ id: slide.id, isActive: !slide.isActive });
+    try {
+      await updateSlide.mutateAsync({ id: slide.id, isActive: !slide.isActive });
+      toast.success(slide.isActive ? 'Slide deactivated' : 'Slide activated');
+    } catch {
+      toast.error('Failed to update');
+    }
   }
 
   return (
@@ -335,7 +351,15 @@ export default function HeroSlidesPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => { deleteSlide.mutate(deleteTarget!.id); setDeleteTarget(null); }}
+        onConfirm={async () => {
+          try {
+            await deleteSlide.mutateAsync(deleteTarget!.id);
+            toast.success('Slide deleted');
+          } catch {
+            toast.error('Failed to delete');
+          }
+          setDeleteTarget(null);
+        }}
         title="Delete Slide"
         message={`Delete "${deleteTarget?.title || deleteTarget?.titleEn || 'this slide'}"? This cannot be undone.`}
         loading={deleteSlide.isPending}

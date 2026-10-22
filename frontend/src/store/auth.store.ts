@@ -89,14 +89,22 @@ export const useAuthStore = create<AuthStore>()(
         } catch {
           /* silent */
         }
+        // Remove cookie AND clear persisted Zustand state completely
         Cookies.remove('access_token');
-        set({ user: null, isAuthenticated: false });
+        // Clear the persisted storage key to prevent stale isAuthenticated
+        if (typeof window !== 'undefined') {
+          try { localStorage.removeItem('dmr-auth'); } catch {}
+        }
+        set({ user: null, isAuthenticated: false, isLoading: false });
       },
 
       // ── Fetch current user ────────────────────────────
       fetchUser: async () => {
         const token = Cookies.get('access_token');
         if (!token) {
+          if (typeof window !== 'undefined') {
+            try { localStorage.removeItem('dmr-auth'); } catch {}
+          }
           set({ user: null, isAuthenticated: false, isLoading: false });
           return;
         }
@@ -105,7 +113,11 @@ export const useAuthStore = create<AuthStore>()(
           const res = await api.get('/auth/me');
           set({ user: res.data.data, isAuthenticated: true, isLoading: false });
         } catch {
+          // Token is invalid/expired — clear everything
           Cookies.remove('access_token');
+          if (typeof window !== 'undefined') {
+            try { localStorage.removeItem('dmr-auth'); } catch {}
+          }
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
