@@ -260,7 +260,7 @@ export class AdminController {
     return this.adminService.adminDeleteVariant(productId, variantId);
   }
 
-  // ── Homepage CMS ──────────────────────────────────────────
+  // â”€â”€ Homepage CMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   @Get('homepage/slides')
   adminGetHeroSlides() {
     return this.adminService.adminGetHeroSlides();
@@ -306,7 +306,7 @@ export class AdminController {
     return this.adminService.adminUpsertHomepageSection(key, dto as any);
   }
 
-  // ── Testimonials CRUD ─────────────────────────────────────
+  // â”€â”€ Testimonials CRUD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   @Get('testimonials')
   adminGetTestimonials(
     @Query('page') page?: string,
@@ -334,4 +334,70 @@ export class AdminController {
   adminDeleteTestimonial(@Param('id') id: string) {
     return this.adminService.adminDeleteTestimonial(id);
   }
+
+
+  // ── Coupon Admin ─────────────────────────────────────────
+  @Get('coupons')
+  adminGetCoupons(@Query('page') page?:string, @Query('limit') limit?:string, @Query('search') search?:string) {
+    return this.adminService.adminGetCoupons({ page:page?Number(page):1, limit:limit?Number(limit):20, search });
+  }
+  @Get('coupons/:id/usages')
+  adminGetCouponUsages(@Param('id') id:string) { return this.adminService.adminGetCouponUsages(id); }
+  @Post('coupons')
+  adminCreateCoupon(@Body() dto:Record<string,unknown>) { return this.adminService.adminCreateCoupon(dto as any); }
+  @Patch('coupons/:id')
+  adminUpdateCoupon(@Param('id') id:string, @Body() dto:Record<string,unknown>) { return this.adminService.adminUpdateCoupon(id, dto); }
+  @Delete('coupons/:id')
+  adminDeleteCoupon(@Param('id') id:string) { return this.adminService.adminDeleteCoupon(id); }
+
+  // ── Banner Admin ─────────────────────────────────────────
+  @Get('banners')
+  adminGetBanners(@Query('page') page?:string, @Query('limit') limit?:string, @Query('position') position?:string) {
+    return this.adminService.adminGetBanners({ page:page?Number(page):1, limit:limit?Number(limit):20, position });
+  }
+  @Post('banners')
+  adminCreateBanner(@Body() dto:Record<string,unknown>) { return this.adminService.adminCreateBanner(dto as any); }
+  @Patch('banners/:id')
+  adminUpdateBanner(@Param('id') id:string, @Body() dto:Record<string,unknown>) { return this.adminService.adminUpdateBanner(id, dto); }
+  @Delete('banners/:id')
+  adminDeleteBanner(@Param('id') id:string) { return this.adminService.adminDeleteBanner(id); }
+
+  // ── Offers Admin ─────────────────────────────────────────
+  @Get('offers')
+  adminGetOffers(@Query('page') page?:string, @Query('limit') limit?:string, @Query('search') search?:string) {
+    return this.adminService.adminGetOffers({ page:page?Number(page):1, limit:limit?Number(limit):20, search });
+  }
+  @Post('offers')
+  adminCreateOffer(@Body() dto:Record<string,unknown>) { return this.adminService.adminCreateOffer(dto); }
+  @Patch('offers/:id')
+  adminUpdateOffer(@Param('id') id:string, @Body() dto:Record<string,unknown>) { return this.adminService.adminUpdateOffer(id, dto); }
+  @Delete('offers/:id')
+  adminDeleteOffer(@Param('id') id:string) { return this.adminService.adminDeleteOffer(id); }
+
+  // ── Promotions Admin ─────────────────────────────────────
+  @Get('promotions')
+  adminGetPromotions(@Query('page') page?:string, @Query('limit') limit?:string, @Query('search') search?:string) {
+    return this.adminService.adminGetPromotions({ page:page?Number(page):1, limit:limit?Number(limit):20, search });
+  }
+  @Post('promotions')
+  adminCreatePromotion(@Body() dto:Record<string,unknown>) { return this.adminService.adminCreatePromotion(dto); }
+  @Patch('promotions/:id')
+  adminUpdatePromotion(@Param('id') id:string, @Body() dto:Record<string,unknown>) { return this.adminService.adminUpdatePromotion(id, dto); }
+  @Delete('promotions/:id')
+  adminDeletePromotion(@Param('id') id:string) { return this.adminService.adminDeletePromotion(id); }
+
+  // ── Newsletter Admin ──────────────────────────────────────
+  @Get('newsletter/subscribers')
+  adminGetSubscribers(@Query('page') page?:string, @Query('limit') limit?:string, @Query('search') search?:string) {
+    return this.adminService.adminGetSubscribers({ page:page?Number(page):1, limit:limit?Number(limit):50, search });
+  }
+  @Get('newsletter/export')
+  async adminExportSubscribers() {
+    const csv = await this.adminService.adminExportSubscribers();
+    return { success:true, data:csv };
+  }
+  @Delete('newsletter/subscribers/:id')
+  adminDeleteSubscriber(@Param('id') id:string) { return this.adminService.adminDeleteSubscriber(id); }
+  @Post('newsletter/subscribers/bulk-delete')
+  adminBulkDeleteSubscribers(@Body() body:{ ids:string[] }) { return this.adminService.adminBulkDeleteSubscribers(body.ids); }
 }

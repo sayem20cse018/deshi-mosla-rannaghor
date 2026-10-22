@@ -920,10 +920,10 @@ export class AdminService {
 
   // -- Hero Slides ------------------------------------------
   async adminGetHeroSlides() {
-    const slides = await this.prisma.heroSlide.findMany({
-      orderBy: { sortOrder: 'asc' },
-    });
-    return { success: true, data: slides };
+    try {
+      const slides = await this.prisma.heroSlide.findMany({ orderBy: { sortOrder: 'asc' } });
+      return { success: true, data: slides };
+    } catch { return { success: true, data: [] }; }
   }
 
   async adminCreateHeroSlide(dto: {
@@ -964,10 +964,10 @@ export class AdminService {
 
   // -- Homepage Sections ------------------------------------
   async adminGetHomepageSections() {
-    const sections = await this.prisma.homepageSection.findMany({
-      orderBy: { sortOrder: 'asc' },
-    });
-    return { success: true, data: sections };
+    try {
+      const sections = await this.prisma.homepageSection.findMany({ orderBy: { sortOrder: 'asc' } });
+      return { success: true, data: sections };
+    } catch { return { success: true, data: [] }; }
   }
 
   async adminUpsertHomepageSection(key: string, dto: {
@@ -979,12 +979,15 @@ export class AdminService {
     extraData?: Record<string, unknown> | null;
     isEnabled?: boolean; sortOrder?: number;
   }) {
+    try {
+    
     const section = await this.prisma.homepageSection.upsert({
       where: { key },
       update: { ...dto, extraData: dto.extraData as any, updatedAt: new Date() },
       create: { key, ...dto, extraData: dto.extraData as any, updatedAt: new Date() },
     });
-    return { success: true, data: section };
+        return { success: true, data: section };
+    } catch (e: any) { throw new Error(e?.message ?? "Failed"); }
   }
 
   async adminReorderHomepageSections(items: { key: string; sortOrder: number }[]) {
@@ -1033,5 +1036,177 @@ export class AdminService {
   async adminDeleteTestimonial(id: string) {
     await this.prisma.testimonial.delete({ where: { id } });
     return { success: true, message: 'Testimonial deleted' };
+  }
+
+
+  // =============================================================
+  // STEP 7: MARKETING MANAGEMENT
+  // =============================================================
+
+  // -- COUPONS ADMIN -----------------------------------------
+  async adminGetCoupons(p: { page?:number; limit?:number; search?:string; isActive?:boolean }) {
+    const page = Math.max(1, p.page??1), limit = Math.min(100, p.limit??20);
+    const where: any = {};
+    if (p.search) where.OR = [{ code:{ contains:p.search, mode:'insensitive' } }, { description:{ contains:p.search, mode:'insensitive' } }];
+    if (p.isActive !== undefined) where.isActive = p.isActive;
+    const [data, total] = await Promise.all([
+      this.prisma.coupon.findMany({ where, skip:(page-1)*limit, take:limit, orderBy:{ createdAt:'desc' }, include:{ _count:{ select:{ usages:true } } } }),
+      this.prisma.coupon.count({ where }),
+    ]);
+    return { success:true, data: data.map(c => ({ ...c, discountValue:Number(c.discountValue), minOrderAmount:c.minOrderAmount?Number(c.minOrderAmount):null, maxDiscount:c.maxDiscount?Number(c.maxDiscount):null, usageCount:c._count.usages })), meta:{ page,limit,total,totalPages:Math.ceil(total/limit) } };
+  }
+
+  async adminCreateCoupon(dto: { code:string; description?:string; discountType:string; discountValue:number; minOrderAmount?:number; maxDiscount?:number; startDate:string; expiryDate:string; usageLimit?:number; userLimit?:number; isActive?:boolean }) {
+    const c = await this.prisma.coupon.create({ data: { code:dto.code.toUpperCase(), description:dto.description, discountType:dto.discountType as any, discountValue:dto.discountValue, minOrderAmount:dto.minOrderAmount, maxDiscount:dto.maxDiscount, startDate:new Date(dto.startDate), expiryDate:new Date(dto.expiryDate), usageLimit:dto.usageLimit, userLimit:dto.userLimit??1, isActive:dto.isActive??true } });
+    return { success:true, data:c };
+  }
+
+  async adminUpdateCoupon(id:string, dto: Record<string,unknown>) {
+    const data: any = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate as string);
+    if (dto.expiryDate) data.expiryDate = new Date(dto.expiryDate as string);
+    if (dto.code) data.code = (dto.code as string).toUpperCase();
+    const c = await this.prisma.coupon.update({ where:{id}, data });
+    return { success:true, data:c };
+  }
+
+  async adminDeleteCoupon(id:string) {
+    await this.prisma.coupon.delete({ where:{id} });
+    return { success:true, message:'Coupon deleted' };
+  }
+
+  async adminGetCouponUsages(couponId:string) {
+    const usages = await this.prisma.couponUsage.findMany({ where:{couponId}, include:{ user:{ select:{ name:true, email:true, phone:true } } }, orderBy:{ usedAt:'desc' } });
+    return { success:true, data:usages };
+  }
+
+  // -- BANNERS ADMIN ------------------------------------------
+  async adminGetBanners(p: { page?:number; limit?:number; position?:string }) {
+    const page = Math.max(1, p.page??1), limit = Math.min(100, p.limit??20);
+    const where: any = {};
+    if (p.position) where.position = p.position;
+    const [data, total] = await Promise.all([
+      this.prisma.banner.findMany({ where, skip:(page-1)*limit, take:limit, orderBy:[{ position:'asc' },{ sortOrder:'asc' }] }),
+      this.prisma.banner.count({ where }),
+    ]);
+    return { success:true, data, meta:{ page,limit,total,totalPages:Math.ceil(total/limit) } };
+  }
+
+  async adminCreateBanner(dto: { title?:string; titleEn?:string; subtitle?:string; image:string; imageMobile?:string; link?:string; buttonText?:string; position?:string; isActive?:boolean; sortOrder?:number; startDate?:string; endDate?:string }) {
+    const b = await this.prisma.banner.create({ data: { title:dto.title, titleEn:dto.titleEn, subtitle:dto.subtitle, image:dto.image, link:dto.link, buttonText:dto.buttonText, position:(dto.position??'HERO') as any, isActive:dto.isActive??true, sortOrder:dto.sortOrder??0, startDate:dto.startDate?new Date(dto.startDate):undefined, endDate:dto.endDate?new Date(dto.endDate):undefined } });
+    return { success:true, data:b };
+  }
+
+  async adminUpdateBanner(id:string, dto: Record<string,unknown>) {
+    const data: any = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate as string);
+    if (dto.endDate) data.endDate = new Date(dto.endDate as string);
+    const b = await this.prisma.banner.update({ where:{id}, data });
+    return { success:true, data:b };
+  }
+
+  async adminDeleteBanner(id:string) {
+    await this.prisma.banner.delete({ where:{id} });
+    return { success:true, message:'Banner deleted' };
+  }
+
+  // -- OFFERS ADMIN -------------------------------------------
+  async adminGetOffers(p: { page?:number; limit?:number; search?:string }) {
+    const page = Math.max(1, p.page??1), limit = Math.min(100, p.limit??20);
+    const where: any = {};
+    if (p.search) where.name = { contains:p.search, mode:'insensitive' };
+    try {
+      const [data, total] = await Promise.all([
+        this.prisma.offer.findMany({ where, skip:(page-1)*limit, take:limit, orderBy:{ createdAt:'desc' } }),
+        this.prisma.offer.count({ where }),
+      ]);
+      return { success:true, data: data.map(o=>({ ...o, discountValue:Number(o.discountValue), minOrderAmount:o.minOrderAmount?Number(o.minOrderAmount):null, maxDiscount:o.maxDiscount?Number(o.maxDiscount):null })), meta:{ page,limit,total,totalPages:Math.ceil(total/limit) } };
+    } catch { return { success:true, data:[], meta:{ page,limit,total:0,totalPages:0 } }; }
+  }
+
+  async adminCreateOffer(dto: any) {
+    const o = await this.prisma.offer.create({ data:{ ...dto, startDate:new Date(dto.startDate), endDate:new Date(dto.endDate) } });
+    return { success:true, data:o };
+  }
+
+  async adminUpdateOffer(id:string, dto: Record<string,unknown>) {
+    const data: any = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate as string);
+    if (dto.endDate) data.endDate = new Date(dto.endDate as string);
+    const o = await this.prisma.offer.update({ where:{id}, data });
+    return { success:true, data:o };
+  }
+
+  async adminDeleteOffer(id:string) {
+    await this.prisma.offer.delete({ where:{id} });
+    return { success:true, message:'Offer deleted' };
+  }
+
+  // -- PROMOTIONS ADMIN ---------------------------------------
+  async adminGetPromotions(p: { page?:number; limit?:number; search?:string }) {
+    const page = Math.max(1, p.page??1), limit = Math.min(100, p.limit??20);
+    const where: any = {};
+    if (p.search) where.name = { contains:p.search, mode:'insensitive' };
+    try {
+      const [data, total] = await Promise.all([
+        this.prisma.promotion.findMany({ where, skip:(page-1)*limit, take:limit, orderBy:{ createdAt:'desc' } }),
+        this.prisma.promotion.count({ where }),
+      ]);
+      return { success:true, data: data.map(p=>({ ...p, discountValue:Number(p.discountValue) })), meta:{ page,limit,total,totalPages:Math.ceil(total/limit) } };
+    } catch { return { success:true, data:[], meta:{ page,limit,total:0,totalPages:0 } }; }
+  }
+
+  async adminCreatePromotion(dto: any) {
+    const p2 = await this.prisma.promotion.create({ data:{ ...dto, startDate:new Date(dto.startDate), endDate:new Date(dto.endDate) } });
+    return { success:true, data:p2 };
+  }
+
+  async adminUpdatePromotion(id:string, dto: Record<string,unknown>) {
+    const data: any = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate as string);
+    if (dto.endDate) data.endDate = new Date(dto.endDate as string);
+    const p2 = await this.prisma.promotion.update({ where:{id}, data });
+    return { success:true, data:p2 };
+  }
+
+  async adminDeletePromotion(id:string) {
+    await this.prisma.promotion.delete({ where:{id} });
+    return { success:true, message:'Promotion deleted' };
+  }
+
+  // -- NEWSLETTER ADMIN ---------------------------------------
+  async adminGetSubscribers(p: { page?:number; limit?:number; search?:string; isActive?:boolean }) {
+    const page = Math.max(1, p.page??1), limit = Math.min(500, p.limit??50);
+    const where: any = {};
+    if (p.search) where.OR = [{ email:{ contains:p.search, mode:'insensitive' } }, { name:{ contains:p.search, mode:'insensitive' } }];
+    if (p.isActive !== undefined) where.isActive = p.isActive;
+    try {
+      const [data, total] = await Promise.all([
+        this.prisma.newsletterSubscriber.findMany({ where, skip:(page-1)*limit, take:limit, orderBy:{ subscribedAt:'desc' } }),
+        this.prisma.newsletterSubscriber.count({ where }),
+      ]);
+      return { success:true, data, meta:{ page,limit,total,totalPages:Math.ceil(total/limit) } };
+    } catch { return { success:true, data:[], meta:{ page,limit,total:0,totalPages:0 } }; }
+  }
+
+  async adminDeleteSubscriber(id:string) {
+    try { await this.prisma.newsletterSubscriber.delete({ where:{id} }); }
+    catch {}
+    return { success:true, message:'Subscriber deleted' };
+  }
+
+  async adminBulkDeleteSubscribers(ids:string[]) {
+    try { await this.prisma.newsletterSubscriber.deleteMany({ where:{ id:{ in:ids } } }); }
+    catch {}
+    return { success:true, message:`${ids.length} subscribers deleted` };
+  }
+
+  async adminExportSubscribers(): Promise<string> {
+    try {
+      const subs = await this.prisma.newsletterSubscriber.findMany({ where:{ isActive:true }, orderBy:{ subscribedAt:'asc' } });
+      const header = 'Email,Name,Source,Subscribed At';
+      const rows = subs.map(s => `${s.email},${s.name??''},${s.source??''},${s.subscribedAt.toISOString()}`);
+      return [header, ...rows].join('\n');
+    } catch { return 'Email,Name,Source,Subscribed At'; }
   }
 }

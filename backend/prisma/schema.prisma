@@ -928,3 +928,61 @@ model HomepageSection {
   @@index([isEnabled, sortOrder])
   @@map("homepage_sections")
 }
+
+model NewsletterSubscriber {
+  id          String   @id @default(uuid())
+  email       String   @unique @db.VarChar(255)
+  name        String?  @db.VarChar(100)
+  isActive    Boolean  @default(true)
+  source      String?  @db.VarChar(50)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([isActive])
+  @@map("newsletter_subscribers")
+}
+
+model Offer {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(200)
+  nameEn      String?  @db.VarChar(200)
+  description String?  @db.Text
+  image       String?  @db.VarChar(500)
+  discountType String  @db.VarChar(20)
+  discountValue Decimal @db.Decimal(10, 2)
+  minOrderAmount Decimal? @db.Decimal(10, 2)
+  maxDiscount Decimal? @db.Decimal(10, 2)
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  targetType  String   @default("ALL") @db.VarChar(20)
+  targetIds   String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([startDate, endDate])
+  @@map("offers")
+}
+
+model Promotion {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(200)
+  nameEn       String?  @db.VarChar(200)
+  description  String?  @db.Text
+  discountType String   @db.VarChar(20)
+  discountValue Decimal @db.Decimal(10, 2)
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean  @default(true)
+  targetType   String   @default("ALL") @db.VarChar(20)
+  targetIds    String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([startDate, endDate])
+  @@map("promotions")
+}
