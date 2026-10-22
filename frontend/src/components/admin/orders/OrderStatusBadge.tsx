@@ -41,3 +41,25 @@ export function PaymentStatusBadge({ status, size = 'md' }: OrderStatusBadgeProp
     </span>
   );
 }
+
+export function PaymentMethodBadge({ method, size = 'md' }: { method: string; size?: 'sm' | 'md' }) {
+  const MAP: Record<string, { label: string; bg: string; color: string }> = {
+    CASH_ON_DELIVERY: { label: 'COD',       bg: 'bg-green-50',  color: 'text-green-700' },
+    BKASH:            { label: 'bKash',     bg: 'bg-pink-50',   color: 'text-pink-700'  },
+    NAGAD:            { label: 'Nagad',     bg: 'bg-orange-50', color: 'text-orange-700'},
+    ROCKET:           { label: 'Rocket',    bg: 'bg-violet-50', color: 'text-violet-700'},
+    SSLCOMMERZ:       { label: 'Card/Net',  bg: 'bg-blue-50',   color: 'text-blue-700'  },
+    VISA:             { label: 'Visa',      bg: 'bg-blue-50',   color: 'text-blue-700'  },
+    MASTERCARD:       { label: 'Mastercard',bg: 'bg-red-50',    color: 'text-red-700'   },
+  };
+  const cfg = MAP[method] ?? { label: method, bg: 'bg-gray-100', color: 'text-gray-600' };
+  return (
+    <span className={cn(
+      'inline-flex items-center font-semibold rounded-full',
+      cfg.bg, cfg.color,
+      size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-xs px-2.5 py-1',
+    )}>
+      {cfg.label}
+    </span>
+  );
+}

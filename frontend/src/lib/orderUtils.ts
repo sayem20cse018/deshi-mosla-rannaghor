@@ -62,3 +62,17 @@ export function formatDate(dateStr: string | null | undefined, short = false): s
   if (short) return d.toLocaleDateString('en-BD', { day: '2-digit', month: 'short', year: '2-digit' });
   return d.toLocaleDateString('en-BD', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
+
+// Payment brand colors and visual config
+export const PAYMENT_BRAND_CONFIG: Record<string, {
+  label: string; bg: string; color: string; border: string; icon: string;
+}> = {
+  CASH_ON_DELIVERY: { label: 'Cash on Delivery', bg: '#f0fdf4', color: '#166534', border: '#bbf7d0', icon: 'cash' },
+  BKASH:            { label: 'bKash',            bg: '#fdf2f8', color: '#be185d', border: '#fbcfe8', icon: 'bkash' },
+  NAGAD:            { label: 'Nagad',            bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', icon: 'nagad' },
+  ROCKET:           { label: 'Rocket',           bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe', icon: 'rocket' },
+  SSLCOMMERZ:       { label: 'SSLCommerz',       bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe', icon: 'card' },
+  VISA:             { label: 'Visa',             bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe', icon: 'card' },
+  MASTERCARD:       { label: 'Mastercard',       bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', icon: 'card' },
+  BKASH_MANUAL:     { label: 'bKash (Manual)',   bg: '#fdf2f8', color: '#be185d', border: '#fbcfe8', icon: 'bkash' },
+};
