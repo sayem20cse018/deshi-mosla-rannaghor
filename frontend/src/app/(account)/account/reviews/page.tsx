@@ -99,7 +99,7 @@ function EditForm({ review, onDone }: { review: any; onDone: () => void }) {
           বাতিল
         </button>
         <button type="submit" disabled={mutation.isPending}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-forest-700 hover:bg-forest-800 text-white font-bold py-2 rounded-xl text-sm transition-all disabled:opacity-60">
+          className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 rounded-xl text-sm transition-all disabled:opacity-60">
           {mutation.isPending
             ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> হচ্ছে...</>
             : <><CheckCircle className="w-3.5 h-3.5" /> সংরক্ষণ</>
@@ -140,7 +140,7 @@ export default function ReviewsPage() {
   if (isLoading)
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="w-7 h-7 animate-spin text-forest-600" />
+        <Loader2 className="w-7 h-7 animate-spin text-orange-500" />
       </div>
     );
 
@@ -196,7 +196,7 @@ export default function ReviewsPage() {
                     {/* Product name + status */}
                     <div className="flex items-start justify-between gap-2 flex-wrap">
                       <Link href={`/product/${review.product?.slug}`}
-                        className="font-bold text-gray-800 text-sm hover:text-forest-700 transition-colors">
+                        className="font-bold text-gray-800 text-sm hover:text-orange-600 transition-colors">
                         {review.product?.name}
                       </Link>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -208,7 +208,7 @@ export default function ReviewsPage() {
                         <div className="flex items-center gap-1 ml-1">
                           {canEd && !isEd && (
                             <button onClick={() => setEditing(review.id)}
-                              className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-forest-600 hover:bg-forest-50 rounded-lg transition-colors"
+                              className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-orange-500 hover:bg-forest-50 rounded-lg transition-colors"
                               title="সম্পাদনা">
                               <Edit3 className="w-3.5 h-3.5" />
                             </button>

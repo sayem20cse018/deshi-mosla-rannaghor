@@ -43,7 +43,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <div className="flex items-center justify-between mb-6">
           <div>
             <nav className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-              <a href="/" className="hover:text-brand-600">
+              <a href="/" className="hover:text-orange-600">
                 হোম
               </a>
               <span>/</span>
@@ -54,7 +54,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
           {/* Mobile sidebar toggle */}
           <button
-            className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-xl hover:border-brand-300 transition-colors"
+            className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-xl hover:border-orange-300 transition-colors"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="w-4 h-4" /> মেনু

@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 // ─── Discount type config ─────────────────────────────────
 const TYPE_CONFIG = {
   PERCENTAGE:    { icon: Percent, label: 'শতকরা ছাড়',     color: 'text-blue-600',   bg: 'bg-blue-50',   border: 'border-blue-200'   },
-  FIXED_AMOUNT:  { icon: Banknote, label: 'নির্দিষ্ট ছাড়', color: 'text-forest-600', bg: 'bg-forest-50', border: 'border-forest-200' },
+  FIXED_AMOUNT:  { icon: Banknote, label: 'নির্দিষ্ট ছাড়', color: 'text-orange-500', bg: 'bg-forest-50', border: 'border-forest-200' },
   FREE_DELIVERY: { icon: Truck,   label: 'ফ্রি ডেলিভারি',  color: 'text-spice-600',  bg: 'bg-spice-50',  border: 'border-spice-200'  },
 };
 
@@ -143,7 +143,7 @@ function CouponCard({ coupon, used = false }: { coupon: any; used?: boolean }) {
         {/* Use now btn */}
         {!isExpired && !used && (
           <Link href="/shop"
-            className="mt-2.5 w-full flex items-center justify-center gap-1.5 text-xs font-bold text-forest-700 bg-forest-50 hover:bg-forest-100 border border-forest-200 py-2 rounded-xl transition-colors">
+            className="mt-2.5 w-full flex items-center justify-center gap-1.5 text-xs font-bold text-orange-600 bg-forest-50 hover:bg-forest-100 border border-forest-200 py-2 rounded-xl transition-colors">
             <ShoppingBag className="w-3.5 h-3.5" /> এখনই ব্যবহার করুন
           </Link>
         )}
@@ -211,7 +211,7 @@ export default function CouponsPage() {
             className={cn(
               'flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all border',
               tab === key
-                ? 'bg-forest-700 text-white border-forest-700 shadow-sm'
+                ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
                 : 'bg-white text-gray-600 border-gray-100 hover:border-forest-200',
             )}>
             {label}
@@ -228,7 +228,7 @@ export default function CouponsPage() {
       {/* Content */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-7 h-7 animate-spin text-forest-600" />
+          <Loader2 className="w-7 h-7 animate-spin text-orange-500" />
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">

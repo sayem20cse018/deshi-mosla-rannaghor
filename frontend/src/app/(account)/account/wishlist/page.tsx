@@ -75,7 +75,7 @@ export default function WishlistPage() {
   if (loading && !fetched) {
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="w-7 h-7 animate-spin text-forest-600" />
+        <Loader2 className="w-7 h-7 animate-spin text-orange-500" />
       </div>
     );
   }
@@ -197,7 +197,7 @@ export default function WishlistPage() {
                 <div className="p-3 space-y-2">
                   {/* Name */}
                   <Link href={`/product/${item.slug}`}>
-                    <h3 className="font-semibold text-[13px] text-gray-800 hover:text-forest-700 line-clamp-2 leading-snug transition-colors">
+                    <h3 className="font-semibold text-[13px] text-gray-800 hover:text-orange-600 line-clamp-2 leading-snug transition-colors">
                       {item.name}
                     </h3>
                   </Link>

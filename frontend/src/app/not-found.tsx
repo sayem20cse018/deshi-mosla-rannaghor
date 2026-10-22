@@ -9,7 +9,7 @@ export default function NotFound() {
         <div className="text-8xl mb-6 animate-float">🌶️</div>
 
         {/* 404 */}
-        <h1 className="text-8xl font-black text-forest-700 leading-none mb-2">৪০৪</h1>
+        <h1 className="text-8xl font-black text-orange-600 leading-none mb-2">৪০৪</h1>
         <h2 className="text-2xl font-bold text-gray-800 mb-3">পেজটি পাওয়া যায়নি</h2>
         <p className="text-gray-500 text-sm mb-8 leading-relaxed">
           আপনি যে পেজটি খুঁজছেন সেটি সরানো হয়েছে বা ঠিকানা পরিবর্তন হয়েছে।
@@ -19,14 +19,14 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 bg-forest-700 hover:bg-forest-800 text-white font-bold px-6 py-3 rounded-xl transition-all"
+            className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition-all"
           >
             <Home className="w-4 h-4" />
             হোমে যান
           </Link>
           <Link
             href="/shop"
-            className="inline-flex items-center justify-center gap-2 bg-white border border-forest-200 text-forest-700 hover:bg-forest-50 font-semibold px-6 py-3 rounded-xl transition-all"
+            className="inline-flex items-center justify-center gap-2 bg-white border border-forest-200 text-orange-600 hover:bg-forest-50 font-semibold px-6 py-3 rounded-xl transition-all"
           >
             <ShoppingBag className="w-4 h-4" />
             পণ্য দেখুন
@@ -49,7 +49,7 @@ export default function NotFound() {
               <Link
                 key={href}
                 href={href}
-                className="text-xs bg-white border border-gray-200 hover:border-forest-300 text-gray-600 hover:text-forest-700 px-3 py-1.5 rounded-full transition-all"
+                className="text-xs bg-white border border-gray-200 hover:border-forest-300 text-gray-600 hover:text-orange-600 px-3 py-1.5 rounded-full transition-all"
               >
                 {label}
               </Link>

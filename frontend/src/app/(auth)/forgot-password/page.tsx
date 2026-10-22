@@ -75,8 +75,8 @@ export default function ForgotPasswordPage() {
           {step === 'request' && (
             <>
               <div className="text-center mb-6">
-                <div className="w-14 h-14 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-7 h-7 text-brand-600" />
+                <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-7 h-7 text-orange-600" />
                 </div>
                 <h1 className="text-xl font-bold text-gray-900">পাসওয়ার্ড ভুলে গেছেন?</h1>
                 <p className="text-gray-500 text-sm mt-1">
@@ -206,7 +206,7 @@ export default function ForgotPasswordPage() {
         <div className="text-center mt-5">
           <Link
             href="/login"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-brand-700"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-orange-700"
           >
             <ArrowLeft className="w-4 h-4" /> লগইনে ফিরুন
           </Link>

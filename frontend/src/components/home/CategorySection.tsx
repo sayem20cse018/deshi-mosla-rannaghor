@@ -97,7 +97,7 @@ const COLOR_MAP: Record<string, { color: string; border: string; text: string }>
 const DEFAULT_STYLE = {
   color: 'from-forest-50 to-forest-100',
   border: 'border-forest-100',
-  text: 'text-forest-700',
+  text: 'text-orange-600',
 };
 
 // Skeleton card for loading state

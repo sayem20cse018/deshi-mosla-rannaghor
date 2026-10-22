@@ -41,7 +41,7 @@ export default function PaymentHistoryPage() {
   if (isLoading)
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
       </div>
     );
 
@@ -67,7 +67,7 @@ export default function PaymentHistoryPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <Link
                     href={`/account/orders/${item.id}`}
-                    className="font-bold text-gray-900 text-sm hover:text-brand-700 transition-colors"
+                    className="font-bold text-gray-900 text-sm hover:text-orange-700 transition-colors"
                   >
                     #{item.orderNumber}
                   </Link>
@@ -93,7 +93,7 @@ export default function PaymentHistoryPage() {
                   })}
                 </p>
               </div>
-              <p className="font-black text-brand-700 flex-shrink-0">
+              <p className="font-black text-orange-700 flex-shrink-0">
                 {formatPriceEn(item.totalAmount)}
               </p>
             </div>

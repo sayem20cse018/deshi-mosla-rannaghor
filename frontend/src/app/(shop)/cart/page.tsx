@@ -28,7 +28,7 @@ export default function CartPage() {
         <div className="container mx-auto px-4 py-12">
           {/* Breadcrumb */}
           <nav className="text-xs text-gray-400 mb-8 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-brand-600">
+            <Link href="/" className="hover:text-orange-600">
               হোম
             </Link>
             <span>/</span>
@@ -83,7 +83,7 @@ export default function CartPage() {
       <div className="bg-white border-b border-gray-100">
         <div className="container mx-auto px-4 py-5">
           <nav className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-brand-600">
+            <Link href="/" className="hover:text-orange-600">
               হোম
             </Link>
             <span>/</span>
@@ -97,7 +97,7 @@ export default function CartPage() {
             <div className="flex items-center gap-3">
               <Link
                 href="/shop"
-                className="flex items-center gap-1.5 text-sm text-brand-700 hover:text-brand-800 font-medium"
+                className="flex items-center gap-1.5 text-sm text-orange-700 hover:text-brand-800 font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
                 কেনাকাটা চালিয়ে যান
@@ -134,7 +134,7 @@ export default function CartPage() {
             <div className="pt-2 flex items-center justify-between">
               <Link
                 href="/shop"
-                className="flex items-center gap-2 text-sm text-brand-600 hover:text-brand-800 font-medium"
+                className="flex items-center gap-2 text-sm text-orange-600 hover:text-brand-800 font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
                 কেনাকাটা চালিয়ে যান
@@ -187,7 +187,7 @@ export default function CartPage() {
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs text-gray-500">{totals.itemCount} পণ্য</p>
-            <p className="text-lg font-black text-brand-700 leading-tight">
+            <p className="text-lg font-black text-orange-700 leading-tight">
               ৳{totals.grandTotal.toLocaleString()}
             </p>
           </div>

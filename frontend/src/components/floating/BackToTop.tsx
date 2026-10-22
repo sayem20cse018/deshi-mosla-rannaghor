@@ -35,9 +35,9 @@ export function BackToTop() {
         'w-11 h-11 flex items-center justify-center',
         'rounded-full bg-white border border-gray-200',
         'shadow-lg hover:shadow-xl',
-        'hover:border-brand-400 hover:bg-brand-50',
+        'hover:border-brand-400 hover:bg-orange-50',
         'transition-all duration-300',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2',
         // Mobile: sit above mobile nav bar
         'mb-safe',
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none',
@@ -67,7 +67,7 @@ export function BackToTop() {
       </svg>
 
       {/* Arrow icon */}
-      <ChevronUp className="w-4 h-4 text-brand-700 relative z-10 group-hover:text-brand-900 transition-colors" />
+      <ChevronUp className="w-4 h-4 text-orange-700 relative z-10 group-hover:text-brand-900 transition-colors" />
     </button>
   );
 }

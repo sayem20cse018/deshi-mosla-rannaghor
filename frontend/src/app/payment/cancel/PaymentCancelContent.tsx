@@ -43,7 +43,7 @@ export default function PaymentCancelContent() {
           {orderId && (
             <Link
               href="/account/orders"
-              className="w-full flex items-center justify-center gap-2 border border-gray-200 hover:border-brand-300 text-gray-700 hover:text-brand-700 font-semibold py-3 rounded-xl text-sm transition-colors"
+              className="w-full flex items-center justify-center gap-2 border border-gray-200 hover:border-orange-300 text-gray-700 hover:text-orange-700 font-semibold py-3 rounded-xl text-sm transition-colors"
             >
               <ShoppingBag className="w-4 h-4" /> আমার অর্ডার দেখুন
             </Link>
@@ -59,7 +59,7 @@ export default function PaymentCancelContent() {
 
           <Link
             href="/"
-            className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-brand-600 text-sm py-2 transition-colors"
+            className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-orange-600 text-sm py-2 transition-colors"
           >
             <Home className="w-4 h-4" /> হোমপেজে যান
           </Link>
@@ -70,7 +70,7 @@ export default function PaymentCancelContent() {
           সাহায্য প্রয়োজন?{' '}
           <a
             href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '8801700000000'}`}
-            className="text-brand-600 font-semibold hover:underline"
+            className="text-orange-600 font-semibold hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >

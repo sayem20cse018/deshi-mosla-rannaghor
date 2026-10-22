@@ -47,7 +47,7 @@ export default function OrderConfirmationPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-brand-600 mx-auto mb-3" />
+          <Loader2 className="w-10 h-10 animate-spin text-orange-600 mx-auto mb-3" />
           <p className="text-gray-500 text-sm">অর্ডার লোড হচ্ছে...</p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function OrderConfirmationPage() {
                       done
                         ? 'bg-brand-600 border-brand-600 text-white'
                         : current
-                          ? 'bg-white border-brand-600 text-brand-600 ring-2 ring-brand-200'
+                          ? 'bg-white border-brand-600 text-orange-600 ring-2 ring-brand-200'
                           : 'bg-white border-gray-200 text-gray-300'
                     }`}
                   >
@@ -119,7 +119,7 @@ export default function OrderConfirmationPage() {
                   </div>
                   <p
                     className={`text-[10px] mt-1.5 text-center font-medium leading-tight ${
-                      done || current ? 'text-brand-700' : 'text-gray-400'
+                      done || current ? 'text-orange-700' : 'text-gray-400'
                     }`}
                   >
                     {step.label}
@@ -131,10 +131,10 @@ export default function OrderConfirmationPage() {
 
           {/* Estimated delivery */}
           {order.estimatedDelivery && (
-            <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-2.5 flex items-center gap-2 mt-4">
-              <Truck className="w-4 h-4 text-brand-600 flex-shrink-0" />
+            <div className="bg-orange-50 border border-brand-100 rounded-xl px-4 py-2.5 flex items-center gap-2 mt-4">
+              <Truck className="w-4 h-4 text-orange-600 flex-shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-brand-700">প্রত্যাশিত ডেলিভারি</p>
+                <p className="text-xs font-semibold text-orange-700">প্রত্যাশিত ডেলিভারি</p>
                 <p className="text-xs text-brand-500">
                   {new Date(order.estimatedDelivery).toLocaleDateString('bn-BD', {
                     weekday: 'long',
@@ -151,7 +151,7 @@ export default function OrderConfirmationPage() {
         {/* ── Order Items ── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-            <Package className="w-4 h-4 text-brand-600" /> অর্ডার আইটেম
+            <Package className="w-4 h-4 text-orange-600" /> অর্ডার আইটেম
           </h2>
           <div className="space-y-3">
             {order.items?.map((item: any) => (
@@ -200,20 +200,20 @@ export default function OrderConfirmationPage() {
               </div>
             )}
             {order.couponDiscount > 0 && (
-              <div className="flex justify-between text-sm text-brand-600">
+              <div className="flex justify-between text-sm text-orange-600">
                 <span>কুপন ছাড়</span>
                 <span>−{formatPriceEn(order.couponDiscount)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm text-gray-500">
               <span>ডেলিভারি</span>
-              <span className={order.deliveryCharge === 0 ? 'text-brand-600 font-medium' : ''}>
+              <span className={order.deliveryCharge === 0 ? 'text-orange-600 font-medium' : ''}>
                 {order.deliveryCharge === 0 ? 'ফ্রি' : formatPriceEn(order.deliveryCharge)}
               </span>
             </div>
             <div className="flex justify-between font-black text-base text-gray-900 border-t border-gray-100 pt-2 mt-2">
               <span>মোট পরিশোধ</span>
-              <span className="text-brand-700">{formatPriceEn(order.totalAmount)}</span>
+              <span className="text-orange-700">{formatPriceEn(order.totalAmount)}</span>
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function OrderConfirmationPage() {
           {/* Payment */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <h3 className="font-bold text-gray-900 text-xs uppercase tracking-wide mb-3 flex items-center gap-1.5">
-              <CreditCard className="w-3.5 h-3.5 text-brand-600" /> পেমেন্ট
+              <CreditCard className="w-3.5 h-3.5 text-orange-600" /> পেমেন্ট
             </h3>
             <p className="text-sm font-semibold text-gray-800">ক্যাশ অন ডেলিভারি</p>
             <p className="text-xs text-gray-400 mt-1">পণ্য হাতে পেলে নগদ পরিশোধ করুন</p>
@@ -236,7 +236,7 @@ export default function OrderConfirmationPage() {
           {order.address && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <h3 className="font-bold text-gray-900 text-xs uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-brand-600" /> ডেলিভারি ঠিকানা
+                <MapPin className="w-3.5 h-3.5 text-orange-600" /> ডেলিভারি ঠিকানা
               </h3>
               <p className="font-semibold text-gray-800 text-sm">{order.address.fullName}</p>
               <p className="text-gray-500 text-xs mt-1 leading-relaxed">
@@ -273,7 +273,7 @@ export default function OrderConfirmationPage() {
           </Link>
           <Link
             href="/"
-            className="flex items-center justify-center gap-2 border border-gray-200 hover:border-brand-300 text-gray-700 hover:text-brand-700 font-semibold py-3.5 rounded-xl text-sm transition-all"
+            className="flex items-center justify-center gap-2 border border-gray-200 hover:border-orange-300 text-gray-700 hover:text-orange-700 font-semibold py-3.5 rounded-xl text-sm transition-all"
           >
             <Home className="w-4 h-4" /> হোমপেজে যান
           </Link>
@@ -281,8 +281,8 @@ export default function OrderConfirmationPage() {
 
         {/* Track order */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-            <Truck className="w-5 h-5 text-brand-600" />
+          <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <Truck className="w-5 h-5 text-orange-600" />
           </div>
           <div className="flex-1">
             <p className="font-semibold text-gray-800 text-sm">অর্ডার ট্র্যাক করুন</p>
@@ -292,7 +292,7 @@ export default function OrderConfirmationPage() {
           </div>
           <Link
             href="/order-tracking"
-            className="text-brand-600 hover:text-brand-800 text-xs font-semibold flex items-center gap-1"
+            className="text-orange-600 hover:text-brand-800 text-xs font-semibold flex items-center gap-1"
           >
             ট্র্যাক করুন <ArrowRight className="w-3.5 h-3.5" />
           </Link>

@@ -195,7 +195,7 @@ export default function OrdersPage() {
       {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="w-7 h-7 animate-spin text-forest-600" />
+          <Loader2 className="w-7 h-7 animate-spin text-orange-500" />
         </div>
       ) : orders.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 py-16 px-8 text-center">

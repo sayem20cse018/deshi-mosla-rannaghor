@@ -172,7 +172,7 @@ export default function OrderTrackingPage() {
   return (
     <div className="min-h-screen bg-cream-50">
       {/* Hero */}
-      <div className="bg-gradient-to-r from-forest-800 to-forest-700 text-white">
+      <div className="bg-gradient-to-r from-orange-700 to-orange-600 text-white">
         <div className="container mx-auto px-4 py-10 md:py-14">
           <div className="max-w-xl mx-auto text-center">
             <div className="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -233,7 +233,7 @@ export default function OrderTrackingPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-forest-700 hover:bg-forest-800 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-60 shadow-sm"
+              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-60 shadow-sm"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -263,7 +263,7 @@ export default function OrderTrackingPage() {
                 </div>
                 <div className="text-right">
                   <StatusBadge status={order.status} />
-                  <p className="font-black text-xl text-forest-700 mt-2">{formatPriceEn(order.totalAmount)}</p>
+                  <p className="font-black text-xl text-orange-600 mt-2">{formatPriceEn(order.totalAmount)}</p>
                   <p className="text-xs text-gray-400">{PAY_METHOD_LABEL[order.paymentMethod] ?? order.paymentMethod}</p>
                 </div>
               </div>
@@ -281,7 +281,7 @@ export default function OrderTrackingPage() {
                           <div className="flex flex-col items-center gap-1.5">
                             <div className={cn(
                               'w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all',
-                              done    ? 'bg-forest-700 border-forest-700 text-white'
+                              done    ? 'bg-orange-500 border-orange-500 text-white'
                               : current ? `${step.bg} ${step.color} border-current ring-4 ring-current/15`
                               : 'bg-white border-gray-200 text-gray-300',
                             )}>
@@ -293,7 +293,7 @@ export default function OrderTrackingPage() {
                             </p>
                           </div>
                           {i < ORDER_STEPS.length - 1 && (
-                            <div className={cn('h-0.5 w-8 mb-5 transition-colors', done ? 'bg-forest-600' : 'bg-gray-200')} />
+                            <div className={cn('h-0.5 w-8 mb-5 transition-colors', done ? 'bg-orange-400' : 'bg-gray-200')} />
                           )}
                         </div>
                       );
@@ -320,7 +320,7 @@ export default function OrderTrackingPage() {
             {order.delivery && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-forest-600" /> ডেলিভারি তথ্য
+                  <Truck className="w-4 h-4 text-orange-500" /> ডেলিভারি তথ্য
                 </h3>
                 <div className="grid sm:grid-cols-2 gap-3 text-sm">
                   <div className="bg-gray-50 rounded-xl p-3">
@@ -359,7 +359,7 @@ export default function OrderTrackingPage() {
             {!isCancelled && order.statusHistory && order.statusHistory.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h3 className="font-bold text-gray-900 text-sm mb-5 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-forest-600" /> অর্ডারের গতিবিধি
+                  <Clock className="w-4 h-4 text-orange-500" /> অর্ডারের গতিবিধি
                 </h3>
                 <div>
                   {ORDER_STEPS.map((step, i) => {
@@ -414,7 +414,7 @@ export default function OrderTrackingPage() {
             {/* Items */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-                <Package className="w-4 h-4 text-forest-600" /> পণ্য তালিকা
+                <Package className="w-4 h-4 text-orange-500" /> পণ্য তালিকা
               </h3>
               <div className="space-y-3">
                 {order.items?.map((item: any, i: number) => (
@@ -438,7 +438,7 @@ export default function OrderTrackingPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-forest-600" /> ডেলিভারি ঠিকানা
+                  <MapPin className="w-4 h-4 text-orange-500" /> ডেলিভারি ঠিকানা
                 </h3>
                 <p className="font-semibold text-gray-800 text-sm">{order.address?.fullName}</p>
                 <p className="text-gray-500 text-xs mt-1">{order.address?.fullAddress}</p>
@@ -449,7 +449,7 @@ export default function OrderTrackingPage() {
 
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-forest-600" /> পেমেন্ট
+                  <CreditCard className="w-4 h-4 text-orange-500" /> পেমেন্ট
                 </h3>
                 <p className="text-sm text-gray-700">
                   <span className="font-semibold">পদ্ধতি:</span>{' '}
@@ -483,7 +483,7 @@ export default function OrderTrackingPage() {
         {!order && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-              <Truck className="w-4 h-4 text-forest-600" /> ডেলিভারি চার্জ তালিকা
+              <Truck className="w-4 h-4 text-orange-500" /> ডেলিভারি চার্জ তালিকা
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -504,7 +504,7 @@ export default function OrderTrackingPage() {
                   ].map((row) => (
                     <tr key={row.area} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                       <td className="py-2.5 text-gray-700 font-medium">{row.area}</td>
-                      <td className="py-2.5 text-right font-bold text-forest-700">{row.charge}</td>
+                      <td className="py-2.5 text-right font-bold text-orange-600">{row.charge}</td>
                       <td className="py-2.5 text-right text-green-600 font-semibold text-xs">{row.free}</td>
                     </tr>
                   ))}

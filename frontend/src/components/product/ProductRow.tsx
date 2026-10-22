@@ -60,7 +60,7 @@ export function ProductRow({
           <div className="mt-4 flex justify-center md:hidden">
             <Link
               href={href}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-forest-700 hover:text-forest-800 bg-forest-50 hover:bg-forest-100 border border-forest-200 px-4 py-2 rounded-xl transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:text-orange-700 bg-forest-50 hover:bg-forest-100 border border-forest-200 px-4 py-2 rounded-xl transition-all"
             >
               সব দেখুন
               <ArrowRight className="w-3.5 h-3.5" />

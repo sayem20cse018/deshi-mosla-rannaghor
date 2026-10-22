@@ -53,7 +53,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
               'w-9 h-9 rounded-xl text-sm font-medium transition-colors',
               page === p
                 ? 'bg-brand-700 text-white shadow-sm'
-                : 'border border-gray-200 text-gray-700 hover:border-brand-300 hover:bg-brand-50',
+                : 'border border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50',
             )}
             aria-current={page === p ? 'page' : undefined}
           >

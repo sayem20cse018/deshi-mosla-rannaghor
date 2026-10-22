@@ -85,14 +85,14 @@ export function AccountSidebar({ onClose }: AccountSidebarProps) {
               className={cn(
                 'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors group',
                 active
-                  ? 'bg-brand-50 text-brand-700'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-brand-700',
+                  ? 'bg-orange-50 text-orange-700'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-orange-700',
               )}
             >
               <Icon
                 className={cn(
                   'w-4 h-4 flex-shrink-0',
-                  active ? 'text-brand-600' : 'text-gray-400 group-hover:text-brand-500',
+                  active ? 'text-orange-600' : 'text-gray-400 group-hover:text-brand-500',
                 )}
               />
               <span className="flex-1">{label}</span>

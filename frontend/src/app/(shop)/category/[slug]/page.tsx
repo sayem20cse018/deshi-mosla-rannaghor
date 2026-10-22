@@ -84,7 +84,7 @@ export default function CategoryPage() {
                 <Link
                   key={child.slug}
                   href={`/category/${child.slug}`}
-                  className="text-sm bg-brand-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded-full hover:bg-brand-100 transition-colors font-medium"
+                  className="text-sm bg-orange-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded-full hover:bg-brand-100 transition-colors font-medium"
                 >
                   {child.name}
                 </Link>

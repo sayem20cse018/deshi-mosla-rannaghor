@@ -220,7 +220,7 @@ export function FilterSidebar({
                   'text-[11px] px-2.5 py-1 rounded-lg border transition-colors',
                   filters.minPrice === mn
                     ? 'bg-[#f0fdf4] border-[#0f4c2a]/30 text-[#0f4c2a] font-bold'
-                    : 'border-gray-200 text-gray-600 hover:border-brand-200',
+                    : 'border-gray-200 text-gray-600 hover:border-orange-200',
                 )}
               >
                 {mn === 0 ? `৳০–৳${mx}` : mx === 99999 ? `৳${mn}+` : `৳${mn}–৳${mx}`}
@@ -242,12 +242,12 @@ export function FilterSidebar({
                   onChange={() =>
                     update({ brand: filters.brand === brand.slug ? undefined : brand.slug })
                   }
-                  className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                  className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-400"
                 />
                 <span
                   className={cn(
-                    'text-sm group-hover:text-brand-700 transition-colors',
-                    filters.brand === brand.slug ? 'text-brand-700 font-medium' : 'text-gray-700',
+                    'text-sm group-hover:text-orange-700 transition-colors',
+                    filters.brand === brand.slug ? 'text-orange-700 font-medium' : 'text-gray-700',
                   )}
                 >
                   {brand.name}
@@ -303,7 +303,7 @@ export function FilterSidebar({
                 onChange={() =>
                   update({ stockStatus: filters.stockStatus === value ? undefined : value })
                 }
-                className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-400"
               />
               <span className={cn('text-sm', color)}>{label}</span>
             </label>
@@ -318,7 +318,7 @@ export function FilterSidebar({
             type="checkbox"
             checked={!!filters.hasDiscount}
             onChange={() => update({ hasDiscount: filters.hasDiscount ? undefined : true })}
-            className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+            className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-400"
           />
           <span className="text-sm text-gray-700">শুধু ছাড়ের পণ্য দেখান</span>
         </label>

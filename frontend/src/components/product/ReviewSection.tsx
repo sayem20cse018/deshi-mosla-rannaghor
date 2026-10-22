@@ -175,7 +175,7 @@ function ReviewForm({
         <button
           type="submit"
           disabled={mutation.isPending || !rating}
-          className="flex-1 flex items-center justify-center gap-2 bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-white font-bold py-2.5 rounded-xl text-sm transition-all"
+          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold py-2.5 rounded-xl text-sm transition-all"
         >
           {mutation.isPending
             ? <><Loader2 className="w-4 h-4 animate-spin" /> জমা হচ্ছে...</>
@@ -207,7 +207,7 @@ function ReviewCard({ review, currentUserId, onEdit, onDelete }: {
               width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
           ) : (
             <div className="w-9 h-9 rounded-full bg-forest-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-forest-700 font-bold text-sm">
+              <span className="text-orange-600 font-bold text-sm">
                 {review.user?.name?.charAt(0) ?? '?'}
               </span>
             </div>
@@ -216,7 +216,7 @@ function ReviewCard({ review, currentUserId, onEdit, onDelete }: {
             <div className="flex items-center gap-1.5">
               <p className="font-semibold text-gray-900 text-sm">{review.user?.name}</p>
               {isOwn && (
-                <span className="text-[9px] font-bold bg-forest-50 text-forest-600 border border-forest-200 px-1.5 py-0.5 rounded-full">
+                <span className="text-[9px] font-bold bg-forest-50 text-orange-500 border border-forest-200 px-1.5 py-0.5 rounded-full">
                   আপনার রিভিউ
                 </span>
               )}
@@ -235,7 +235,7 @@ function ReviewCard({ review, currentUserId, onEdit, onDelete }: {
           {isOwn && (
             <div className="flex items-center gap-1 ml-1">
               <button onClick={() => onEdit(review)}
-                className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-forest-600 hover:bg-forest-50 rounded-lg transition-colors">
+                className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-orange-500 hover:bg-forest-50 rounded-lg transition-colors">
                 <Edit3 className="w-3.5 h-3.5" />
               </button>
               <button onClick={() => onDelete(review.id)}
@@ -399,7 +399,7 @@ export function ReviewSection({
 
             {reviews.length > 5 && (
               <button onClick={() => setShowAll((s) => !s)}
-                className="w-full py-3 border border-gray-200 rounded-2xl text-sm font-semibold text-gray-600 hover:border-forest-300 hover:text-forest-700 transition-colors flex items-center justify-center gap-1.5">
+                className="w-full py-3 border border-gray-200 rounded-2xl text-sm font-semibold text-gray-600 hover:border-forest-300 hover:text-orange-600 transition-colors flex items-center justify-center gap-1.5">
                 {showAll
                   ? <><ChevronUp className="w-4 h-4" /> কম দেখুন</>
                   : <><ChevronDown className="w-4 h-4" /> আরও {reviews.length - 5} টি রিভিউ</>

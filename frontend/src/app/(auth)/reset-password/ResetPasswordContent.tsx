@@ -65,7 +65,7 @@ export default function ResetPasswordContent() {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {done ? (
             <div className="text-center py-4">
-              <CheckCircle className="w-16 h-16 text-brand-600 mx-auto mb-4" />
+              <CheckCircle className="w-16 h-16 text-orange-600 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-gray-900 mb-2">পাসওয়ার্ড পরিবর্তন হয়েছে!</h2>
               <p className="text-gray-500 text-sm mb-6">এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।</p>
               <Link href="/login" className="btn-primary px-8 py-3 inline-flex">
@@ -75,8 +75,8 @@ export default function ResetPasswordContent() {
           ) : (
             <>
               <div className="text-center mb-6">
-                <div className="w-14 h-14 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Lock className="w-7 h-7 text-brand-600" />
+                <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-7 h-7 text-orange-600" />
                 </div>
                 <h1 className="text-xl font-bold text-gray-900">নতুন পাসওয়ার্ড সেট করুন</h1>
                 <p className="text-gray-500 text-sm mt-1">{identifier}</p>

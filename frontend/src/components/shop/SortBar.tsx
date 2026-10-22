@@ -94,7 +94,7 @@ export function SortBar({
                   className={cn(
                     'w-full text-left px-4 py-2.5 text-sm transition-colors',
                     sortBy === opt.value
-                      ? 'bg-brand-50 text-brand-700 font-semibold'
+                      ? 'bg-orange-50 text-orange-700 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50',
                   )}
                 >

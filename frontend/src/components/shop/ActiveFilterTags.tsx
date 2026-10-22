@@ -47,7 +47,7 @@ export function ActiveFilterTags({ filters, search, onRemove, onClearAll }: Prop
         <button
           key={tag.key}
           onClick={() => onRemove(tag.key as any)}
-          className="flex items-center gap-1 bg-brand-50 text-brand-700 border border-brand-200 text-xs font-medium px-2.5 py-1 rounded-full hover:bg-brand-100 transition-colors"
+          className="flex items-center gap-1 bg-orange-50 text-orange-700 border border-orange-200 text-xs font-medium px-2.5 py-1 rounded-full hover:bg-brand-100 transition-colors"
         >
           {tag.label}
           <X className="w-3 h-3" />

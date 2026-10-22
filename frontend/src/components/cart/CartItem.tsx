@@ -57,7 +57,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
         <Link
           href={`/product/${product.slug}`}
           onClick={onLinkClick}
-          className="flex-shrink-0 w-[60px] h-[60px] rounded-xl overflow-hidden bg-white border border-gray-100 hover:border-brand-200 transition-colors"
+          className="flex-shrink-0 w-[60px] h-[60px] rounded-xl overflow-hidden bg-white border border-gray-100 hover:border-orange-200 transition-colors"
         >
           {product.primaryImage ? (
             <Image
@@ -68,7 +68,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl bg-brand-50">
+            <div className="w-full h-full flex items-center justify-center text-2xl bg-orange-50">
               🌶️
             </div>
           )}
@@ -79,7 +79,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
           <Link
             href={`/product/${product.slug}`}
             onClick={onLinkClick}
-            className="text-sm font-semibold text-gray-800 hover:text-brand-700 transition-colors line-clamp-2 leading-snug"
+            className="text-sm font-semibold text-gray-800 hover:text-orange-700 transition-colors line-clamp-2 leading-snug"
           >
             {product.name}
           </Link>
@@ -96,7 +96,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               <button
                 onClick={() => handleQtyChange(quantity - 1)}
                 disabled={quantity <= 1 || updating}
-                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-40 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-40 transition-colors"
                 aria-label="কমান"
               >
                 <Minus className="w-3 h-3" />
@@ -112,7 +112,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
               <button
                 onClick={() => handleQtyChange(quantity + 1)}
                 disabled={quantity >= maxQty || updating}
-                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-40 transition-colors"
+                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-40 transition-colors"
                 aria-label="বাড়ান"
               >
                 <Plus className="w-3 h-3" />
@@ -122,7 +122,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             {/* Line total + remove */}
             <div className="flex items-center gap-2">
               <div className="text-right">
-                <p className="text-sm font-bold text-brand-700">{formatPriceEn(lineTotal)}</p>
+                <p className="text-sm font-bold text-orange-700">{formatPriceEn(lineTotal)}</p>
                 {hasSaving && quantity > 1 && (
                   <p className="text-[10px] text-gray-400 line-through">
                     {formatPriceEn(originalLineTotal)}
@@ -150,13 +150,13 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
         'flex gap-4 bg-white rounded-2xl border p-4 transition-all duration-300',
         removing
           ? 'opacity-0 scale-98 border-red-100'
-          : 'border-gray-100 hover:border-brand-200 hover:shadow-sm',
+          : 'border-gray-100 hover:border-orange-200 hover:shadow-sm',
       )}
     >
       {/* Thumbnail */}
       <Link
         href={`/product/${product.slug}`}
-        className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-gray-100 hover:border-brand-300 transition-colors"
+        className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-gray-100 hover:border-orange-300 transition-colors"
       >
         {product.primaryImage ? (
           <Image
@@ -167,7 +167,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl bg-brand-50">
+          <div className="w-full h-full flex items-center justify-center text-4xl bg-orange-50">
             🌶️
           </div>
         )}
@@ -179,7 +179,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
           <div className="min-w-0">
             <Link
               href={`/product/${product.slug}`}
-              className="font-semibold text-gray-900 hover:text-brand-700 transition-colors leading-snug line-clamp-2 text-sm sm:text-base"
+              className="font-semibold text-gray-900 hover:text-orange-700 transition-colors leading-snug line-clamp-2 text-sm sm:text-base"
             >
               {product.name}
             </Link>
@@ -216,7 +216,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
         <div className="flex items-center justify-between mt-3">
           {/* Unit price */}
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-brand-700">
+            <span className="text-lg font-bold text-orange-700">
               {formatPriceEn(effectivePrice)}
             </span>
             {hasSaving && (
@@ -232,7 +232,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             <button
               onClick={() => handleQtyChange(quantity - 1)}
               disabled={quantity <= 1 || updating}
-              className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-30 transition-colors"
+              className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-30 transition-colors"
               aria-label="কমান"
             >
               <Minus className="w-4 h-4" />
@@ -248,7 +248,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
             <button
               onClick={() => handleQtyChange(quantity + 1)}
               disabled={quantity >= maxQty || updating}
-              className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-30 transition-colors"
+              className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-30 transition-colors"
               aria-label="বাড়ান"
             >
               <Plus className="w-4 h-4" />
@@ -259,7 +259,7 @@ export function CartItemRow({ item, onLinkClick, compact = false }: CartItemProp
           <div className="text-right min-w-[72px]">
             <p className="font-bold text-gray-900 text-base">{formatPriceEn(lineTotal)}</p>
             {hasSaving && (
-              <p className="text-xs text-brand-600 font-medium">
+              <p className="text-xs text-orange-600 font-medium">
                 সাশ্রয়: {formatPriceEn((product.price - effectivePrice) * quantity)}
               </p>
             )}

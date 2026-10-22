@@ -158,7 +158,7 @@ export default function OrderDetailPage() {
   if (isLoading)
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-forest-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
       </div>
     );
 
@@ -195,7 +195,7 @@ export default function OrderDetailPage() {
 
         {/* Back */}
         <Link href="/account/orders"
-          className="inline-flex items-center gap-1.5 text-sm text-forest-700 hover:text-forest-800 font-medium">
+          className="inline-flex items-center gap-1.5 text-sm text-orange-600 hover:text-orange-700 font-medium">
           <ArrowLeft className="w-4 h-4" /> অর্ডার তালিকা
         </Link>
 
@@ -217,7 +217,7 @@ export default function OrderDetailPage() {
                 STATUS_COLOR[data.status] ?? 'bg-gray-50 text-gray-600 border-gray-200')}>
                 {STATUS_LABEL[data.status] ?? data.status}
               </span>
-              <p className="font-black text-2xl text-forest-700">{formatPriceEn(data.totalAmount)}</p>
+              <p className="font-black text-2xl text-orange-600">{formatPriceEn(data.totalAmount)}</p>
               <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full',
                 data.paymentStatus === 'PAID'
                   ? 'bg-green-50 text-green-700'
@@ -235,7 +235,7 @@ export default function OrderDetailPage() {
                 {/* connector line */}
                 <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-100 z-0" />
                 <div
-                  className="absolute top-5 left-0 h-0.5 bg-forest-600 z-0 transition-all duration-700"
+                  className="absolute top-5 left-0 h-0.5 bg-orange-400 z-0 transition-all duration-700"
                   style={{ width: `${Math.max(0, (currentStep / (ORDER_STEPS.length - 1)) * 100)}%` }}
                 />
                 {ORDER_STEPS.map((step, i) => {
@@ -246,14 +246,14 @@ export default function OrderDetailPage() {
                     <div key={step.key} className="flex flex-col items-center gap-2 relative z-10 flex-1">
                       <div className={cn(
                         'w-10 h-10 rounded-full border-2 flex items-center justify-center bg-white transition-all duration-300',
-                        done ? 'border-forest-600 bg-forest-600 text-white'
-                          : curr ? 'border-forest-600 text-forest-600 ring-4 ring-forest-100'
+                        done ? 'border-orange-400 bg-orange-400 text-white'
+                          : curr ? 'border-orange-400 text-orange-500 ring-4 ring-forest-100'
                           : 'border-gray-200 text-gray-300',
                       )}>
                         {done ? <CheckCircle className="w-5 h-5" /> : <Icon className="w-4.5 h-4.5" />}
                       </div>
                       <p className={cn('text-[10px] text-center leading-tight whitespace-pre-line',
-                        done || curr ? 'text-forest-700 font-bold' : 'text-gray-400')}>
+                        done || curr ? 'text-orange-600 font-bold' : 'text-gray-400')}>
                         {step.label}
                       </p>
                       {historyMap[step.key] && (
@@ -272,13 +272,13 @@ export default function OrderDetailPage() {
               <div className="sm:hidden">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-bold text-gray-600">অগ্রগতি</p>
-                  <p className="text-xs text-forest-600 font-semibold">
+                  <p className="text-xs text-orange-500 font-semibold">
                     {currentStep + 1}/{ORDER_STEPS.length} ধাপ
                   </p>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-forest-600 rounded-full transition-all duration-700"
+                    className="h-full bg-orange-400 rounded-full transition-all duration-700"
                     style={{ width: `${Math.max(8, ((currentStep + 1) / ORDER_STEPS.length) * 100)}%` }}
                   />
                 </div>
@@ -321,7 +321,7 @@ export default function OrderDetailPage() {
           <div className="mt-4 flex gap-2.5 flex-wrap">
             <Link
               href={`/order-tracking?order=${data.orderNumber}`}
-              className="flex items-center gap-1.5 text-xs font-semibold text-forest-700 bg-forest-50 hover:bg-forest-100 border border-forest-200 px-3.5 py-2 rounded-xl transition-colors">
+              className="flex items-center gap-1.5 text-xs font-semibold text-orange-600 bg-forest-50 hover:bg-forest-100 border border-forest-200 px-3.5 py-2 rounded-xl transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> পাবলিক ট্র্যাক
             </Link>
             {canCancel && (
@@ -345,7 +345,7 @@ export default function OrderDetailPage() {
         {data.delivery && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-              <Truck className="w-4 h-4 text-forest-600" /> ডেলিভারি তথ্য
+              <Truck className="w-4 h-4 text-orange-500" /> ডেলিভারি তথ্য
             </h3>
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-xl p-3">
@@ -362,8 +362,8 @@ export default function OrderDetailPage() {
               )}
               {data.delivery.trackingNumber && (
                 <div className="bg-forest-50 border border-forest-100 rounded-xl p-3 sm:col-span-2">
-                  <p className="text-xs text-forest-600 mb-0.5">ট্র্যাকিং নম্বর</p>
-                  <p className="font-black text-forest-700 font-mono">{data.delivery.trackingNumber}</p>
+                  <p className="text-xs text-orange-500 mb-0.5">ট্র্যাকিং নম্বর</p>
+                  <p className="font-black text-orange-600 font-mono">{data.delivery.trackingNumber}</p>
                 </div>
               )}
             </div>
@@ -374,7 +374,7 @@ export default function OrderDetailPage() {
         {data.statusHistory && data.statusHistory.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h3 className="font-bold text-gray-900 text-sm mb-5 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-forest-600" /> অর্ডারের গতিবিধি
+              <Clock className="w-4 h-4 text-orange-500" /> অর্ডারের গতিবিধি
             </h3>
             <div className="relative">
               {data.statusHistory.map((h: any, i: number) => {
@@ -389,7 +389,7 @@ export default function OrderDetailPage() {
                         isCxl
                           ? 'bg-red-50 border-red-400 text-red-500'
                           : isLast
-                            ? 'bg-forest-100 border-forest-600 text-forest-600'
+                            ? 'bg-forest-100 border-orange-400 text-orange-500'
                             : 'bg-green-50 border-green-400 text-green-600',
                       )}>
                         {isCxl
@@ -404,7 +404,7 @@ export default function OrderDetailPage() {
                     {/* info */}
                     <div className={cn('flex-1 pt-1.5', !isLast && 'pb-5')}>
                       <p className={cn('font-bold text-sm',
-                        isCxl ? 'text-red-600' : isLast ? 'text-forest-700' : 'text-gray-700')}>
+                        isCxl ? 'text-red-600' : isLast ? 'text-orange-600' : 'text-gray-700')}>
                         {STATUS_LABEL[h.status] ?? h.status}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5">
@@ -429,7 +429,7 @@ export default function OrderDetailPage() {
         {/* ── Order items ── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-            <Package className="w-4 h-4 text-forest-600" /> পণ্য তালিকা
+            <Package className="w-4 h-4 text-orange-500" /> পণ্য তালিকা
           </h3>
           <div className="space-y-3">
             {data.items?.map((item: any) => (
@@ -455,7 +455,7 @@ export default function OrderDetailPage() {
             {[
               { label: 'সাবটোটাল', value: data.subtotal, color: 'text-gray-600' },
               ...(data.discountAmount > 0 ? [{ label: 'পণ্যে ছাড়', value: -data.discountAmount, color: 'text-green-600' }] : []),
-              ...(data.couponDiscount > 0 ? [{ label: 'কুপন ছাড়', value: -data.couponDiscount, color: 'text-forest-600' }] : []),
+              ...(data.couponDiscount > 0 ? [{ label: 'কুপন ছাড়', value: -data.couponDiscount, color: 'text-orange-500' }] : []),
               { label: 'ডেলিভারি চার্জ', value: data.deliveryCharge, color: data.deliveryCharge === 0 ? 'text-green-600' : 'text-gray-600' },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex justify-between text-sm">
@@ -467,7 +467,7 @@ export default function OrderDetailPage() {
             ))}
             <div className="flex justify-between font-black text-base border-t border-gray-100 pt-2 mt-1">
               <span>সর্বমোট</span>
-              <span className="text-forest-700 text-lg">{formatPriceEn(data.totalAmount)}</span>
+              <span className="text-orange-600 text-lg">{formatPriceEn(data.totalAmount)}</span>
             </div>
           </div>
         </div>
@@ -477,7 +477,7 @@ export default function OrderDetailPage() {
           {data.address && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-forest-600" /> ডেলিভারি ঠিকানা
+                <MapPin className="w-4 h-4 text-orange-500" /> ডেলিভারি ঠিকানা
               </h3>
               <p className="font-semibold text-gray-800 text-sm">{data.address.fullName}</p>
               <div className="text-gray-500 text-sm mt-1.5 space-y-0.5">
@@ -492,7 +492,7 @@ export default function OrderDetailPage() {
           {data.payment && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-forest-600" /> পেমেন্ট তথ্য
+                <CreditCard className="w-4 h-4 text-orange-500" /> পেমেন্ট তথ্য
               </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">

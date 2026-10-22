@@ -35,13 +35,13 @@ const CATEGORIES = [
 ];
 
 const PAYMENT = [
-  { label: 'COD',        bg: '#374151', color: '#d1d5db' },
-  { label: 'bKash',      bg: '#831843', color: '#fbcfe8' },
-  { label: 'Nagad',      bg: '#7c2d12', color: '#fed7aa' },
-  { label: 'Rocket',     bg: '#4c1d95', color: '#ddd6fe' },
-  { label: 'Visa',       bg: '#1e3a8a', color: '#bfdbfe' },
-  { label: 'Mastercard', bg: '#7f1d1d', color: '#fecaca' },
-  { label: 'SSL',        bg: '#14532d', color: '#bbf7d0' },
+  { label: 'COD',        bg: '#1f2937', color: '#d1fae5' },
+  { label: 'bKash',      bg: '#9d174d', color: '#fce7f3' },
+  { label: 'Nagad',      bg: '#b45309', color: '#fef3c7' },
+  { label: 'Rocket',     bg: '#5b21b6', color: '#ede9fe' },
+  { label: 'Visa',       bg: '#1d4ed8', color: '#dbeafe' },
+  { label: 'MC',         bg: '#991b1b', color: '#fee2e2' },
+  { label: 'SSL',        bg: '#065f46', color: '#d1fae5' },
 ];
 
 const FONT_BN = 'Noto Sans Bengali, sans-serif';
@@ -85,7 +85,7 @@ export function Footer() {
             <Link href="/" className="inline-flex items-center gap-3 group">
               <div className="relative w-11 h-11 flex-shrink-0">
                 <div className="absolute inset-0 rounded-[14px] group-hover:scale-105 transition-transform duration-200"
-                     style={{ background: 'linear-gradient(135deg,#0f4c2a,#1a6b3c)', boxShadow: '0 4px 12px rgba(15,76,42,0.4)' }} />
+                     style={{ background: 'linear-gradient(135deg,#ea580c,#c2410c)', boxShadow: '0 4px 12px rgba(15,76,42,0.4)' }} />
                 <div className="absolute inset-[3px] rounded-[10px] border border-white/20 flex items-center justify-center">
                   <span className="text-white font-black text-[15px] leading-none" style={{ fontFamily: FONT_BN }}>দম</span>
                 </div>
@@ -94,7 +94,7 @@ export function Footer() {
               <div>
                 <p className="text-white font-black text-[15px] leading-snug" style={{ fontFamily: FONT_BN }}>দেশি মসলার রান্নাঘর</p>
                 <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mt-0.5"
-                   style={{ color: '#4ade80', fontFamily: FONT_EN }}>Deshi Moslar Rannaghar</p>
+                   style={{ color: '#fed7aa', fontFamily: FONT_EN }}>Deshi Moslar Rannaghar</p>
               </div>
             </Link>
 
@@ -159,7 +159,7 @@ export function Footer() {
 
           {/* ── About col ── */}
           <div className="lg:col-span-2">
-            <ColTitle>About Amader™</ColTitle>
+            <ColTitle>About Us</ColTitle>
             <ul className="space-y-2.5">
               {ABOUT_LINKS.map(l => <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>)}
             </ul>

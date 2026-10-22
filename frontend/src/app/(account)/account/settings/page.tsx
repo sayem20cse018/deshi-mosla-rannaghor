@@ -76,7 +76,7 @@ export default function SettingsPage() {
       {/* Security */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-5">
-          <Shield className="w-5 h-5 text-brand-600" />
+          <Shield className="w-5 h-5 text-orange-600" />
           <h2 className="text-base font-bold text-gray-900">নিরাপত্তা</h2>
         </div>
         <div className="space-y-3">

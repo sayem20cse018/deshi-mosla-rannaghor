@@ -49,10 +49,10 @@ export function BrandStorySection() {
             {PILLARS.map(({ icon: Icon, title, desc }) => (
               <div
                 key={title}
-                className="bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-brand-200 hover:bg-brand-50 transition-colors"
+                className="bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-orange-200 hover:bg-orange-50 transition-colors"
               >
                 <div className="w-10 h-10 bg-brand-100 rounded-xl flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-brand-700" />
+                  <Icon className="w-5 h-5 text-orange-700" />
                 </div>
                 <h4 className="text-gray-800 font-semibold text-sm mb-1">{title}</h4>
                 <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>

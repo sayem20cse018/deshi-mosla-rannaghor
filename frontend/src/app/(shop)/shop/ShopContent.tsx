@@ -60,7 +60,7 @@ export default function ShopContent() {
       <div className="bg-white border-b border-gray-100">
         <div className="container mx-auto px-4 py-6">
           <nav className="text-xs text-gray-400 mb-2 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-brand-600">হোম</Link>
+            <Link href="/" className="hover:text-orange-600">হোম</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-gray-700 font-medium">শপ</span>
           </nav>
