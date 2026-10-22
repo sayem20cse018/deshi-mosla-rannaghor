@@ -13,6 +13,7 @@ import {
   PageHeader, AdminBtn, Modal, ConfirmDialog,
   FilterBar, Pagination, LoadingState, ErrorState, EmptyState, Badge,
 } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 
 // ── Form ──────────────────────────────────────────────────────────────────────
 
@@ -65,17 +66,16 @@ function TestimonialForm({ initial = BLANK, onSave, onClose, loading }: FormProp
         {field('Role / Location', 'role', 'text', 'e.g. Dhaka, Customer')}
       </div>
 
-      {field('Avatar URL', 'avatar', 'text', 'https://res.cloudinary.com/...')}
-
-      {/* Preview avatar */}
-      {form.avatar && (
-        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-            <Image src={form.avatar} alt={form.name ?? ''} width={48} height={48} className="w-full h-full object-cover" />
-          </div>
-          <p className="text-sm text-gray-600">Avatar preview</p>
-        </div>
-      )}
+      <div>
+        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Photo</label>
+        <UploadButton
+          value={form.avatar ?? ''}
+          onChange={(url) => set('avatar', url)}
+          folder="testimonials"
+          label="Upload Avatar"
+          aspectRatio="square"
+        />
+      </div>
 
       {/* Rating */}
       <div>

@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 import { useCreateCollection } from '@/hooks/useAdminCollections';
 import { AdminBtn } from '@/components/admin/ui';
 

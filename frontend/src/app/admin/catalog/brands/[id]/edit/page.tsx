@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useAdminBrand, useUpdateBrand } from '@/hooks/useAdminBrands';
 import { AdminBtn, LoadingState, ErrorState } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 
 export default function EditBrandPage() {
   const params    = useParams<{ id: string }>();
@@ -123,8 +124,14 @@ export default function EditBrandPage() {
               </div>
             </div>
             <div>
-              <label className={labelCls}>Logo URL</label>
-              <input value={form.logo} onChange={set('logo')} placeholder="https://cdn.example.com/logo.png" className={inputCls} />
+              <label className={labelCls}>Logo</label>
+              <UploadButton
+                value={form.logo}
+                onChange={(url) => setForm((f) => ({ ...f, logo: url }))}
+                folder="brands"
+                label="Upload Brand Logo"
+                aspectRatio="square"
+              />
             </div>
             <div>
               <label className={labelCls}>Description</label>

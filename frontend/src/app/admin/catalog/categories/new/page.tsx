@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useCreateCategory } from '@/hooks/useAdminCategories';
 import { AdminBtn } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 import api from '@/lib/api';
 
 function generateSlug(name: string): string {
@@ -144,8 +145,14 @@ export default function NewCategoryPage() {
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Image URL</label>
-                <input value={form.image} onChange={set('image')} placeholder="https://..." className={inputCls} />
+                <label className={labelCls}>Image</label>
+                <UploadButton
+                  value={form.image}
+                  onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+                  folder="categories"
+                  label="Upload Category Image"
+                  aspectRatio="wide"
+                />
               </div>
             </div>
             <div>

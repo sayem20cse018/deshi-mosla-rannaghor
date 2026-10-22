@@ -7,6 +7,7 @@ import {
   RefreshCw, X, Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 import {
   useAdminHomepageSections, useUpsertHomepageSection,
   useToggleHomepageSection, useReorderHomepageSections,

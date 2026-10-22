@@ -13,6 +13,7 @@ import {
   useRemoveCollectionProduct,
 } from '@/hooks/useAdminCollections';
 import { AdminBtn, LoadingState, ErrorState, ConfirmDialog } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 import api from '@/lib/api';
 
 interface ProductSearchResult {
@@ -196,12 +197,24 @@ export default function EditCollectionPage() {
           <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4 shadow-sm">
             <h3 className="font-black text-gray-900 text-sm border-b border-gray-50 pb-3">Media</h3>
             <div>
-              <label className={labelCls}>Cover Image URL</label>
-              <input value={form.image} onChange={set('image')} placeholder="https://..." className={inputCls} />
+              <label className={labelCls}>Cover Image</label>
+              <UploadButton
+                value={form.image}
+                onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+                folder="collections"
+                label="Upload Cover Image"
+                aspectRatio="wide"
+              />
             </div>
             <div>
-              <label className={labelCls}>Banner Image URL</label>
-              <input value={form.banner} onChange={set('banner')} placeholder="https://..." className={inputCls} />
+              <label className={labelCls}>Banner Image</label>
+              <UploadButton
+                value={form.banner}
+                onChange={(url) => setForm((f) => ({ ...f, banner: url }))}
+                folder="collections"
+                label="Upload Banner Image"
+                aspectRatio="wide"
+              />
             </div>
           </div>
 

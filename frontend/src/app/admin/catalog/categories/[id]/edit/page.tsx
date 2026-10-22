@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useAdminCategory, useUpdateCategory } from '@/hooks/useAdminCategories';
 import { AdminBtn, LoadingState, ErrorState } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 import api from '@/lib/api';
 
 interface ParentOption { id: string; name: string; }
@@ -156,8 +157,14 @@ export default function EditCategoryPage() {
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Image URL</label>
-                <input value={form.image} onChange={set('image')} placeholder="https://..." className={inputCls} />
+                <label className={labelCls}>Image</label>
+              <UploadButton
+                value={form.image}
+                onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+                folder="categories"
+                label="Upload Category Image"
+                aspectRatio="wide"
+              />
               </div>
             </div>
             <div>

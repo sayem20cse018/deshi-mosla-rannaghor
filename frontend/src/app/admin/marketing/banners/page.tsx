@@ -6,6 +6,7 @@ import { Plus, Edit2, Trash2, ImageIcon, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAdminBanners, useCreateBanner, useUpdateBanner, useDeleteBanner, AdminBanner } from '@/hooks/useMarketing';
 import { PageHeader, AdminBtn, Modal, ConfirmDialog, LoadingState, ErrorState, EmptyState, Badge } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 
 const POSITIONS = ['HERO','PROMOTIONAL','CATEGORY_TOP','HOMEPAGE_MIDDLE','SIDEBAR'];
 const BLANK: Partial<AdminBanner> = { title:'', titleEn:'', subtitle:'', image:'', imageMobile:'', link:'', buttonText:'', position:'HERO', isActive:true, sortOrder:0, startDate:'', endDate:'' };
@@ -47,13 +48,28 @@ function BannerForm({ initial = BLANK, onSave, onClose, loading }: { initial?:Pa
         {field('Title (EN)', 'titleEn')}
       </div>
       {field('Subtitle', 'subtitle')}
-      {field('Desktop Image URL *', 'image', 'text', 'https://res.cloudinary.com/...')}
-      {f.image && (
-        <div className="relative w-full h-28 rounded-xl overflow-hidden bg-gray-100">
-          <Image src={f.image} alt="preview" fill className="object-cover" sizes="600px" />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Desktop Image *</label>
+          <UploadButton
+            value={f.image ?? ''}
+            onChange={(url) => set('image', url)}
+            folder="banners"
+            label="Upload Desktop Image"
+            aspectRatio="wide"
+          />
         </div>
-      )}
-      {field('Mobile Image URL', 'imageMobile', 'text', 'Optional mobile version')}
+        <div>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Mobile Image</label>
+          <UploadButton
+            value={f.imageMobile ?? ''}
+            onChange={(url) => set('imageMobile', url)}
+            folder="banners"
+            label="Upload Mobile Image"
+            aspectRatio="tall"
+          />
+        </div>
+      </div>
       {field('Link URL', 'link', 'text', '/shop')}
       {field('Button Text', 'buttonText', 'text', 'Shop Now')}
       <div className="grid grid-cols-2 gap-3">

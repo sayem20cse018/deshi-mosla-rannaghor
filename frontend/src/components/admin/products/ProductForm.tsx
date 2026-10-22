@@ -1,18 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Save, ArrowLeft, Package, Tag, DollarSign,
   Image as ImageIcon, Star, CheckSquare, X, Plus, Layers, Pencil, Trash2,
+  Upload, Loader2, GripVertical,
 } from 'lucide-react';
 import { cn, formatPriceEn } from '@/lib/utils';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useAdminProducts';
 import { useCategories } from '@/hooks/useCategories';
 import { AdminBtn, ConfirmDialog } from '@/components/admin/ui';
+import { useUploadMedia, useUploadProgress, useBulkUploadMedia } from '@/hooks/useMedia';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
+import Image from 'next/image';
 
 interface ProductFormProps {
   initialData?: Record<string, unknown>;
@@ -74,6 +77,67 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     name: '', sku: '', price: '', salePrice: '', stock: '0', weight: '', isActive: true, sortOrder: '0',
   });
   const [showVariantForm, setShowVariantForm] = useState(false);
+
+  // ── Image state ────────────────────────────────────────────────────────────
+  type ProductImage = { id: string; url: string; altText?: string; isPrimary?: boolean; sortOrder?: number };
+  const [images, setImages] = useState<ProductImage[]>(() =>
+    Array.isArray(initialData?.images) ? (initialData.images as ProductImage[]) : []
+  );
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+  const { progress, setFileProgress, clearProgress } = useUploadProgress();
+  const uploadMut = useUploadMedia(setFileProgress);
+  const imgInputRef = React.useRef<HTMLInputElement>(null);
+
+  async function handleImageFiles(files: File[]) {
+    if (!isEdit || !initialData?.id) {
+      toast.error('Save the product first before uploading images');
+      return;
+    }
+    const images2 = files.filter(f => f.type.startsWith('image/'));
+    if (!images2.length) return;
+    setUploadingImages(true);
+    try {
+      for (const file of images2) {
+        const res = await uploadMut.mutateAsync({ file, folder: 'products' });
+        const url = res.data.secureUrl;
+        // Add to product via backend
+        const r = await api.post(`/products/${initialData.id as string}/images`, { url, isPrimary: images.length === 0 });
+        setImages((prev) => [...prev, r.data.data]);
+      }
+      toast.success(`${images2.length} image(s) uploaded`);
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingImages(false);
+      clearProgress();
+    }
+  }
+
+  async function handleDeleteImage(imgId: string) {
+    if (!isEdit || !initialData?.id) return;
+    setDeletingImageId(imgId);
+    try {
+      await api.delete(`/products/images/${imgId}`);
+      setImages((prev) => prev.filter(i => i.id !== imgId));
+      toast.success('Image removed');
+    } catch {
+      toast.error('Failed to remove image');
+    } finally {
+      setDeletingImageId(null);
+    }
+  }
+
+  async function handleSetPrimary(imgId: string) {
+    if (!isEdit || !initialData?.id) return;
+    try {
+      await api.patch(`/products/${initialData.id as string}/images/${imgId}/primary`);
+      setImages((prev) => prev.map(i => ({ ...i, isPrimary: i.id === imgId })));
+      toast.success('Primary image set');
+    } catch {
+      toast.error('Failed');
+    }
+  }
 
   const [form, setForm] = useState({
     name:          (initialData?.name as string)         ?? '',
@@ -493,32 +557,116 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
           {/* Images */}
           {tab === 'images' && (
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-              <h3 className="font-black text-gray-900 text-sm border-b border-gray-50 pb-3 mb-4">Product Images</h3>
-              {isEdit && Array.isArray(initialData?.images) && (initialData.images as unknown[]).length > 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-5">
+              <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                <h3 className="font-black text-gray-900 text-sm">Product Images</h3>
+                <AdminBtn
+                  type="button" size="sm" variant="secondary"
+                  icon={uploadingImages ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                  loading={uploadingImages}
+                  onClick={() => imgInputRef.current?.click()}
+                >
+                  {uploadingImages ? 'Uploading...' : 'Upload Images'}
+                </AdminBtn>
+              </div>
+
+              {/* Hidden multi-file input */}
+              <input
+                ref={imgInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files) handleImageFiles(Array.from(e.target.files));
+                  e.target.value = '';
+                }}
+              />
+
+              {/* Drag & drop zone */}
+              <div
+                className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-orange-300 hover:bg-orange-50/30 transition-all cursor-pointer"
+                onClick={() => imgInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const files = Array.from(e.dataTransfer.files);
+                  handleImageFiles(files);
+                }}
+              >
+                <Upload className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-gray-500">Click or drag images here to upload</p>
+                <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP — Max 10MB each — Multiple files supported</p>
+                {!isEdit && (
+                  <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-1.5 mt-3 inline-block font-semibold">
+                    Save the product first to enable image upload
+                  </p>
+                )}
+              </div>
+
+              {/* Upload progress */}
+              {uploadingImages && Object.keys(progress).length > 0 && (
+                <div className="space-y-2">
+                  {Object.entries(progress).map(([name, pct]) => (
+                    <div key={name}>
+                      <div className="flex justify-between text-xs text-gray-600 mb-1">
+                        <span className="truncate max-w-[200px]">{name}</span>
+                        <span className="font-semibold">{pct}%</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-orange-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Image grid */}
+              {images.length > 0 ? (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {(initialData.images as Array<{ id: string; url: string; altText?: string; isPrimary?: boolean }>).map((img) => (
-                    <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img.url} alt={img.altText || ''} className="w-full h-full object-cover" />
+                  {images.map((img) => (
+                    <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden border-2 border-gray-100 hover:border-orange-300 transition-colors">
+                      <Image
+                        src={img.url}
+                        alt={img.altText ?? ''}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 33vw, 25vw"
+                      />
                       {img.isPrimary && (
-                        <div className="absolute top-1.5 left-1.5 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                        <div className="absolute top-1.5 left-1.5 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full z-10">
                           PRIMARY
                         </div>
                       )}
+                      {/* Overlay actions */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 z-10">
+                        {!img.isPrimary && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimary(img.id)}
+                            className="px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black rounded-lg transition-colors"
+                          >
+                            Set Primary
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(img.id)}
+                          disabled={deletingImageId === img.id}
+                          className="w-7 h-7 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          {deletingImageId === img.id
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Trash2 className="w-3.5 h-3.5" />
+                          }
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-200 rounded-2xl p-10 text-center">
-                  <ImageIcon className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <p className="font-semibold text-gray-500 text-sm">No images yet</p>
-                  <p className="text-xs text-gray-400 mt-1">Images can be added after creating the product via Cloudinary upload.</p>
-                </div>
+                <p className="text-xs text-gray-400 text-center py-4">No images yet. Upload above.</p>
               )}
-              <p className="text-xs text-gray-400 mt-4 bg-gray-50 rounded-xl p-3">
-                Upload images to Cloudinary and paste the URL in the image URL field. Full image management coming in next update.
-              </p>
             </div>
           )}
 

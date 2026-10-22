@@ -15,6 +15,7 @@ import {
   PageHeader, AdminBtn, Modal, ConfirmDialog,
   LoadingState, ErrorState, EmptyState, Badge,
 } from '@/components/admin/ui';
+import { UploadButton } from '@/components/admin/media/UploadButton';
 
 // ── Slide Form ────────────────────────────────────────────────────────────────
 
@@ -99,9 +100,29 @@ function SlideForm({ initial = BLANK, onSave, onClose, loading }: SlideFormProps
       </div>
       {field('CTA2 URL', 'cta2Url', 'text', '/recipes')}
 
-      {/* Images */}
-      {field('Desktop Image URL', 'image', 'text', 'https://res.cloudinary.com/...')}
-      {field('Mobile Image URL', 'imageMobile', 'text', 'https://res.cloudinary.com/...')}
+      {/* Images — direct upload */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Desktop Image</label>
+          <UploadButton
+            value={(form.image as string) ?? ''}
+            onChange={(url) => set('image', url)}
+            folder="banners"
+            label="Upload Desktop Image"
+            aspectRatio="wide"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Mobile Image</label>
+          <UploadButton
+            value={(form.imageMobile as string) ?? ''}
+            onChange={(url) => set('imageMobile', url)}
+            folder="banners"
+            label="Upload Mobile Image"
+            aspectRatio="tall"
+          />
+        </div>
+      </div>
 
       {/* Styling */}
       <div className="grid grid-cols-2 gap-3">
