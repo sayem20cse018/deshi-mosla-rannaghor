@@ -20,6 +20,7 @@ const EMOJI_PLACEHOLDER = '🌶️';
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   const hasImages = images.length > 0;
   const current = images[active];
@@ -31,10 +32,26 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     setActive((i) => (i === images.length - 1 ? 0 : i + 1));
   }
 
+  function onTouchStart(e: React.TouchEvent) {
+    setTouchStart(e.touches[0].clientX);
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStart === null) return;
+    const diff = touchStart - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) next(); else prev();
+    }
+    setTouchStart(null);
+  }
+
   return (
     <div className="space-y-3">
       {/* Main image */}
-      <div className="relative aspect-square bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 shadow-sm group">
+      <div
+        className="relative aspect-square bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 shadow-sm group"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {hasImages && current ? (
           <>
             <Image
@@ -96,7 +113,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               className={cn(
                 'flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all',
                 i === active
-                  ? 'border-forest-600 shadow-md'
+                  ? 'border-orange-500 shadow-md'
                   : 'border-gray-100 hover:border-gray-300',
               )}
               style={{ width: '72px', height: '72px' }}
@@ -128,7 +145,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               onClick={() => setLightbox(false)}
               className="absolute top-2 right-2 w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white"
             >
-              ✕
+              &#x2715;
             </button>
           </div>
         </div>

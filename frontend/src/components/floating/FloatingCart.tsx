@@ -41,7 +41,7 @@ export function FloatingCart() {
       className={[
         // desktop only, above WhatsApp button
         // WhatsApp is at bottom-20 (80px), cart sits higher to avoid overlap
-        'hidden md:block fixed right-4 z-40',
+        'hidden md:block fixed right-4 z-[45]',
         'transition-all duration-500 ease-out',
         show ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
       ].join(' ')}

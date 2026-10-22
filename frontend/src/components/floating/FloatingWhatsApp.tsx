@@ -23,7 +23,7 @@ export function FloatingWhatsApp() {
 
   return (
     /* Bottom-right, above BackToTop, hidden on xs (below md MobileNav would overlap) */
-    <div className="fixed right-4 bottom-20 z-40 flex flex-col items-end gap-2">
+    <div className="fixed right-4 bottom-20 z-[41] flex flex-col items-end gap-2">
       {/* ── Popup card ── */}
       <div
         className={cn(

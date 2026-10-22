@@ -117,17 +117,17 @@ export default function ProductDetailPage() {
       <div className="border-b border-gray-200/60 bg-white">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-xs text-gray-400" style={{ fontFamily: 'Manrope, Noto Sans Bengali, sans-serif' }}>
-            <Link href="/" className="hover:text-forest-600">
+            <Link href="/" className="hover:text-orange-500">
               হোম
             </Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/shop" className="hover:text-forest-600">
+            <Link href="/shop" className="hover:text-orange-500">
               শপ
             </Link>
             {product.category && (
               <>
                 <ChevronRight className="w-3 h-3" />
-                <Link href={`/category/${product.category.slug}`} className="hover:text-forest-600">
+                <Link href={`/category/${product.category.slug}`} className="hover:text-orange-500">
                   {product.category.name}
                 </Link>
               </>
@@ -155,7 +155,7 @@ export default function ProductDetailPage() {
                 </span>
               )}
               {product.isNewArrival && (
-                <span className="bg-forest-50 text-forest-700 border border-forest-100 text-xs font-bold px-2.5 py-1 rounded-full">
+                <span className="bg-orange-50 text-orange-600 border border-orange-100 text-xs font-bold px-2.5 py-1 rounded-full">
                   ✨ নতুন
                 </span>
               )}
@@ -183,16 +183,16 @@ export default function ProductDetailPage() {
             {product.reviewCount > 0 && (
               <div className="flex items-center gap-3">
                 <StarRating rating={product.avgRating} count={product.reviewCount} size="md" />
-                <a href="#reviews" className="text-sm text-forest-600 hover:underline">
+                <a href="#reviews" className="text-sm text-orange-500 hover:underline">
                   {product.reviewCount} টি রিভিউ
                 </a>
               </div>
             )}
 
             {/* Price */}
-            <div className="bg-gradient-to-r from-forest-50 to-white border border-forest-100/50 rounded-2xl p-4">
+            <div className="bg-gradient-to-r from-orange-50 to-white border border-orange-100/50 rounded-2xl p-4">
               <div className="flex items-end gap-3">
-                <span className="text-3xl font-black text-forest-700">
+                <span className="text-3xl font-black text-orange-600">
                   {formatPriceEn(effectivePrice)}
                 </span>
                 {discountPrice && (
@@ -242,7 +242,7 @@ export default function ProductDetailPage() {
                   </div>
                   <span className="text-sm text-gray-500">
                     মোট:{' '}
-                    <strong className="text-forest-700">
+                    <strong className="text-orange-600">
                       {formatPriceEn(effectivePrice * qty)}
                     </strong>
                   </span>
@@ -317,7 +317,7 @@ export default function ProductDetailPage() {
                     .writeText(window.location.href)
                     .then(() => toast.success('লিংক কপি হয়েছে'))
                 }
-                className="w-[54px] h-[54px] flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-forest-200 hover:text-forest-600 transition-colors"
+                className="w-[54px] h-[54px] flex-shrink-0 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:border-orange-200 hover:text-orange-500 transition-colors"
                 aria-label="শেয়ার"
               >
                 <Share2 className="w-4 h-4" />
@@ -333,8 +333,8 @@ export default function ProductDetailPage() {
                 { icon: Check, label: 'ক্যাশ অন ডেলিভারি', sub: 'সারাদেশে' },
               ].map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-2.5 bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
-                  <div className="w-8 h-8 bg-gradient-to-br from-forest-50 to-forest-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-forest-700" />
+                  <div className="w-8 h-8 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-4 h-4 text-orange-600" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-800 leading-tight">{label}</p>
@@ -357,7 +357,7 @@ export default function ProductDetailPage() {
                 className={cn(
                   'px-5 py-3 text-sm font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px',
                   activeTab === i
-                    ? 'text-forest-700 border-forest-600 font-bold'
+                    ? 'text-orange-600 border-orange-500 font-bold'
                     : 'text-gray-500 border-transparent hover:text-gray-700',
                 )}
               >
