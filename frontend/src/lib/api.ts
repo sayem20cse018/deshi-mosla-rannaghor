@@ -24,12 +24,17 @@ const GUEST_ALLOWED_PATTERNS = [
   '/cart',
   '/cart/',
   '/orders/guest',
+  '/orders/meta',
   '/products',
   '/categories',
   '/brands',
   '/coupons/validate',
   '/auth/me',
 ];
+
+// Pages where 401 should never trigger redirect (guest-accessible pages)
+const GUEST_PAGES = ['/checkout', '/cart', '/shop', '/category', '/product', '/order-tracking'];
+
 
 function isGuestAllowed(url: string): boolean {
   if (!url) return false;
@@ -49,10 +54,11 @@ api.interceptors.response.use(
 
       // Never redirect if already on login/admin pages
       const onLoginPage = pathname.startsWith('/login') || pathname.startsWith('/admin');
+      const onGuestPage = GUEST_PAGES.some((p) => pathname.startsWith(p));
       // Never redirect for guest-allowed endpoints (cart sync, product API etc.)
       const guestOk = isGuestAllowed(requestUrl);
 
-      if (!onLoginPage && !guestOk) {
+      if (!onLoginPage && !onGuestPage && !guestOk) {
         Cookies.remove('access_token');
         window.location.href = '/login?redirect=' + encodeURIComponent(pathname);
       }

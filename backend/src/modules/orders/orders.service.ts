@@ -599,6 +599,223 @@ export class OrdersService {
     };
   }
 
+
+  // -- Place Guest Order (no auth required) --
+  async placeGuestOrder(dto: CreateGuestOrderDto) {
+    const method   = dto.paymentMethod ?? SupportedPaymentMethod.CASH_ON_DELIVERY;
+    const isOnline = ONLINE_METHODS.has(method);
+
+    // Fetch and validate products
+    const productIds = dto.items.map((i) => i.productId);
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      include: {
+        images:    { where: { isPrimary: true }, take: 1 },
+        inventory: true,
+      },
+    });
+
+    if (products.length !== productIds.length) {
+      throw new BadRequestException('One or more products not found.');
+    }
+
+    // Stock validation + totals
+    let subtotal     = 0;
+    let itemDiscount = 0;
+
+    for (const orderItem of dto.items) {
+      const p = products.find((pr) => pr.id === orderItem.productId)!;
+      if (!p.isActive) throw new BadRequestException(`"${p.name}" is not available.`);
+      if (p.stockStatus === 'OUT_OF_STOCK') throw new BadRequestException(`"${p.name}" is out of stock.`);
+      const available = p.inventory?.availableStock ?? 0;
+      if (available < orderItem.quantity)
+        throw new BadRequestException(`"${p.name}" has only ${available} unit(s) available.`);
+      const orig = Number(p.price);
+      const eff  = p.discountPrice ? Number(p.discountPrice) : orig;
+      subtotal     += eff  * orderItem.quantity;
+      itemDiscount += (orig - eff) * orderItem.quantity;
+    }
+
+    // Coupon
+    let couponDiscount = 0;
+    let couponId: string | undefined;
+    if (dto.couponCode) {
+      const coupon = await this.prisma.coupon.findUnique({ where: { code: dto.couponCode.toUpperCase() } });
+      if (coupon && coupon.isActive && new Date() <= coupon.expiryDate) {
+        if (!coupon.minOrderAmount || subtotal >= Number(coupon.minOrderAmount)) {
+          if (coupon.discountType === 'PERCENTAGE') {
+            couponDiscount = (subtotal * Number(coupon.discountValue)) / 100;
+            if (coupon.maxDiscount) couponDiscount = Math.min(couponDiscount, Number(coupon.maxDiscount));
+          } else if (coupon.discountType === 'FIXED_AMOUNT') {
+            couponDiscount = Math.min(Number(coupon.discountValue), subtotal);
+          } else if (coupon.discountType === 'FREE_DELIVERY') {
+            couponDiscount = DEFAULT_DELIVERY_CHARGE;
+          }
+          couponId = coupon.id;
+        }
+      }
+    }
+
+    const afterCoupon    = subtotal - couponDiscount;
+    const isFreeDelivery = dto.couponCode
+      ? (await this.prisma.coupon.findUnique({ where: { code: dto.couponCode.toUpperCase() } }))?.discountType === 'FREE_DELIVERY'
+      : false;
+    const deliveryCharge = (afterCoupon >= FREE_DELIVERY_THRESHOLD || isFreeDelivery) ? 0 : DEFAULT_DELIVERY_CHARGE;
+    const totalAmount    = afterCoupon + deliveryCharge;
+
+    // Create guest address (userId = null)
+    const addr = await this.prisma.address.create({
+      data: {
+        userId:      null as any,
+        fullName:    dto.deliveryAddress.fullName,
+        phone:       dto.deliveryAddress.phone,
+        division:    dto.deliveryAddress.division,
+        district:    dto.deliveryAddress.district,
+        area:        dto.deliveryAddress.area,
+        fullAddress: dto.deliveryAddress.fullAddress,
+        postalCode:  dto.deliveryAddress.postalCode,
+        isDefault:   false,
+      },
+    });
+
+    const guestName  = dto.deliveryAddress.fullName;
+    const guestEmail = dto.deliveryAddress.email ?? '';
+    const guestPhone = dto.deliveryAddress.phone;
+
+    // Transaction
+    const order = await this.prisma.$transaction(async (tx) => {
+      let orderNumber = generateOrderNumber();
+      let attempt = 0;
+      while (attempt < 5) {
+        const exists = await tx.order.findUnique({ where: { orderNumber } });
+        if (!exists) break;
+        orderNumber = generateOrderNumber();
+        attempt++;
+      }
+
+      const newOrder = await tx.order.create({
+        data: {
+          orderNumber,
+          userId:          null as any,
+          addressId:       addr.id,
+          couponId,
+          status:          'PENDING',
+          subtotal,
+          discountAmount:  itemDiscount,
+          couponDiscount,
+          deliveryCharge,
+          totalAmount,
+          paymentMethod:   method as any,
+          paymentStatus:   isOnline ? 'PROCESSING' : 'PENDING',
+          deliveryNote:    dto.deliveryNote,
+          estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          items: {
+            create: dto.items.map((orderItem) => {
+              const p    = products.find((pr) => pr.id === orderItem.productId)!;
+              const orig = Number(p.price);
+              const eff  = p.discountPrice ? Number(p.discountPrice) : orig;
+              return {
+                productId:    p.id,
+                productName:  p.name,
+                productSku:   p.sku,
+                productImage: p.images?.[0]?.url ?? null,
+                quantity:     orderItem.quantity,
+                unitPrice:    eff,
+                discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
+                totalPrice:   eff * orderItem.quantity,
+              };
+            }),
+          },
+        },
+        include: { items: true, address: true },
+      });
+
+      await tx.orderStatusHistory.create({
+        data: { orderId: newOrder.id, status: 'PENDING', note: 'Guest order placed', createdBy: 'CUSTOMER' },
+      });
+      await tx.payment.create({
+        data: {
+          orderId:       newOrder.id,
+          amount:        totalAmount,
+          paymentMethod: method as any,
+          paymentStatus: isOnline ? 'PROCESSING' : 'PENDING',
+          codStatus:     !isOnline ? 'PENDING' : undefined,
+        },
+      });
+      await tx.delivery.create({
+        data: {
+          orderId:       newOrder.id,
+          status:        'PENDING',
+          deliveryCharge,
+          estimatedDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      // Decrease stock
+      for (const orderItem of dto.items) {
+        const p   = products.find((pr) => pr.id === orderItem.productId)!;
+        const inv = p.inventory;
+        if (!inv) continue;
+        const newAvailable = Math.max(0, inv.availableStock - orderItem.quantity);
+        await tx.inventory.update({
+          where: { productId: p.id },
+          data: { availableStock: newAvailable, soldQuantity: { increment: orderItem.quantity } },
+        });
+        await tx.inventoryLog.create({
+          data: {
+            inventoryId: inv.id,
+            changeQty:   -orderItem.quantity,
+            type:        'SALE',
+            reason:      `Guest Order #${orderNumber}`,
+            reference:   newOrder.id,
+          },
+        });
+        const newStatus = newAvailable === 0 ? 'OUT_OF_STOCK' : newAvailable <= inv.lowStockAlert ? 'LOW_STOCK' : 'IN_STOCK';
+        await tx.product.update({ where: { id: p.id }, data: { stockStatus: newStatus as any } });
+      }
+
+      if (couponId) {
+        await tx.coupon.update({ where: { id: couponId }, data: { usedCount: { increment: 1 } } });
+      }
+
+      return newOrder;
+    });
+
+    const fullOrder = await this.prisma.order.findUnique({
+      where: { id: order.id },
+      include: {
+        items:    true,
+        address:  true,
+        payment:  { select: { id: true, paymentMethod: true, paymentStatus: true, codStatus: true } },
+        delivery: { select: { status: true, estimatedDate: true } },
+      },
+    });
+
+    if (isOnline) {
+      const gatewayResult = await this.paymentsService.initiateSSLCommerzPayment('guest', {
+        orderId:         order.id,
+        paymentMethod:   method as any,
+        customerName:    guestName,
+        customerEmail:   guestEmail,
+        customerPhone:   guestPhone,
+        customerAddress: dto.deliveryAddress.fullAddress,
+      });
+      return {
+        success: true, requiresGateway: true,
+        message: 'Redirect to payment gateway',
+        gatewayUrl: gatewayResult.gatewayUrl,
+        transactionId: gatewayResult.transactionId,
+        data: { ...fullOrder, subtotal, totalAmount, deliveryCharge, discountAmount: itemDiscount, couponDiscount },
+      };
+    }
+
+    return {
+      success: true,
+      requiresGateway: false,
+      message: 'Order placed successfully!',
+      data: { ...fullOrder, subtotal, totalAmount, deliveryCharge, discountAmount: itemDiscount, couponDiscount },
+    };
+  }
   // -- Customer return request --
   async requestReturn(userId: string, orderId: string, reason: string) {
     const order = await this.prisma.order.findFirst({ where: { id: orderId, userId } });

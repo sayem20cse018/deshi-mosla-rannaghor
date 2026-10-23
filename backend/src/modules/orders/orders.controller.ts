@@ -13,7 +13,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 
 class CancelOrderDto {
-  @ApiPropertyOptional({ example: 'ভুলে অর্ডার দিয়েছিলাম' })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @MaxLength(500)
@@ -27,18 +27,26 @@ class CancelOrderDto {
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // ── Place order ───────────────────────────────────────
+  // ── Place order (authenticated) ───────────────────────
   @Post()
-  @ApiOperation({ summary: 'Place a new order (COD or online)' })
+  @ApiOperation({ summary: 'Place a new order (requires login)' })
   placeOrder(@CurrentUser('id') userId: string, @Body() dto: CreateOrderDto) {
     return this.ordersService.placeOrder(userId, dto);
   }
 
-  // ── Track by order number (public — no auth needed) ───
+  // ── Place guest order (NO auth required) ─────────────
+  @Public()
+  @Post('guest')
+  @ApiOperation({ summary: 'Place a guest order without authentication' })
+  placeGuestOrder(@Body() dto: CreateGuestOrderDto) {
+    return this.ordersService.placeGuestOrder(dto);
+  }
+
+  // ── Track by order number (public) ───────────────────
   @Public()
   @Get('track/:orderNumber')
   @ApiOperation({ summary: 'Track order by order number (public)' })
-  @ApiQuery({ name: 'phone', required: false, description: 'Phone for verification' })
+  @ApiQuery({ name: 'phone', required: false })
   trackOrder(
     @Param('orderNumber') orderNumber: string,
     @Query('phone') phone?: string,
@@ -54,7 +62,7 @@ export class OrdersController {
     return this.ordersService.getDeliveryCharges();
   }
 
-  // ── Calculate delivery charge for a district ──────────
+  // ── Calculate delivery charge (public) ────────────────
   @Public()
   @Get('meta/delivery-charge-calc')
   @ApiOperation({ summary: 'Calculate delivery charge for district + amount' })
@@ -85,7 +93,7 @@ export class OrdersController {
     return this.ordersService.cancelOrder(userId, orderId, dto.reason);
   }
 
-  // -- Customer return request --
+  // ── Return request (customer) ─────────────────────────
   @Patch(':id/return')
   @ApiOperation({ summary: 'Request return on a delivered order' })
   requestReturn(
@@ -96,7 +104,7 @@ export class OrdersController {
     return this.ordersService.requestReturn(userId, orderId, dto.reason ?? 'Return requested by customer');
   }
 
-  // -- Invoice data (authenticated) --
+  // ── Invoice data (authenticated) ─────────────────────
   @Get(':id/invoice')
   @ApiOperation({ summary: 'Get invoice data for an order' })
   getInvoice(@CurrentUser('id') userId: string, @Param('id') orderId: string) {
