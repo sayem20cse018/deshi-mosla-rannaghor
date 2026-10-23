@@ -18,5 +18,5 @@ RUN npm prune --production
 
 EXPOSE 3000
 
-# Run migrations then start (IF_NOT_EXISTS SQL is safe to re-run)
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
+# Resolve any failed migrations first, then deploy remaining, then start
+CMD ["sh", "-c", "npx prisma migrate resolve --rolled-back 20261021121449_add_collections_variants; npx prisma migrate deploy && node dist/src/main"]
