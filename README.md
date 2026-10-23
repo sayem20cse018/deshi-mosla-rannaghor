@@ -1,531 +1,606 @@
-﻿'use client';
+﻿# দেশি মসলার রান্নাঘর — Deshi Moslar Rannaghar
 
-import { useState } from 'react';
-import {
-  X,
-  ChevronLeft,
-  ChevronRight,
-  AlertTriangle,
-  Loader2,
-  Search,
-  SlidersHorizontal,
-  RefreshCw,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+**বাংলাদেশের বিশ্বস্ত অনলাইন মসলা ও গ্রোসারি শপ**
+Premium Bengali grocery e-commerce platform — 100% authentic deshi products, delivered to your door.
 
-// â”€â”€ Stat Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  change?: string;
-  positive?: boolean;
-  color?: string;
-}
+---
 
-export function StatCard({
-  title,
-  value,
-  icon,
-  change,
-  positive,
-  color = '#ea580c',
-}: StatCardProps) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-      <div className="flex items-start justify-between mb-4">
-        <p className="text-sm font-medium text-gray-500">{title}</p>
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center"
-          style={{ background: color + '15' }}
-        >
-          <div style={{ color }}>{icon}</div>
-        </div>
-      </div>
-      <p
-        className="text-2xl font-black text-gray-900"
-        style={{ fontFamily: 'Manrope,sans-serif' }}
-      >
-        {value}
-      </p>
-      {change && (
-        <p className={cn('text-xs font-medium mt-1', positive ? 'text-green-600' : 'text-red-500')}>
-          {positive ? '+' : ''}
-          {change}
-        </p>
-      )}
-    </div>
-  );
-}
+## সূচিপত্র (Table of Contents)
 
-// â”€â”€ Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'orange';
+- [প্রজেক্ট পরিচিতি](#প্রজেক্ট-পরিচিতি)
+- [প্রযুক্তি স্ট্যাক](#প্রযুক্তি-স্ট্যাক)
+- [বর্তমান অগ্রগতি](#বর্তমান-অগ্রগতি)
+- [Frontend Pages](#frontend-pages)
+- [Admin Panel](#admin-panel)
+- [Backend Modules](#backend-modules)
+- [Database Models](#database-models)
+- [Payment System](#payment-system)
+- [Delivery System](#delivery-system)
+- [প্রজেক্ট Structure](#প্রজেক্ট-structure)
+- [Setup ও Installation](#setup-ও-installation)
+- [Environment Variables](#environment-variables)
+- [Deployment](#deployment)
+- [অসম্পন্ন কাজ](#অসম্পন্ন-কাজ)
+- [ভবিষ্যৎ পরিকল্পনা](#ভবিষ্যৎ-পরিকল্পনা)
 
-const BADGE_STYLES: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-amber-100 text-amber-700',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
-  orange: 'bg-orange-100 text-orange-700',
-};
+---
 
-export function Badge({
-  children,
-  variant = 'default',
-}: {
-  children: React.ReactNode;
-  variant?: BadgeVariant;
-}) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold',
-        BADGE_STYLES[variant],
-      )}
-    >
-      {children}
-    </span>
-  );
-}
+## প্রজেক্ট পরিচিতি
 
-// â”€â”€ Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface Column<T> {
-  key: string;
-  label: string;
-  render?: (row: T) => React.ReactNode;
-  width?: string;
-}
+**দেশি মসলার রান্নাঘর** একটি সম্পূর্ণ বাংলাদেশি ই-কমার্স ওয়েবসাইট যেখানে দেশীয় মসলা, তেল, চাল, ডাল, মধু সহ সকল মুদি পণ্য অনলাইনে কেনা যায়। প্রজেক্টটিতে রয়েছে একটি আধুনিক customer-facing storefront এবং একটি সম্পূর্ণ admin panel।
 
-interface AdminTableProps<T> {
-  columns: Column<T>[];
-  data: T[];
-  loading?: boolean;
-  keyField: keyof T;
-}
+**মূল বৈশিষ্ট্য:**
+- Guest Checkout — login ছাড়াই পণ্য কেনা সম্ভব
+- Dynamic Category System — admin থেকে category তৈরি করলে frontend-এ automatically চলে আসে
+- Orange Brand Theme — সম্পূর্ণ custom orange branding
+- Bilingual — বাংলা প্রাইমারি, ইংরেজি সাপোর্ট
+- Mobile-first responsive design
+- Cloudinary image hosting
+- Multiple payment methods support
 
-export function AdminTable<T extends Record<string, unknown>>({
-  columns,
-  data,
-  loading,
-  keyField,
-}: AdminTableProps<T>) {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-7 h-7 animate-spin text-orange-500" />
-      </div>
-    );
-  }
+---
 
-  if (!data.length) {
-    return <EmptyState title="No records found" description="Try adjusting your filters." />;
-  }
+## প্রযুক্তি স্ট্যাক
 
-  return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-100">
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 border-b border-gray-100">
-          <tr>
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                className="text-left px-4 py-3 text-xs font-black text-gray-500 uppercase tracking-wider"
-                style={{ width: col.width }}
-              >
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-50">
-          {data.map((row) => (
-            <tr key={String(row[keyField])} className="hover:bg-gray-50 transition-colors">
-              {columns.map((col) => (
-                <td key={col.key} className="px-4 py-3 text-gray-700">
-                  {col.render ? col.render(row) : (row[col.key] as React.ReactNode)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+### Frontend
+| প্রযুক্তি | ব্যবহার |
+|---|---|
+| Next.js 16 (App Router) | React framework, SSR/CSR |
+| TypeScript | Type safety |
+| Tailwind CSS | Styling |
+| Radix UI | Accessible UI components |
+| TanStack Query v5 | Server state management |
+| Zustand | Client state (auth, cart) |
+| React Hook Form + Zod | Form validation |
+| Swiper.js | Image sliders/carousels |
+| Lucide React | Icons |
+| React Hot Toast | Notifications |
+| Axios | HTTP client |
 
-// â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface PaginationProps {
-  page: number;
-  totalPages: number;
-  total: number;
-  limit: number;
-  onChange: (page: number) => void;
-}
+### Backend
+| প্রযুক্তি | ব্যবহার |
+|---|---|
+| NestJS 10 | Node.js framework |
+| TypeScript | Type safety |
+| Prisma ORM | Database access |
+| PostgreSQL | Primary database |
+| JWT (Access + Refresh) | Authentication |
+| Passport.js | Auth strategies |
+| Cloudinary | Image upload/storage |
+| Multer | File handling |
+| Bcrypt | Password hashing |
+| Helmet | Security headers |
+| Express Rate Limit | Rate limiting |
+| Swagger | API documentation |
+| Class Validator | DTO validation |
 
-export function Pagination({ page, totalPages, total, limit, onChange }: PaginationProps) {
-  const from = Math.min((page - 1) * limit + 1, total);
-  const to = Math.min(page * limit, total);
+### Infrastructure
+| সার্ভিস | ব্যবহার |
+|---|---|
+| Railway | Backend hosting |
+| Vercel | Frontend hosting |
+| Neon (PostgreSQL) | Managed database |
+| Cloudinary | Media storage |
+| SSLCommerz | Payment gateway |
 
-  return (
-    <div className="flex items-center justify-between">
-      <p className="text-sm text-gray-500">
-        Showing{' '}
-        <span className="font-semibold text-gray-900">
-          {from}-{to}
-        </span>{' '}
-        of <span className="font-semibold text-gray-900">{total}</span>
-      </p>
-      <div className="flex items-center gap-1">
-        <button
-          onClick={() => onChange(page - 1)}
-          disabled={page <= 1}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-          const p = i + 1;
-          return (
-            <button
-              key={p}
-              onClick={() => onChange(p)}
-              className={cn(
-                'w-8 h-8 rounded-lg text-sm font-bold transition-colors',
-                p === page
-                  ? 'bg-orange-500 text-white'
-                  : 'border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600',
-              )}
-            >
-              {p}
-            </button>
-          );
-        })}
-        <button
-          onClick={() => onChange(page + 1)}
-          disabled={page >= totalPages}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  );
-}
+---
 
-// â”€â”€ Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface ModalProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-}
+## বর্তমান অগ্রগতি
 
-const MODAL_SIZE = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' };
+```
+সামগ্রিক সম্পন্নতা: ~72%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={cn('relative bg-white rounded-2xl shadow-2xl w-full', MODAL_SIZE[size])}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="font-black text-gray-900 text-base">{title}</h3>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-500 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="px-6 py-5">{children}</div>
-      </div>
-    </div>
-  );
-}
+Frontend UI/Pages        ████████████████████░░░  85%
+Admin Panel (UI)         ████████████████████░░░  80%
+Backend API              █████████████████░░░░░░  70%
+Database Schema          ███████████████████████  95%
+Payment Integration      ██████████░░░░░░░░░░░░░  40%
+Delivery System          ██████████████░░░░░░░░░  60%
+Deploy / Production      ████████████░░░░░░░░░░░  50%
+```
 
-// â”€â”€ Confirm Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface ConfirmDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: string;
-  loading?: boolean;
-  danger?: boolean;
-}
+---
 
-export function ConfirmDialog({
-  open,
-  onClose,
-  onConfirm,
-  title,
-  message,
-  loading,
-  danger,
-}: ConfirmDialogProps) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-        <div className="flex items-start gap-4 mb-4">
-          <div
-            className={cn(
-              'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0',
-              danger ? 'bg-red-100' : 'bg-orange-100',
-            )}
-          >
-            <AlertTriangle
-              className={cn('w-5 h-5', danger ? 'text-red-600' : 'text-orange-600')}
-            />
-          </div>
-          <div>
-            <h3 className="font-black text-gray-900 text-base">{title}</h3>
-            <p className="text-gray-500 text-sm mt-1">{message}</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={loading}
-            className={cn(
-              'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50',
-              danger ? 'bg-red-600 hover:bg-red-700' : 'bg-orange-500 hover:bg-orange-600',
-            )}
-          >
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+## Frontend Pages
 
-// â”€â”€ Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface DrawerProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-  side?: 'right' | 'left';
-  size?: string;
-}
+### Customer Storefront
 
-export function Drawer({
-  open,
-  onClose,
-  title,
-  children,
-  side = 'right',
-  size = '480px',
-}: DrawerProps) {
-  return (
-    <>
-      <div
-        onClick={onClose}
-        className={cn(
-          'fixed inset-0 bg-black/50 z-40 transition-opacity duration-300',
-          open ? 'opacity-100' : 'opacity-0 pointer-events-none',
-        )}
-      />
-      <div
-        className={cn(
-          'fixed top-0 h-full bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300',
-          side === 'right' ? 'right-0' : 'left-0',
-          open
-            ? 'translate-x-0'
-            : side === 'right'
-              ? 'translate-x-full'
-              : '-translate-x-full',
-        )}
-        style={{ width: size }}
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
-          <h3 className="font-black text-gray-900 text-base">{title}</h3>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-500 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
-      </div>
-    </>
-  );
-}
+| Page | Path | Status |
+|---|---|---|
+| Homepage | `/` | ✅ সম্পন্ন |
+| Shop (All Products) | `/shop` | ✅ সম্পন্ন |
+| Dynamic Category Page | `/category/[slug]` | ✅ সম্পন্ন |
+| All Categories | `/categories` | ✅ সম্পন্ন |
+| Product Detail | `/product/[slug]` | ✅ সম্পন্ন |
+| Cart | `/cart` | ✅ সম্পন্ন |
+| Checkout (Guest + Login) | `/checkout` | ✅ সম্পন্ন |
+| Order Confirmation | `/order/[id]/confirmation` | ✅ সম্পন্ন |
+| Payment Success | `/payment/success` | ✅ সম্পন্ন |
+| Payment Failed | `/payment/failed` | ✅ সম্পন্ন |
+| Payment Cancel | `/payment/cancel` | ✅ সম্পন্ন |
+| Order Tracking | `/order-tracking` | ✅ সম্পন্ন |
+| About Us | `/about` | ✅ সম্পন্ন |
+| Blog | `/blog` | ✅ UI সম্পন্ন |
+| FAQ | `/faq` | ✅ সম্পন্ন |
+| Privacy Policy | `/privacy-policy` | ✅ সম্পন্ন |
+| Return Policy | `/return-policy` | ✅ সম্পন্ন |
+| Terms & Conditions | `/terms` | ✅ সম্পন্ন |
 
-// â”€â”€ Empty State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface EmptyStateProps {
-  title: string;
-  description?: string;
-  action?: React.ReactNode;
-  icon?: React.ReactNode;
-}
+### Auth Pages
 
-export function EmptyState({ title, description, action, icon }: EmptyStateProps) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        {icon ?? <Search className="w-7 h-7 text-gray-400" />}
-      </div>
-      <h3 className="font-black text-gray-800 text-lg mb-2">{title}</h3>
-      {description && <p className="text-gray-500 text-sm max-w-xs mb-4">{description}</p>}
-      {action}
-    </div>
-  );
-}
+| Page | Path | Status |
+|---|---|---|
+| Login | `/login` | ✅ Orange theme |
+| Register | `/register` | ✅ সম্পন্ন |
+| Forgot Password | `/forgot-password` | ✅ সম্পন্ন |
+| Reset Password | `/reset-password` | ✅ সম্পন্ন |
 
-// â”€â”€ Loading State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-export function LoadingState({ message = 'Loading...' }: { message?: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3">
-      <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-      <p className="text-gray-500 text-sm">{message}</p>
-    </div>
-  );
-}
+### Account Pages (Logged-in users)
 
-// â”€â”€ Error State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-export function ErrorState({
-  message = 'Something went wrong.',
-  onRetry,
-}: {
-  message?: string;
-  onRetry?: () => void;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
-        <AlertTriangle className="w-7 h-7 text-red-500" />
-      </div>
-      <p className="text-gray-700 font-semibold">{message}</p>
-      {onRetry && (
-        <button
-          onClick={onRetry}
-          className="flex items-center gap-2 text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" /> Try Again
-        </button>
-      )}
-    </div>
-  );
-}
+| Page | Path | Status |
+|---|---|---|
+| Account Dashboard | `/account` | ✅ সম্পন্ন |
+| Profile Settings | `/account/profile` | ✅ সম্পন্ন |
+| My Orders | `/account/orders` | ✅ সম্পন্ন |
+| Order Detail | `/account/orders/[id]` | ✅ সম্পন্ন |
+| Wishlist | `/account/wishlist` | ✅ সম্পন্ন |
+| Addresses | `/account/addresses` | ✅ সম্পন্ন |
+| Coupons | `/account/coupons` | ✅ সম্পন্ন |
+| Payment History | `/account/payment-history` | ✅ সম্পন্ন |
+| Reviews | `/account/reviews` | ✅ সম্পন্ন |
+| Settings | `/account/settings` | ✅ সম্পন্ন |
 
-// â”€â”€ Search + Filter Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface FilterBarProps {
-  search: string;
-  onSearch: (v: string) => void;
-  onFilterToggle?: () => void;
-  placeholder?: string;
-  children?: React.ReactNode;
-}
+---
 
-export function FilterBar({
-  search,
-  onSearch,
-  onFilterToggle,
-  placeholder = 'Search...',
-  children,
-}: FilterBarProps) {
-  return (
-    <div className="flex items-center gap-3 flex-wrap">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => onSearch(e.target.value)}
-          placeholder={placeholder}
-          className="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 transition-all"
-        />
-      </div>
-      {children}
-      {onFilterToggle && (
-        <button
-          onClick={onFilterToggle}
-          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:border-orange-300 hover:text-orange-600 transition-colors"
-        >
-          <SlidersHorizontal className="w-4 h-4" /> Filters
-        </button>
-      )}
-    </div>
-  );
-}
+## Admin Panel
 
-// â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface PageHeaderProps {
-  title: string;
-  description?: string;
-  action?: React.ReactNode;
-}
+Admin panel-এ access: `/admin` — শুধুমাত্র authenticated admin users।
 
-export function PageHeader({ title, description, action }: PageHeaderProps) {
-  return (
-    <div className="flex items-start justify-between gap-4 mb-6">
-      <div>
-        <h1 className="text-2xl font-black text-gray-900">{title}</h1>
-        {description && <p className="text-gray-500 text-sm mt-1">{description}</p>}
-      </div>
-      {action && <div className="flex-shrink-0">{action}</div>}
-    </div>
-  );
-}
+### Catalog Management
 
-// â”€â”€ Admin Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-interface AdminBtnProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-  loading?: boolean;
-  icon?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
-}
+| Section | Features | Status |
+|---|---|---|
+| **Products** | Create/Edit/Delete, Image gallery upload, Variants, SEO, Stock | ✅ সম্পন্ন |
+| **Categories** | Create/Edit, Banner upload, Description, Icon, Active/Inactive, Nav order | ✅ সম্পন্ন |
+| **Brands** | Create/Edit/Delete, Logo upload | ✅ সম্পন্ন |
+| **Collections** | Create/Edit, Products assign | ✅ সম্পন্ন |
+| **Media Library** | Upload, Browse, Delete images | ✅ সম্পন্ন |
+| **Tags** | Create/manage product tags | ✅ UI সম্পন্ন |
 
-const BTN_VARIANT = {
-  primary: 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm shadow-orange-500/20',
-  secondary: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200',
-  danger: 'bg-red-600 hover:bg-red-700 text-white',
-  ghost: 'text-gray-600 hover:bg-gray-100',
-};
+### Order Management
 
-const BTN_SIZE = {
-  sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2.5 text-sm',
-  lg: 'px-6 py-3 text-base',
-};
+| Section | Features | Status |
+|---|---|---|
+| All Orders | List, Filter, Search, Detail drawer | ✅ সম্পন্ন |
+| Pending / Confirmed / Processing | Status-filtered views | ✅ সম্পন্ন |
+| Shipped / Delivered / Cancelled | Status-filtered views | ✅ সম্পন্ন |
+| Refunds & Returns | Refund/return management | ✅ UI সম্পন্ন |
+| Order Status Update | One-click status change | ✅ সম্পন্ন |
 
-export function AdminBtn({
-  variant = 'primary',
-  loading,
-  icon,
-  size = 'md',
-  children,
-  className,
-  disabled,
-  ...props
-}: AdminBtnProps) {
-  return (
-    <button
-      {...props}
-      disabled={disabled || loading}
-      className={cn(
-        'inline-flex items-center gap-2 rounded-xl font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed',
-        BTN_VARIANT[variant],
-        BTN_SIZE[size],
-        className,
-      )}
-    >
-      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : icon}
-      {children}
-    </button>
-  );
-}
+### Customer Management
+
+| Section | Features | Status |
+|---|---|---|
+| Customers | List, Search, View details | ✅ সম্পন্ন |
+| Reviews | Manage product reviews | ✅ সম্পন্ন |
+| Wishlists | Customer wishlist overview | ✅ সম্পন্ন |
+
+### Inventory Management
+
+| Section | Features | Status |
+|---|---|---|
+| Inventory Dashboard | Stock overview | ✅ সম্পন্ন |
+| Low Stock Alerts | Products with low quantity | ✅ সম্পন্ন |
+| Stock Adjustments | Manual stock update | ✅ সম্পন্ন |
+| Inventory History | Log of all changes | ✅ সম্পন্ন |
+
+### Marketing
+
+| Section | Features | Status |
+|---|---|---|
+| Coupons | Create discount codes, %, fixed | ✅ সম্পন্ন |
+| Banners | Homepage/category banners | ✅ সম্পন্ন |
+| Offers | Special offers management | ✅ UI সম্পন্ন |
+| Promotions | Promotional campaigns | ✅ UI সম্পন্ন |
+| Newsletter | Subscriber management | ✅ UI সম্পন্ন |
+
+### Content Management
+
+| Section | Features | Status |
+|---|---|---|
+| Hero Slides | Homepage slider | ✅ সম্পন্ন |
+| Homepage Sections | CMS for home page | ✅ সম্পন্ন |
+| Blog | Blog post management | ✅ UI সম্পন্ন |
+| Recipes | Ranna recipe management | ✅ UI সম্পন্ন |
+| FAQs | Q&A management | ✅ সম্পন্ন |
+| Testimonials | Customer review showcase | ✅ সম্পন্ন |
+| Static Pages | About, Terms etc. | ✅ UI সম্পন্ন |
+
+### Delivery Management
+
+| Section | Features | Status |
+|---|---|---|
+| Delivery Charges | Zone-based pricing | ✅ সম্পন্ন |
+| Delivery Zones | Dhaka/outside zones | ✅ সম্পন্ন |
+| Delivery Providers | Pathao, Steadfast etc. | ✅ UI সম্পন্ন |
+| Delivery Settings | General config | ✅ সম্পন্ন |
+
+### Payment Management
+
+| Section | Features | Status |
+|---|---|---|
+| Transactions | All payment logs | ✅ সম্পন্ন |
+| COD Orders | Cash on delivery overview | ✅ সম্পন্ন |
+| Online Payments | SSLCommerz transactions | ⚠️ Test mode |
+| Payment Settings | Gateway config | ✅ সম্পন্ন |
+
+### Reports
+
+| Section | Status |
+|---|---|
+| Sales Report | ✅ UI সম্পন্ন |
+| Orders Report | ✅ UI সম্পন্ন |
+| Products Report | ✅ UI সম্পন্ন |
+| Customers Report | ✅ UI সম্পন্ন |
+| Inventory Report | ✅ UI সম্পন্ন |
+
+### Settings
+
+| Section | Status |
+|---|---|
+| Store Settings | ✅ সম্পন্ন |
+| Payment Settings | ✅ সম্পন্ন |
+| SEO Settings | ✅ সম্পন্ন |
+| Tax Settings | ✅ সম্পন্ন |
+| Notification Settings | ✅ সম্পন্ন |
+
+### Administration
+
+| Section | Status |
+|---|---|
+| Admin Users | ✅ সম্পন্ন |
+| Roles & Permissions | ✅ UI সম্পন্ন |
+| Activity Log | ✅ সম্পন্ন |
+| System Settings | ✅ সম্পন্ন |
+
+---
+
+## Backend Modules
+
+NestJS-এ মোট **21টি module** তৈরি:
+
+| Module | Responsibility |
+|---|---|
+| `auth` | Login, Register, JWT, OTP, Password reset |
+| `users` | Customer profiles, addresses |
+| `admin` | Admin auth, dashboard stats |
+| `products` | CRUD, search, filter, variants |
+| `categories` | Hierarchy, nav, dynamic pages |
+| `brands` | Brand management |
+| `cart` | Add/remove/update cart items |
+| `orders` | Order placement, status tracking |
+| `payments` | SSLCommerz integration, COD |
+| `delivery` | Zone charges, providers |
+| `coupons` | Discount codes, validation |
+| `wishlist` | Save products |
+| `inventory` | Stock tracking, adjustments |
+| `reviews` | Product ratings & reviews |
+| `recipes` | Recipe content |
+| `banners` | Homepage/marketing banners |
+| `collections` | Product collections/combos |
+| `notifications` | In-app notifications |
+| `media` | Cloudinary image management |
+| `reports` | Sales/order analytics |
+| `settings` | Site configuration |
+
+---
+
+## Database Models
+
+PostgreSQL (Prisma ORM) — মোট **38টি model:**
+
+```
+User, Admin, AdminActivityLog, Address
+Category, Brand, Product, ProductImage, ProductVariant
+Inventory, InventoryLog
+Cart, CartItem
+Wishlist, WishlistItem
+Coupon, CouponUsage
+Order, OrderItem, OrderStatusHistory
+Payment, PaymentTransaction
+Delivery, DeliveryCharge
+Review, Recipe, RecipeIngredient
+Notification, Banner, Testimonial
+SiteSettings, Collection, CollectionProduct
+MediaFile, HeroSlide, HomepageSection
+NewsletterSubscriber, Offer, Promotion
+```
+
+---
+
+## Payment System
+
+| Method | Status |
+|---|---|
+| Cash on Delivery (COD) | ✅ সম্পন্ন |
+| SSLCommerz | ⚠️ Test mode (credentials দরকার) |
+| bKash Direct API | ❌ এখনো হয়নি |
+| Nagad Direct API | ❌ এখনো হয়নি |
+| Rocket | ❌ এখনো হয়নি |
+| Card (Visa/MC via SSL) | ⚠️ SSLCommerz-এর মাধ্যমে |
+
+Payment logos (bKash, Nagad, Rocket, COD, SSLCommerz) frontend-এ দেখায়।
+Checkout-এ payment method selection আছে।
+
+---
+
+## Delivery System
+
+| Feature | Status |
+|---|---|
+| Dhaka / Outside Dhaka zones | ✅ সম্পন্ন |
+| Zone-based charge calculation | ✅ সম্পন্ন |
+| Free delivery threshold | ✅ সম্পন্ন |
+| Pathao / Steadfast integration | ❌ এখনো হয়নি |
+| Real-time tracking | ❌ এখনো হয়নি |
+| SMS on delivery update | ❌ এখনো হয়নি |
+
+---
+
+## প্রজেক্ট Structure
+
+```
+deshi-moslar-rannaghar-website/
+│
+├── frontend/                     # Next.js Frontend
+│   ├── src/
+│   │   ├── app/                  # Next.js App Router pages
+│   │   │   ├── (shop)/           # Customer pages (home, category, product, cart, checkout)
+│   │   │   ├── (auth)/           # Login, register, forgot/reset password
+│   │   │   ├── (account)/        # User account pages
+│   │   │   ├── admin/            # Admin panel (70+ pages)
+│   │   │   ├── payment/          # Payment callback pages
+│   │   │   └── order/            # Order confirmation
+│   │   ├── components/
+│   │   │   ├── home/             # Homepage sections
+│   │   │   ├── product/          # Product card, gallery, reviews
+│   │   │   ├── shop/             # Filter, sort, grid, pagination
+│   │   │   ├── cart/             # Cart drawer, items, summary
+│   │   │   ├── checkout/         # Checkout components
+│   │   │   ├── admin/            # Admin UI components
+│   │   │   ├── layout/           # Header, Footer, MobileNav
+│   │   │   ├── floating/         # FloatingCart, WhatsApp, BackToTop
+│   │   │   └── payment/          # Payment logos
+│   │   ├── hooks/                # React Query custom hooks
+│   │   ├── store/                # Zustand stores (auth, cart)
+│   │   ├── lib/                  # API client, utils, mock data
+│   │   └── types/                # TypeScript interfaces
+│   ├── .env.local                # Frontend env vars
+│   └── package.json
+│
+├── backend/                      # NestJS Backend
+│   ├── src/
+│   │   ├── modules/              # 21 feature modules
+│   │   ├── common/               # Guards, decorators, interceptors, filters
+│   │   └── main.ts               # App bootstrap
+│   ├── prisma/
+│   │   ├── schema.prisma         # 38 database models
+│   │   ├── migrations/           # DB migration history
+│   │   └── seed/                 # Seed data scripts
+│   ├── scripts/                  # Admin creation scripts
+│   ├── .env                      # Backend env vars
+│   ├── Dockerfile                # Docker config
+│   ├── nixpacks.toml             # Railway deploy config
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## Setup ও Installation
+
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL database (Neon recommended)
+- Cloudinary account
+- Git
+
+### Backend Setup
+
+```bash
+# 1. backend ফোল্ডারে যান
+cd backend
+
+# 2. dependencies install করুন
+npm install
+
+# 3. .env file তৈরি করুন
+cp .env.example .env
+# .env ফাইল এডিট করে সব values দিন
+
+# 4. Database migrate করুন
+npx prisma migrate deploy
+
+# 5. Prisma client generate করুন
+npx prisma generate
+
+# 6. Admin user তৈরি করুন
+npx ts-node scripts/create-admin.ts
+
+# 7. Server চালু করুন (development)
+npm run start:dev
+
+# 8. Server চালু করুন (production)
+npm run build
+npm run start:prod
+```
+
+Backend চলবে: `http://localhost:5000`
+Swagger API Docs: `http://localhost:5000/api/v1/docs`
+
+### Frontend Setup
+
+```bash
+# 1. frontend ফোল্ডারে যান
+cd frontend
+
+# 2. dependencies install করুন
+npm install
+
+# 3. .env.local ফাইল তৈরি করুন
+# নিচের Environment Variables দেখুন
+
+# 4. Development server চালু করুন
+npm run dev
+
+# 5. Production build
+npm run build
+npm start
+```
+
+Frontend চলবে: `http://localhost:3000`
+
+---
+
+## Environment Variables
+
+### Backend (.env)
+
+```env
+NODE_ENV=production
+PORT=5000
+DATABASE_URL=postgresql://USER:PASS@HOST/DB?sslmode=require
+JWT_SECRET=your-32-char-minimum-secret
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=your-refresh-secret
+ADMIN_JWT_SECRET=your-admin-jwt-secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+SSLCOMMERZ_STORE_ID=your_store_id
+SSLCOMMERZ_STORE_PASSWORD=your_password
+SSLCOMMERZ_IS_LIVE=false
+FRONTEND_URL=https://your-frontend.vercel.app
+```
+
+### Frontend (.env.local)
+
+```env
+NEXT_PUBLIC_API_URL=https://your-backend.railway.app/api/v1
+NEXT_PUBLIC_APP_NAME=দেশি মসলার রান্নাঘর
+NEXT_PUBLIC_APP_NAME_EN=Deshi Moslar Rannaghar
+NEXT_PUBLIC_APP_URL=https://your-frontend.vercel.app
+NEXT_PUBLIC_WHATSAPP_NUMBER=+8801700000000
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset
+```
+
+---
+
+## Deployment
+
+### Backend → Railway
+
+1. Railway-তে নতুন project তৈরি করুন
+2. GitHub repo connect করুন
+3. Environment variables সেট করুন (`.env.example` দেখুন)
+4. `backend` ফোল্ডার root হিসেবে সেট করুন
+5. Deploy — `nixpacks.toml` automatically configure করবে
+
+### Frontend → Vercel
+
+1. Vercel-এ নতুন project তৈরি করুন
+2. GitHub repo connect করুন
+3. Root directory: `frontend`
+4. Environment variables সেট করুন
+5. Deploy
+
+### Database → Neon (PostgreSQL)
+
+1. [neon.tech](https://neon.tech) এ account তৈরি করুন
+2. নতুন database তৈরি করুন
+3. Connection string নিন
+4. Backend `.env`-এ `DATABASE_URL` সেট করুন
+5. `npx prisma migrate deploy` চালান
+
+---
+
+## অসম্পন্ন কাজ
+
+এই মুহূর্তে নিচের কাজগুলো বাকি আছে:
+
+### উচ্চ অগ্রাধিকার
+- [ ] **Production env vars** — Railway ও Vercel-এ সব environment variable সেট করতে হবে
+- [ ] **SSLCommerz live credentials** — test mode থেকে live mode-এ নিতে হবে
+- [ ] **Admin reports — real data** — charts ও graphs-এ actual API data connect করতে হবে
+
+### মাঝারি অগ্রাধিকার
+- [ ] **Email notifications** — order confirmation, shipping update emails
+- [ ] **SMS notifications** — bKash/Nagad/Pathao SMS
+- [ ] **Blog backend** — blog post CRUD API এবং frontend rendering
+- [ ] **Recipe backend** — recipe CMS full connection
+- [ ] **Promotions/Offers** — marketing module full API integration
+
+### কম অগ্রাধিকার
+- [ ] **Admin roles/permissions** — role-based access control পূর্ণাঙ্গ করা
+- [ ] **Static page editor** — About/Terms এর WYSIWYG editor
+- [ ] **Delivery provider integration** — Pathao, Steadfast API connect
+
+---
+
+## ভবিষ্যৎ পরিকল্পনা
+
+### Phase 2 (নিকট ভবিষ্যৎ)
+- bKash Payment Gateway direct integration
+- Nagad Payment Gateway direct integration
+- Pathao / Steadfast delivery API integration
+- OTP-based login (mobile number)
+- Push notifications
+
+### Phase 3 (দীর্ঘমেয়াদী)
+- Mobile app (React Native)
+- Affiliate/referral system
+- Loyalty points program
+- Advanced analytics dashboard
+- Multi-vendor support
+- Product subscriptions (সাপ্তাহিক/মাসিক অর্ডার)
+- AI-powered product recommendations
+- Live chat support integration
+
+---
+
+## মূল ফিচার সারসংক্ষেপ
+
+| Feature | Details |
+|---|---|
+| **Guest Checkout** | Login ছাড়া পণ্য কেনা যায় |
+| **Dynamic Categories** | Admin থেকে category তৈরি → frontend-এ auto-appear |
+| **Image Upload** | Cloudinary integration, admin panel থেকে সরাসরি upload |
+| **Orange Brand Theme** | সম্পূর্ণ custom `#ea580c` orange branding |
+| **Mobile Responsive** | Mobile-first design, swipe gallery, floating cart |
+| **Filter & Sort** | Price, brand, availability, rating — live filter |
+| **Cart Persistence** | Page refresh করলেও cart থাকে |
+| **Wishlist** | Login ছাড়া save করা যায় (toast only) |
+| **Order Tracking** | Customer order ID দিয়ে track করতে পারে |
+| **Coupon System** | Discount code apply করা যায় checkout-এ |
+| **Admin Guard** | JWT token verify করে, stale auth নেই |
+| **Media Library** | Admin panel-এ centralized image management |
+
+---
+
+## License
+
+Private project — All rights reserved.
+© 2025 দেশি মসলার রান্নাঘর
+
+---
+
+## যোগাযোগ
+
+- 📧 Email: info@deshimoslar.com
+- 📞 Phone: +880 1700-000000
+- 📍 Location: ঢাকা, বাংলাদেশ
+- 🌐 Website: [deshimoslar.com](https://deshimoslar.com)
