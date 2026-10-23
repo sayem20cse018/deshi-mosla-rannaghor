@@ -109,10 +109,10 @@ export function FilterSidebar({
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-[#0f4c2a]" />
+          <SlidersHorizontal className="w-4 h-4 text-orange-500" />
           <span className="font-bold text-gray-900 text-sm">ফিল্টার</span>
           {activeCount > 0 && (
-            <span className="bg-[#0f4c2a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            <span className="bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
               {activeCount}
             </span>
           )}
@@ -142,7 +142,7 @@ export function FilterSidebar({
             className={cn(
               'w-full text-left text-sm px-3 py-2 rounded-xl transition-colors',
               !filters.category
-                ? 'bg-[#f0fdf4] text-[#0f4c2a] font-bold'
+                ? 'bg-orange-50 text-orange-600 font-bold'
                 : 'hover:bg-gray-50 text-gray-700',
             )}
           >
@@ -157,7 +157,7 @@ export function FilterSidebar({
                 className={cn(
                   'w-full text-left text-sm px-3 py-2 rounded-xl transition-colors flex items-center justify-between',
                   filters.category === cat.slug
-                    ? 'bg-[#f0fdf4] text-[#0f4c2a] font-bold'
+                    ? 'bg-orange-50 text-orange-600 font-bold'
                     : 'hover:bg-gray-50 text-gray-700',
                 )}
               >
@@ -219,7 +219,7 @@ export function FilterSidebar({
                 className={cn(
                   'text-[11px] px-2.5 py-1 rounded-lg border transition-colors',
                   filters.minPrice === mn
-                    ? 'bg-[#f0fdf4] border-[#0f4c2a]/30 text-[#0f4c2a] font-bold'
+                    ? 'bg-orange-50 border-[orange-600]/30 text-orange-600 font-bold'
                     : 'border-gray-200 text-gray-600 hover:border-orange-200',
                 )}
               >

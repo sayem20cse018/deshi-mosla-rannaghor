@@ -6,6 +6,7 @@ import {
   Facebook, Instagram, Youtube, Twitter,
   ChevronRight,
 } from 'lucide-react';
+import { useNavCategories } from '@/hooks/useCategories';
 
 const ABOUT_LINKS = [
   { href: '/about',          label: 'আমাদের সম্পর্কে'  },
@@ -21,17 +22,6 @@ const POLICY_LINKS = [
   { href: '/privacy-policy',  label: 'প্রাইভেসি পলিসি'      },
   { href: '/return-policy',   label: 'রিটার্ন ও এক্সচেঞ্জ'  },
   { href: '/about#shipping',  label: 'শিপিং ও ডেলিভারি'     },
-];
-
-const CATEGORIES = [
-  { href: '/category/mosla',       label: 'মসলা'      },
-  { href: '/category/tel',         label: 'তেল'        },
-  { href: '/category/chal',        label: 'চাল'        },
-  { href: '/category/dal',         label: 'ডাল'        },
-  { href: '/category/modhu',       label: 'মধু'        },
-  { href: '/category/cha',         label: 'চা'          },
-  { href: '/category/snacks',      label: 'স্ন্যাকস'   },
-  { href: '/category/sauce-achar', label: 'সস ও আচার'  },
 ];
 
 const PAYMENT = [
@@ -71,6 +61,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 }
 
 export function Footer() {
+  const { data: navCats = [] } = useNavCategories();
   return (
     <footer style={{ background: '#0b1d13', fontFamily: FONT_BN }}>
 
@@ -178,12 +169,15 @@ export function Footer() {
             <div>
               <ColTitle>Product Categories</ColTitle>
               <div className="grid grid-cols-2 gap-y-2.5 gap-x-3">
-                {CATEGORIES.map(c => (
-                  <Link key={c.href} href={c.href}
+                {navCats.slice(0, 12).map(c => (
+                  <Link key={c.slug} href={`/category/${c.slug}`}
                         className="text-[13px] transition-colors hover:text-white group flex items-center gap-1"
                         style={{ color: '#9ca3af', fontFamily: FONT_BN }}>
                     <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-50 flex-shrink-0 -ml-1 transition-all" />
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-150">{c.label}</span>
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-150">
+                      {c.icon && <span className="mr-1 text-[11px]">{c.icon}</span>}
+                      {c.name}
+                    </span>
                   </Link>
                 ))}
               </div>

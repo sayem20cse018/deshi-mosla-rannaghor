@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ChevronRight, SlidersHorizontal, X, ChevronDown,
-  Grid3X3, List, LayoutGrid, Package,
+  ChevronRight, SlidersHorizontal, X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FilterSidebar, ActiveFilters } from '@/components/shop/FilterSidebar';
@@ -21,7 +20,6 @@ const LIMIT = 16;
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
   const { data: category, isLoading: catLoading } = useCategory(slug);
   const { data: navCats = [] } = useNavCategories();
 
@@ -214,20 +212,21 @@ export default function CategoryPage() {
               <div className="flex items-center gap-3 flex-wrap">
                 {/* Mobile filter toggle */}
                 <button type="button" onClick={() => setMobileFilterOpen(true)}
-                  className="lg:hidden flex items-center gap-2 text-sm font-semibold text-gray-600 bg-gray-50 border border-gray-200 hover:border-orange-300 hover:text-orange-600 px-3 py-2 rounded-xl transition-colors">
+                  className="lg:hidden flex items-center gap-2 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 px-3.5 py-2 rounded-xl shadow-sm transition-colors">
                   <SlidersHorizontal className="w-4 h-4" />
                   Filter
                   {Object.keys(filters).filter(k => filters[k as keyof ActiveFilters] !== undefined).length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-white text-orange-500 text-[10px] font-black flex items-center justify-center">
                       {Object.keys(filters).filter(k => filters[k as keyof ActiveFilters] !== undefined).length}
                     </span>
                   )}
                 </button>
 
+                {/* Count */}
                 <p className="text-sm text-gray-500 flex-1">
                   <span className="font-black text-gray-900">{meta?.total ?? 0}</span> products
                   {meta && meta.totalPages > 1 && (
-                    <span className="text-gray-400 ml-1"> Page {page}/{meta.totalPages}</span>
+                    <span className="text-gray-400 ml-1">· Page {page}/{meta.totalPages}</span>
                   )}
                 </p>
 
@@ -241,20 +240,6 @@ export default function CategoryPage() {
                   page={page}
                   limit={LIMIT}
                 />
-
-                {/* View toggle */}
-                <div className="hidden sm:flex items-center border border-gray-200 rounded-xl overflow-hidden">
-                  <button type="button" onClick={() => setView('grid')}
-                    className={cn('w-9 h-9 flex items-center justify-center transition-colors',
-                      view === 'grid' ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-orange-500')}>
-                    <LayoutGrid className="w-4 h-4" />
-                  </button>
-                  <button type="button" onClick={() => setView('list')}
-                    className={cn('w-9 h-9 flex items-center justify-center transition-colors',
-                      view === 'list' ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-orange-500')}>
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
               </div>
             </div>
 

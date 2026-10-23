@@ -54,7 +54,7 @@ export function SortBar({
       <div className="flex items-center gap-3">
         <button
           onClick={onFilterToggle}
-          className="md:hidden flex items-center gap-1.5 text-sm font-bold text-white bg-[#0f4c2a] px-3.5 py-2 rounded-xl shadow-sm active:opacity-80 transition-opacity"
+          className="md:hidden flex items-center gap-1.5 text-sm font-bold text-white bg-orange-500 px-3.5 py-2 rounded-xl shadow-sm active:opacity-80 transition-opacity"
         >
           <SlidersHorizontal className="w-4 h-4" /> ফিল্টার
         </button>
@@ -112,7 +112,7 @@ export function SortBar({
             className={cn(
               'p-2 transition-colors',
               view === 'grid'
-                ? 'bg-[#0f4c2a] text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-white text-gray-500 hover:bg-gray-50',
             )}
             aria-label="গ্রিড ভিউ"
@@ -124,7 +124,7 @@ export function SortBar({
             className={cn(
               'p-2 transition-colors',
               view === 'list'
-                ? 'bg-[#0f4c2a] text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-white text-gray-500 hover:bg-gray-50',
             )}
             aria-label="লিস্ট ভিউ"
