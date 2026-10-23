@@ -295,6 +295,7 @@ model Product {
   minOrderQty     Int         @default(1)
   maxOrderQty     Int?
   stockStatus     StockStatus @default(IN_STOCK)
+  avgRating       Float?      @default(0)
   isActive        Boolean     @default(true)
   isFeatured      Boolean     @default(false)
   isBestSeller    Boolean     @default(false)

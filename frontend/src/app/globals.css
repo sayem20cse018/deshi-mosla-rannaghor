@@ -30,19 +30,19 @@
     --radius: 0.625rem;
 
     /* Brand */
-    --brand-50:  #f0fdf4;
-    --brand-100: #dcfce7;
-    --brand-200: #bbf7d0;
-    --brand-500: #22c55e;
-    --brand-600: #16a34a;
-    --brand-700: #15803d;
-    --brand-800: #166534;
-    --brand-900: #14532d;
+    --brand-50:  #fff7ed;
+    --brand-100: #ffedd5;
+    --brand-200: #fed7aa;
+    --brand-500: #f97316;
+    --brand-600: #ea580c;
+    --brand-700: #c2410c;
+    --brand-800: #9a3412;
+    --brand-900: #7c2d12;
 
     /* Forest */
-    --forest-700: #0f4c2a;
-    --forest-800: #0a3d22;
-    --forest-900: #072d18;
+    --forest-700: #c2410c;
+    --forest-800: #9a3412;
+    --forest-900: #7c2d12;
 
     /* Spice */
     --spice-400: #fb923c;
