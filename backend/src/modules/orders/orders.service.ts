@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateOrderDto, SupportedPaymentMethod } from './dto/create-order.dto';
+import { CreateGuestOrderDto } from './dto/create-guest-order.dto';
 import { PaymentsService } from '../payments/payments.service';
 
 // COD payment methods — don't need gateway redirect

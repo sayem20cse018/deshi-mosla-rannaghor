@@ -69,9 +69,9 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
     <div className={cn(sticky && 'sticky top-24', className)}>
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
         {/* Header */}
-        <div className="bg-brand-700 px-5 py-4">
+        <div className="bg-orange-500 px-5 py-4">
           <h2 className="text-white font-bold text-base">অর্ডার সামারি</h2>
-          <p className="text-brand-200 text-xs mt-0.5">{totals.itemCount} টি পণ্য</p>
+          <p className="text-orange-100 text-xs mt-0.5">{totals.itemCount} টি পণ্য</p>
         </div>
 
         <div className="p-5 space-y-4">
@@ -93,9 +93,9 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
                   </span>
                   <span className="font-bold">{formatPriceEn(remaining)} বাকি</span>
                 </div>
-                <div className="w-full h-2 bg-brand-200 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-orange-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-brand-500 to-brand-700 rounded-full transition-all duration-700"
+                    className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full transition-all duration-700"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
@@ -276,7 +276,7 @@ export function CartSummary({ className, sticky = true }: CartSummaryProps) {
           {/* CTA */}
           <Link
             href="/checkout"
-            className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl text-base transition-all shadow-lg shadow-brand-700/20"
+            className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl text-base transition-all shadow-lg shadow-orange-500/25"
           >
             অর্ডার করুন
             <ArrowRight className="w-5 h-5" />

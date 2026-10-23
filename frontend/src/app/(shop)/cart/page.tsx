@@ -49,7 +49,7 @@ export default function CartPage() {
 
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold px-8 py-3.5 rounded-xl text-base transition-all shadow-lg shadow-brand-700/20"
+              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-xl text-base transition-all shadow-lg shadow-orange-500/25"
             >
               কেনাকাটা শুরু করুন
               <ArrowRight className="w-5 h-5" />
@@ -63,7 +63,7 @@ export default function CartPage() {
                   <Link
                     key={cat.slug}
                     href={`/category/${cat.slug}`}
-                    className="chip text-sm hover:bg-brand-100 transition-colors"
+                    className="chip text-sm hover:bg-orange-50 transition-colors"
                   >
                     {cat.label}
                   </Link>
@@ -166,7 +166,7 @@ export default function CartPage() {
                   <Link
                     key={p.slug}
                     href={`/product/${p.slug}`}
-                    className="chip text-xs hover:bg-brand-100 transition-colors"
+                    className="chip text-xs hover:bg-orange-50 transition-colors"
                   >
                     {p.name}
                   </Link>
@@ -193,7 +193,7 @@ export default function CartPage() {
           </div>
           <Link
             href="/checkout"
-            className="flex-1 max-w-[200px] flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 rounded-xl text-sm transition-all"
+            className="flex-1 max-w-[200px] flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-sm transition-all"
           >
             অর্ডার করুন
             <ArrowRight className="w-4 h-4" />

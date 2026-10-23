@@ -172,7 +172,7 @@ export const useCartStore = create<CartStore>()(
         }
 
         toast.success('কার্টে পণ্য যোগ হয়েছে', {
-          style: { background: '#166534', color: '#fff' },
+          style: { background: '#ea580c', color: '#fff' },
         });
 
         // Sync to server if authenticated
