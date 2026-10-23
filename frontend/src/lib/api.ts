@@ -9,7 +9,7 @@ export const api = axios.create({
   withCredentials: false,
 });
 
-// Request interceptor -- attach JWT Bearer token if present
+// Request interceptor — attach JWT token if present
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get('access_token');
@@ -19,29 +19,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Routes where 401 should silently fail (guest access allowed)
-const GUEST_ALLOWED_PATTERNS = [
-  '/cart',
-  '/cart/',
-  '/orders/guest',
-  '/orders/meta',
-  '/products',
-  '/categories',
-  '/brands',
-  '/coupons/validate',
-  '/auth/me',
+// Pages that REQUIRE login — 401 here should redirect to login
+const AUTH_REQUIRED_PAGES = [
+  '/account/profile',
+  '/account/settings',
+  '/account/addresses',
+  '/account/orders',
+  '/account/reviews',
+  '/account/wishlist',
+  '/account/coupons',
+  '/account/payment-history',
 ];
 
-// Pages where 401 should never trigger redirect (guest-accessible pages)
-const GUEST_PAGES = ['/checkout', '/cart', '/shop', '/category', '/product', '/order-tracking'];
-
-
-function isGuestAllowed(url: string): boolean {
-  if (!url) return false;
-  return GUEST_ALLOWED_PATTERNS.some((p) => url.includes(p));
-}
-
-// Response interceptor -- only redirect to login for auth-required routes
+// Response interceptor — only redirect on 401 for explicit account pages
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -49,19 +39,16 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       typeof window !== 'undefined'
     ) {
-      const requestUrl = error.config?.url ?? '';
-      const pathname   = window.location.pathname;
+      const pathname = window.location.pathname;
 
-      // Never redirect if already on login/admin pages
-      const onLoginPage = pathname.startsWith('/login') || pathname.startsWith('/admin');
-      const onGuestPage = GUEST_PAGES.some((p) => pathname.startsWith(p));
-      // Never redirect for guest-allowed endpoints (cart sync, product API etc.)
-      const guestOk = isGuestAllowed(requestUrl);
+      // Only redirect if user is on an account page that truly requires login
+      const needsLogin = AUTH_REQUIRED_PAGES.some((p) => pathname.startsWith(p));
 
-      if (!onLoginPage && !onGuestPage && !guestOk) {
+      if (needsLogin) {
         Cookies.remove('access_token');
         window.location.href = '/login?redirect=' + encodeURIComponent(pathname);
       }
+      // For ALL other pages (checkout, cart, product, home etc.) — just reject silently
     }
     return Promise.reject(error);
   },
