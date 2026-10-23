@@ -1241,4 +1241,205 @@ export class AdminService {
       return [header, ...rows].join('\n');
     } catch { return 'Email,Name,Source,Subscribed At'; }
   }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN CUSTOMERS
+  // ---------------------------------------------------------------------------
+
+  async adminGetCustomers(params: {
+    page?: number; limit?: number; search?: string;
+    isActive?: string; isBlocked?: string;
+    sortBy?: string; sortOrder?: 'asc' | 'desc';
+  }) {
+    const { page = 1, limit = 20, search, isActive, isBlocked, sortBy = 'createdAt', sortOrder = 'desc' } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = { role: 'CUSTOMER' };
+    if (isActive !== undefined) where.isActive = isActive === 'true';
+    if (isBlocked !== undefined) where.isBlocked = isBlocked === 'true';
+    if (search) {
+      where.OR = [
+        { name:  { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [customers, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+        select: {
+          id: true, name: true, email: true, phone: true,
+          avatar: true, isActive: true, isBlocked: true,
+          lastLoginAt: true, createdAt: true,
+          _count: { select: { orders: true, reviews: true } },
+          orders: {
+            take: 1, orderBy: { createdAt: 'desc' },
+            select: { id: true, orderNumber: true, totalAmount: true, status: true, createdAt: true },
+          },
+        },
+      }),
+      this.prisma.user.count({ where: where as any }),
+    ]);
+
+    // Total spending per customer
+    const ids = customers.map((c) => c.id);
+    const spending = await this.prisma.order.groupBy({
+      by: ['userId'],
+      where: { userId: { in: ids }, status: { in: ['DELIVERED', 'CONFIRMED', 'PROCESSING', 'PACKED', 'SHIPPED'] } },
+      _sum: { totalAmount: true },
+    });
+    const spendMap = Object.fromEntries(spending.map((s) => [s.userId, Number(s._sum.totalAmount ?? 0)]));
+
+    return {
+      success: true,
+      data: customers.map((c) => ({
+        ...c,
+        totalOrders:  c._count.orders,
+        totalReviews: c._count.reviews,
+        totalSpending: spendMap[c.id] ?? 0,
+        lastOrder: c.orders[0] ? { ...c.orders[0], totalAmount: Number(c.orders[0].totalAmount) } : null,
+      })),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminGetCustomer(userId: string) {
+    const customer = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true, name: true, email: true, phone: true, avatar: true,
+        gender: true, dateOfBirth: true, isActive: true, isBlocked: true,
+        lastLoginAt: true, createdAt: true, updatedAt: true,
+        isEmailVerified: true, isPhoneVerified: true,
+        addresses: true,
+        _count: { select: { orders: true, reviews: true, wishlists: true } },
+        orders: {
+          take: 5, orderBy: { createdAt: 'desc' },
+          select: {
+            id: true, orderNumber: true, status: true,
+            totalAmount: true, paymentMethod: true, createdAt: true,
+            _count: { select: { items: true } },
+          },
+        },
+        reviews: {
+          take: 5, orderBy: { createdAt: 'desc' },
+          select: {
+            id: true, rating: true, title: true, status: true, createdAt: true,
+            product: { select: { id: true, name: true, slug: true } },
+          },
+        },
+      },
+    });
+    if (!customer) throw new Error('Customer not found');
+
+    const spending = await this.prisma.order.aggregate({
+      where: { userId, status: { in: ['DELIVERED', 'CONFIRMED', 'PROCESSING', 'PACKED', 'SHIPPED'] } },
+      _sum: { totalAmount: true },
+    });
+
+    return {
+      success: true,
+      data: {
+        ...customer,
+        totalSpending: Number(spending._sum.totalAmount ?? 0),
+        orders: customer.orders.map((o) => ({
+          ...o, totalAmount: Number(o.totalAmount), itemCount: o._count.items,
+        })),
+      },
+    };
+  }
+
+  async adminToggleCustomer(userId: string, action: 'activate' | 'deactivate' | 'block' | 'unblock') {
+    const update: Record<string, boolean> = {};
+    if (action === 'activate')   update.isActive  = true;
+    if (action === 'deactivate') update.isActive  = false;
+    if (action === 'block')      update.isBlocked = true;
+    if (action === 'unblock')    update.isBlocked = false;
+
+    await this.prisma.user.update({ where: { id: userId }, data: update });
+    return { success: true, message: `Customer ${action}d successfully.` };
+  }
+
+  // ---------------------------------------------------------------------------
+  // ADMIN REVIEWS MODERATION
+  // ---------------------------------------------------------------------------
+
+  async adminGetReviews(params: {
+    page?: number; limit?: number; search?: string;
+    status?: string; rating?: number;
+    sortBy?: string; sortOrder?: 'asc' | 'desc';
+  }) {
+    const { page = 1, limit = 20, search, status, rating, sortBy = 'createdAt', sortOrder = 'desc' } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (status) where.status = status;
+    if (rating) where.rating = Number(rating);
+    if (search) {
+      where.OR = [
+        { user:    { name:  { contains: search, mode: 'insensitive' } } },
+        { product: { name:  { contains: search, mode: 'insensitive' } } },
+        { comment: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [reviews, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: where as any,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+        include: {
+          user:    { select: { id: true, name: true, email: true, avatar: true } },
+          product: { select: { id: true, name: true, slug: true, images: { where: { isPrimary: true }, take: 1, select: { url: true } } } },
+        },
+      }),
+      this.prisma.review.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: reviews,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminUpdateReviewStatus(reviewId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', adminNote?: string) {
+    const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
+    if (!review) throw new Error('Review not found');
+
+    await this.prisma.review.update({
+      where: { id: reviewId },
+      data: { status, ...(adminNote ? { adminNote } : {}) },
+    });
+
+    // Recalculate product rating when approve/reject changes count
+    if (status === 'APPROVED' || (review.status === 'APPROVED' && status !== 'APPROVED')) {
+      const reviews = await this.prisma.review.findMany({
+        where: { productId: review.productId, status: 'APPROVED' },
+        select: { rating: true },
+      });
+      const avg = reviews.length
+        ? parseFloat((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1))
+        : 0;
+      await this.prisma.product.update({
+        where: { id: review.productId },
+        data: { avgRating: avg } as any,
+      }).catch(() => {});
+    }
+
+    return { success: true, message: `Review ${status.toLowerCase()}.` };
+  }
+
+  async adminDeleteReview(reviewId: string) {
+    const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
+    if (!review) throw new Error('Review not found');
+    await this.prisma.review.delete({ where: { id: reviewId } });
+    return { success: true, message: 'Review deleted.' };
+  }
+
 }

@@ -408,4 +408,72 @@ export class AdminController {
   adminDeleteSubscriber(@Param('id') id:string) { return this.adminService.adminDeleteSubscriber(id); }
   @Post('newsletter/subscribers/bulk-delete')
   adminBulkDeleteSubscribers(@Body() body:{ ids:string[] }) { return this.adminService.adminBulkDeleteSubscribers(body.ids); }
+
+  // ─── CUSTOMERS ────────────────────────────────────────────────────────────
+
+  @Get('customers')
+  adminGetCustomers(
+    @Query('page')       page?:       string,
+    @Query('limit')      limit?:      string,
+    @Query('search')     search?:     string,
+    @Query('isActive')   isActive?:   string,
+    @Query('isBlocked')  isBlocked?:  string,
+    @Query('sortBy')     sortBy?:     string,
+    @Query('sortOrder')  sortOrder?:  string,
+  ) {
+    return this.adminService.adminGetCustomers({
+      page:       page  ? Number(page)  : 1,
+      limit:      limit ? Number(limit) : 20,
+      search, isActive, isBlocked,
+      sortBy,
+      sortOrder: (sortOrder as 'asc' | 'desc') ?? 'desc',
+    });
+  }
+
+  @Get('customers/:id')
+  adminGetCustomer(@Param('id') id: string) {
+    return this.adminService.adminGetCustomer(id);
+  }
+
+  @Patch('customers/:id/toggle')
+  adminToggleCustomer(
+    @Param('id') id: string,
+    @Body() body: { action: 'activate' | 'deactivate' | 'block' | 'unblock' },
+  ) {
+    return this.adminService.adminToggleCustomer(id, body.action);
+  }
+
+  // ─── REVIEWS ──────────────────────────────────────────────────────────────
+
+  @Get('reviews')
+  adminGetReviews(
+    @Query('page')       page?:       string,
+    @Query('limit')      limit?:      string,
+    @Query('search')     search?:     string,
+    @Query('status')     status?:     string,
+    @Query('rating')     rating?:     string,
+    @Query('sortOrder')  sortOrder?:  string,
+  ) {
+    return this.adminService.adminGetReviews({
+      page:    page  ? Number(page)  : 1,
+      limit:   limit ? Number(limit) : 20,
+      search, status,
+      rating: rating ? Number(rating) : undefined,
+      sortOrder: (sortOrder as 'asc' | 'desc') ?? 'desc',
+    });
+  }
+
+  @Patch('reviews/:id/status')
+  adminUpdateReviewStatus(
+    @Param('id') id: string,
+    @Body() body: { status: 'APPROVED' | 'REJECTED' | 'PENDING'; adminNote?: string },
+  ) {
+    return this.adminService.adminUpdateReviewStatus(id, body.status, body.adminNote);
+  }
+
+  @Delete('reviews/:id')
+  adminDeleteReview(@Param('id') id: string) {
+    return this.adminService.adminDeleteReview(id);
+  }
+
 }
