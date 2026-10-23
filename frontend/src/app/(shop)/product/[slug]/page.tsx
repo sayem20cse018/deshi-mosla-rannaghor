@@ -302,7 +302,7 @@ export default function ProductDetailPage() {
                 {/* Wishlist heart */}
                 <button
                   onClick={async () => {
-                    if (!isAuthenticated) { toast('Login to wishlist', { icon: '🔐' }); router.push('/login'); return; }
+                    if (!isAuthenticated) { toast('Login to wishlist', { icon: '🔐' }); return; }
                     const isW = isWishlisted(product.id);
                     if (isW) { await removeFromWishlist(product.id); toast('Removed from wishlist', { icon: '💔' }); }
                     else { await addToWishlist(product.id); toast.success('Added to wishlist'); }

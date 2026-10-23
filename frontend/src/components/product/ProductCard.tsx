@@ -106,7 +106,6 @@ export function ProductCard({ product, className, variant = 'default' }: Product
     e.stopPropagation();
     if (!isAuthenticated) {
       toast('উইশলিস্টে যোগ করতে লগইন করুন', { icon: '🔐' });
-      router.push('/login');
       return;
     }
     if (wishBusy) return;

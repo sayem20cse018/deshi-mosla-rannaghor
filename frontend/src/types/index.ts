@@ -17,9 +17,17 @@ export interface Category {
   name: string;
   nameEn?: string;
   slug: string;
+  description?: string;
   image?: string;
   icon?: string;
+  banner?: string;
   parentId?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+  showInNav?: boolean;
+  navOrder?: number;
+  metaTitle?: string;
+  metaDesc?: string;
   parent?: { id: string; name: string; slug: string } | null;
   children?: Category[];
   _count?: { products: number };

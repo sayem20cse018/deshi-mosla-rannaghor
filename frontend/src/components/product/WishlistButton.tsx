@@ -39,7 +39,6 @@ export function WishlistButton({
 
     if (!isAuthenticated) {
       toast('উইশলিস্টে যোগ করতে লগইন করুন', { icon: '🔐' });
-      router.push('/login');
       return;
     }
 
