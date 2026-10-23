@@ -476,4 +476,55 @@ export class AdminController {
     return this.adminService.adminDeleteReview(id);
   }
 
+
+  // ─── INVENTORY ────────────────────────────────────────────────────────────
+
+  @Get('inventory')
+  adminGetInventory(
+    @Query('page')        page?:        string,
+    @Query('limit')       limit?:       string,
+    @Query('search')      search?:      string,
+    @Query('stockStatus') stockStatus?: string,
+    @Query('categoryId')  categoryId?:  string,
+    @Query('sortBy')      sortBy?:      string,
+    @Query('sortOrder')   sortOrder?:   string,
+  ) {
+    return this.adminService.adminGetInventory({
+      page:  page  ? Number(page)  : 1,
+      limit: limit ? Number(limit) : 20,
+      search, stockStatus, categoryId,
+      sortBy,
+      sortOrder: (sortOrder as 'asc' | 'desc') ?? 'desc',
+    });
+  }
+
+  @Post('inventory/:productId/adjust')
+  adminAdjustStock(
+    @Param('productId') productId: string,
+    @Body() dto: { adjustment: number; type: 'MANUAL_ADD' | 'MANUAL_REMOVE' | 'CORRECTION' | 'DAMAGE' | 'RETURN'; reason?: string },
+  ) {
+    return this.adminService.adminAdjustStock(productId, dto);
+  }
+
+  @Get('inventory/logs')
+  adminGetInventoryLogs(
+    @Query('page')      page?:      string,
+    @Query('limit')     limit?:     string,
+    @Query('productId') productId?: string,
+    @Query('type')      type?:      string,
+    @Query('from')      from?:      string,
+    @Query('to')        to?:        string,
+  ) {
+    return this.adminService.adminGetInventoryLogs({
+      page:  page  ? Number(page)  : 1,
+      limit: limit ? Number(limit) : 30,
+      productId, type, from, to,
+    });
+  }
+
+  @Get('inventory/low-stock-full')
+  adminGetFullLowStock() {
+    return this.adminService.adminGetFullLowStock();
+  }
+
 }

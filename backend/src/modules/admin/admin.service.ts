@@ -1418,7 +1418,7 @@ export class AdminService {
     });
 
     // Recalculate product rating when approve/reject changes count
-    if (status === 'APPROVED' || (review.status === 'APPROVED' && status !== 'APPROVED')) {
+    if ((status as string) === 'APPROVED' || (review.status === 'APPROVED' && (status as string) !== 'APPROVED')) {
       const reviews = await this.prisma.review.findMany({
         where: { productId: review.productId, status: 'APPROVED' },
         select: { rating: true },
@@ -1440,6 +1440,169 @@ export class AdminService {
     if (!review) throw new Error('Review not found');
     await this.prisma.review.delete({ where: { id: reviewId } });
     return { success: true, message: 'Review deleted.' };
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // ADMIN INVENTORY MANAGEMENT
+  // ---------------------------------------------------------------------------
+
+  async adminGetInventory(params: {
+    page?: number; limit?: number; search?: string;
+    stockStatus?: string; categoryId?: string;
+    sortBy?: string; sortOrder?: 'asc' | 'desc';
+  }) {
+    const { page = 1, limit = 20, search, stockStatus, categoryId, sortBy = 'updatedAt', sortOrder = 'desc' } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = { isActive: true };
+    if (stockStatus) where.stockStatus = stockStatus;
+    if (categoryId)  where.categoryId  = categoryId;
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { sku:  { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [products, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where: where as any,
+        skip, take: limit,
+        orderBy: { [sortBy]: sortOrder },
+        select: {
+          id: true, name: true, sku: true, stockStatus: true,
+          category: { select: { name: true } },
+          inventory: {
+            select: {
+              id: true, totalStock: true, availableStock: true,
+              soldQuantity: true, reservedStock: true, lowStockAlert: true,
+              updatedAt: true,
+            },
+          },
+          variants: {
+            where: { isActive: true },
+            select: { id: true, name: true, sku: true, stock: true },
+          },
+          images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+        },
+      }),
+      this.prisma.product.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: products,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminAdjustStock(productId: string, dto: {
+    adjustment: number;
+    type: 'MANUAL_ADD' | 'MANUAL_REMOVE' | 'CORRECTION' | 'DAMAGE' | 'RETURN';
+    reason?: string;
+  }) {
+    const inventory = await this.prisma.inventory.findUnique({
+      where: { productId },
+      include: { product: { select: { name: true, stockStatus: true } } },
+    });
+    if (!inventory) throw new Error('Inventory not found for this product.');
+
+    const newAvailable = inventory.availableStock + dto.adjustment;
+    if (newAvailable < 0) throw new Error(`Cannot reduce stock below 0. Current: ${inventory.availableStock}`);
+
+    const newTotal = inventory.totalStock + (dto.adjustment > 0 ? dto.adjustment : 0);
+
+    await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.inventory.update({
+        where: { productId },
+        data: {
+          availableStock: newAvailable,
+          totalStock:     dto.adjustment > 0 ? { increment: dto.adjustment } : inventory.totalStock,
+        },
+      });
+
+      // Sync product stockStatus
+      let newStatus: string;
+      if (updated.availableStock <= 0)                   newStatus = 'OUT_OF_STOCK';
+      else if (updated.availableStock <= updated.lowStockAlert) newStatus = 'LOW_STOCK';
+      else                                               newStatus = 'IN_STOCK';
+
+      await tx.product.update({ where: { id: productId }, data: { stockStatus: newStatus as any } });
+
+      await tx.inventoryLog.create({
+        data: {
+          inventoryId: inventory.id,
+          changeQty:   dto.adjustment,
+          type:        dto.type,
+          reason:      dto.reason ?? `Manual adjustment by admin`,
+          reference:   `MANUAL_${Date.now()}`,
+        },
+      });
+    });
+
+    return { success: true, message: `Stock adjusted by ${dto.adjustment > 0 ? '+' : ''}${dto.adjustment}.` };
+  }
+
+  async adminGetInventoryLogs(params: {
+    page?: number; limit?: number;
+    productId?: string; type?: string;
+    from?: string; to?: string;
+  }) {
+    const { page = 1, limit = 30, productId, type, from, to } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (type) where.type = type;
+    if (from || to) {
+      const dateFilter: Record<string, Date> = {};
+      if (from) { const d = new Date(from); d.setHours(0,0,0,0); dateFilter.gte = d; }
+      if (to)   { const d = new Date(to);   d.setHours(23,59,59,999); dateFilter.lte = d; }
+      where.createdAt = dateFilter;
+    }
+    if (productId) {
+      // Find inventory id for this product
+      const inv = await this.prisma.inventory.findUnique({ where: { productId }, select: { id: true } });
+      if (inv) where.inventoryId = inv.id;
+      else return { success: true, data: [], meta: { page, limit, total: 0, totalPages: 0 } };
+    }
+
+    const [logs, total] = await Promise.all([
+      this.prisma.inventoryLog.findMany({
+        where: where as any,
+        skip, take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          inventory: {
+            select: {
+              productId: true,
+              product: { select: { id: true, name: true, sku: true } },
+            },
+          },
+        },
+      }),
+      this.prisma.inventoryLog.count({ where: where as any }),
+    ]);
+
+    return {
+      success: true,
+      data: logs,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async adminGetFullLowStock() {
+    const products = await this.prisma.product.findMany({
+      where: { stockStatus: { in: ['LOW_STOCK', 'OUT_OF_STOCK'] }, isActive: true },
+      orderBy: [{ stockStatus: 'asc' }, { updatedAt: 'desc' }],
+      select: {
+        id: true, name: true, sku: true, stockStatus: true,
+        category: { select: { name: true } },
+        inventory: { select: { availableStock: true, lowStockAlert: true, totalStock: true } },
+        images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+      },
+    });
+    return { success: true, data: products };
   }
 
 }

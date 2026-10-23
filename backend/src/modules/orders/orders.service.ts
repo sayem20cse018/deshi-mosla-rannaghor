@@ -598,4 +598,54 @@ export class OrdersService {
       couponDiscount: Number(order.couponDiscount),
     };
   }
+
+  // -- Customer return request --
+  async requestReturn(userId: string, orderId: string, reason: string) {
+    const order = await this.prisma.order.findFirst({ where: { id: orderId, userId } });
+    if (!order) throw new NotFoundException('Order not found.');
+    if (order.status !== 'DELIVERED') {
+      throw new BadRequestException('Returns are only allowed on delivered orders.');
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: orderId },
+        data: { status: 'RETURNED', returnedAt: new Date(), returnReason: reason },
+      });
+      await tx.orderStatusHistory.create({
+        data: { orderId, status: 'RETURNED', note: reason, createdBy: 'CUSTOMER' },
+      });
+    });
+    return { success: true, message: 'Return request submitted.' };
+  }
+
+  // -- Get order invoice data (customer) --
+  async getInvoice(userId: string, orderId: string) {
+    const order = await this.prisma.order.findFirst({
+      where: { id: orderId, userId },
+      include: {
+        items: true,
+        address: true,
+        payment: { select: { paymentMethod: true, paymentStatus: true, paidAt: true, transactionId: true } },
+        coupon:  { select: { code: true, discountType: true, discountValue: true } },
+      },
+    });
+    if (!order) throw new NotFoundException('Order not found.');
+    return {
+      success: true,
+      data: {
+        ...order,
+        subtotal:       Number(order.subtotal),
+        totalAmount:    Number(order.totalAmount),
+        deliveryCharge: Number(order.deliveryCharge),
+        discountAmount: Number(order.discountAmount),
+        couponDiscount: Number(order.couponDiscount),
+        items: order.items.map((i) => ({
+          ...i,
+          unitPrice:     Number(i.unitPrice),
+          discountPrice: i.discountPrice ? Number(i.discountPrice) : null,
+          totalPrice:    Number(i.totalPrice),
+        })),
+      },
+    };
+  }
 }
