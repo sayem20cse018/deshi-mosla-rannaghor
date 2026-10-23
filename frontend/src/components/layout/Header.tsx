@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -115,7 +115,7 @@ export function Header() {
                   </div>
                   <div className="leading-none hidden xl:block">
                     <p className="text-gray-900 font-black text-[17px] leading-snug" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>দেশি মসলার রান্নাঘর</p>
-                    <p className="text-[#0f4c2a] text-[10.5px] font-bold tracking-[0.2em] uppercase mt-1" style={{fontFamily:'Manrope,sans-serif'}}>
+                    <p className="text-orange-600 text-[10.5px] font-bold tracking-[0.2em] uppercase mt-1" style={{fontFamily:'Manrope,sans-serif'}}>
                       Deshi Moslar Rannaghar
                     </p>
                   </div>
@@ -124,7 +124,7 @@ export function Header() {
                 {/* Home */}
                 <Link href="/" className={cn(
                   'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[14px] font-semibold transition-all duration-150',
-                  pathname === '/' ? 'text-[#0f4c2a] bg-[#f0fdf4]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100',
+                  pathname === '/' ? 'text-orange-600 bg-orange-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100',
                 )} style={{fontFamily:'Manrope,Noto Sans Bengali,sans-serif'}}>
                   <Home className="w-[17px] h-[17px]" strokeWidth={2} />
                   <span>{T('home')}</span>
@@ -133,7 +133,7 @@ export function Header() {
                 {/* Blog */}
                 <Link href="/blog" className={cn(
                   'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[14px] font-semibold transition-all duration-150',
-                  pathname === '/blog' ? 'text-[#0f4c2a] bg-[#f0fdf4]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100',
+                  pathname === '/blog' ? 'text-orange-600 bg-orange-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100',
                 )} style={{fontFamily:'Manrope,Noto Sans Bengali,sans-serif'}}>
                   <BookOpen className="w-[17px] h-[17px]" strokeWidth={2} />
                   <span>{T('blog')}</span>
@@ -150,7 +150,7 @@ export function Header() {
 
                 {/* Track Order */}
                 <Link href="/order-tracking"
-                  className={cn('hdr-action', pathname === '/order-tracking' && 'text-[#0f4c2a] bg-[#f0fdf4]')}
+                  className={cn('hdr-action', pathname === '/order-tracking' && 'text-orange-600 bg-orange-50')}
                   style={{minWidth:'64px'}}>
                   <span className="icon-wrap"><Package className="w-[22px] h-[22px]" strokeWidth={1.75} /></span>
                   <span className="lbl" style={{fontFamily:'Manrope,Noto Sans Bengali,sans-serif'}}>{T('trackOrder')}</span>
@@ -175,7 +175,7 @@ export function Header() {
                       {(['bn','en'] as Lang[]).map(l => (
                         <button key={l} type="button" onClick={() => { setLang(l); setLangOpen(false); }}
                           className={cn('w-full text-left px-4 py-3 text-sm flex items-center gap-3 transition-colors',
-                            lang === l ? 'text-[#0f4c2a] bg-[#f0fdf4] font-bold' : 'text-gray-700 hover:bg-gray-50')}>
+                            lang === l ? 'text-orange-600 bg-orange-50 font-bold' : 'text-gray-700 hover:bg-gray-50')}>
                           <span className="text-base">{l === 'bn' ? '🇧🇩' : '🇬🇧'}</span>
                           <span style={{fontFamily:'Manrope,Noto Sans Bengali,sans-serif'}}>{l === 'bn' ? 'বাংলা' : 'English'}</span>
                           {lang === l && <span className="ml-auto text-[#0f4c2a] text-xs font-black">✓</span>}
@@ -203,12 +203,12 @@ export function Header() {
                           )}
                         </span>
                         <span className="lbl truncate max-w-[60px]" style={{fontFamily:'Manrope,Noto Sans Bengali,sans-serif'}}>
-                          {user?.name?.split(' ')[0] ?? T('myAccount')}
+                          {T('myAccount')}
                         </span>
                       </button>
                       {accountOpen && (
                         <div className="absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-2xl shadow-black/12 border border-gray-100 z-50 w-[224px] overflow-hidden animate-fade-down">
-                          <div className="px-4 py-3.5 bg-gradient-to-br from-[#0f4c2a] to-[#072d18]">
+                          <div className="px-4 py-3.5 bg-gradient-to-br from-[#ea580c] to-[#c2410c]">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                                 <span className="text-white font-black text-base">{user?.name?.charAt(0)}</span>
@@ -228,7 +228,7 @@ export function Header() {
                             ].map(({href,label,icon:Icon}) => (
                               <Link key={href} href={href} onClick={() => setAccountOpen(false)}
                                 className={cn('flex items-center gap-3 px-4 py-2.5 text-[13.5px] transition-colors',
-                                  pathname === href ? 'text-[#0f4c2a] bg-[#f0fdf4] font-semibold' : 'text-gray-700 hover:bg-gray-50')}>
+                                  pathname === href ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-gray-700 hover:bg-gray-50')}>
                                 <Icon className="w-4 h-4 text-gray-400 flex-shrink-0" strokeWidth={1.75} />
                                 <span style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>{label}</span>
                                 <ChevronRight className="w-3.5 h-3.5 text-gray-300 ml-auto" />
@@ -270,11 +270,11 @@ export function Header() {
 
                 {/* Cart */}
                 <button type="button" onClick={openCart}
-                  className="relative flex items-center gap-2.5 h-[48px] px-5 ml-1 rounded-xl bg-[#0f4c2a] hover:bg-[#0a3d22] active:bg-[#072d18] text-white transition-all duration-150 shadow-md shadow-[#0f4c2a]/25 hover:shadow-lg">
+                  className="relative flex items-center gap-2.5 h-[48px] px-5 ml-1 rounded-xl bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white transition-all duration-150 shadow-md shadow-orange-500/25 hover:shadow-lg">
                   <div className="relative">
                     <ShoppingCart className="w-[20px] h-[20px]" strokeWidth={2} />
                     {itemCount > 0 && (
-                      <span className="absolute -top-[7px] -right-[7px] min-w-[17px] h-[17px] px-0.5 flex items-center justify-center text-[9px] font-black text-white bg-[#ea580c] rounded-full border border-[#0f4c2a] leading-none">
+                      <span className="absolute -top-[7px] -right-[7px] min-w-[17px] h-[17px] px-0.5 flex items-center justify-center text-[9px] font-black text-white bg-white rounded-full border border-orange-500 leading-none text-orange-600">
                         {itemCount > 9 ? '9+' : itemCount}
                       </span>
                     )}
@@ -404,7 +404,7 @@ export function Header() {
             </button>
 
             <Link href="/" className="flex-1 flex flex-col items-center justify-center gap-[3px] min-w-0">
-              <span className="text-[#0f4c2a] font-black leading-tight tracking-tight truncate"
+              <span className="text-orange-600 font-black leading-tight tracking-tight truncate"
                     style={{ fontSize: '17px', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                 দেশি মসলার রান্নাঘর
               </span>
@@ -424,7 +424,7 @@ export function Header() {
               {/* Cart */}
               <button type="button" onClick={openCart}
                 className="relative flex items-center justify-center rounded-xl text-white hover:opacity-90 active:opacity-80 transition-all"
-                style={{ width: '48px', height: '48px', backgroundColor: '#0f4c2a' }}>
+                style={{ width: '48px', height: '48px', backgroundColor: '#ea580c' }}>
                 <ShoppingCart className="w-[24px] h-[24px]" strokeWidth={2} />
                 {itemCount > 0 && (
                   <span className="absolute -top-[5px] -right-[5px] min-w-[19px] h-[19px] px-0.5 flex items-center justify-center text-[9px] font-black text-white rounded-full border-[1.5px] border-white leading-none"
@@ -452,7 +452,7 @@ export function Header() {
         <div className="lg:hidden fixed inset-0 z-[60] flex">
           <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={() => setDrawerOpen(false)} />
           <div className="relative w-[82vw] max-w-[300px] bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-slide-in-right">
-            <div className="bg-gradient-to-br from-[#0f4c2a] to-[#072d18] px-5 pt-11 pb-5">
+            <div className="bg-gradient-to-br from-[#ea580c] to-[#c2410c] px-5 pt-11 pb-5">
               <button type="button" onClick={() => setDrawerOpen(false)}
                 className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors">
                 <X className="w-4 h-4" strokeWidth={2.5} />
@@ -471,7 +471,7 @@ export function Header() {
                 <div>
                   <p className="text-white/70 text-sm mb-2.5" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>স্বাগতম!</p>
                   <div className="flex gap-2">
-                    <Link href="/login" onClick={() => setDrawerOpen(false)} className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white text-[#0f4c2a]" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>লগইন</Link>
+                    <Link href="/login" onClick={() => setDrawerOpen(false)} className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white text-orange-600" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>লগইন</Link>
                     <Link href="/register" onClick={() => setDrawerOpen(false)} className="flex-1 py-2 text-center text-sm font-bold rounded-xl bg-white/15 text-white border border-white/25" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>নিবন্ধন</Link>
                   </div>
                 </div>
@@ -482,7 +482,7 @@ export function Header() {
               {(['bn','en'] as Lang[]).map(l => (
                 <button key={l} type="button" onClick={() => setLang(l)}
                   className={cn('flex-1 py-2.5 text-sm font-semibold transition-colors',
-                    lang === l ? 'text-[#0f4c2a] bg-[#f0fdf4]' : 'text-gray-400 hover:bg-gray-50')}
+                    lang === l ? 'text-orange-600 bg-orange-50' : 'text-gray-400 hover:bg-gray-50')}
                   style={{fontFamily:'Noto Sans Bengali,Manrope,sans-serif'}}>
                   {l === 'bn' ? '🇧🇩 বাংলা' : '🇬🇧 English'}
                 </button>
@@ -498,7 +498,7 @@ export function Header() {
               ].map(({href,label,emoji}) => (
                 <Link key={href} href={href} onClick={() => setDrawerOpen(false)}
                   className={cn('flex items-center gap-3 px-4 py-3 text-[13.5px] font-medium border-b border-gray-50 transition-colors',
-                    pathname === href ? 'text-[#0f4c2a] bg-[#f0fdf4] font-semibold' : 'text-gray-700 hover:bg-gray-50')}
+                    pathname === href ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-gray-700 hover:bg-gray-50')}
                   style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
                   <span className="text-base w-6 text-center flex-shrink-0">{emoji}</span>
                   <span className="flex-1">{label}</span>
@@ -532,7 +532,7 @@ export function Header() {
                   ].map(({href,label,emoji}) => (
                     <Link key={href} href={href} onClick={() => setDrawerOpen(false)}
                       className={cn('flex items-center gap-3 px-4 py-2.5 text-[13.5px] border-b border-gray-50 transition-colors',
-                        pathname === href ? 'text-[#0f4c2a] bg-[#f0fdf4] font-semibold' : 'text-gray-700 hover:bg-gray-50')}
+                        pathname === href ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-gray-700 hover:bg-gray-50')}
                       style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>
                       <span className="text-base w-6 text-center flex-shrink-0">{emoji}</span>
                       <span className="flex-1">{label}</span>
