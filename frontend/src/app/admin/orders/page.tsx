@@ -316,8 +316,8 @@ function OrderRow({
         <p className="text-xs text-gray-400 mt-0.5">{order.itemCount} item{order.itemCount !== 1 ? 's' : ''}</p>
       </td>
       <td className="px-4 py-3" onClick={onOpen}>
-        <p className="font-semibold text-gray-800 text-xs">{order.user.name}</p>
-        <p className="text-xs text-gray-400">{order.user.phone}</p>
+        <p className="font-semibold text-gray-800 text-xs">{order.user?.name ?? 'Guest'}</p>
+        <p className="text-xs text-gray-400">{order.user?.phone ?? order.address?.phone ?? ''}</p>
       </td>
       <td className="px-4 py-3 hidden md:table-cell" onClick={onOpen}>
         <div className="flex items-center gap-1">

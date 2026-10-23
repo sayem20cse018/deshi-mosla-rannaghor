@@ -42,8 +42,9 @@ export class UsersController {
     @CurrentUser('id') userId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
+    @Query('status') status?: string,
   ) {
-    return this.usersService.getMyOrders(userId, page, limit);
+    return this.usersService.getMyOrders(userId, page, limit, status);
   }
 
   @Get('me/orders/:id')

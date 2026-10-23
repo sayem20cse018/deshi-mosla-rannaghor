@@ -84,4 +84,22 @@ export class OrdersController {
   ) {
     return this.ordersService.cancelOrder(userId, orderId, dto.reason);
   }
+
+  // -- Customer return request --
+  @Patch(':id/return')
+  @ApiOperation({ summary: 'Request return on a delivered order' })
+  requestReturn(
+    @CurrentUser('id') userId: string,
+    @Param('id') orderId: string,
+    @Body() dto: CancelOrderDto,
+  ) {
+    return this.ordersService.requestReturn(userId, orderId, dto.reason ?? 'Return requested by customer');
+  }
+
+  // -- Invoice data (authenticated) --
+  @Get(':id/invoice')
+  @ApiOperation({ summary: 'Get invoice data for an order' })
+  getInvoice(@CurrentUser('id') userId: string, @Param('id') orderId: string) {
+    return this.ordersService.getInvoice(userId, orderId);
+  }
 }

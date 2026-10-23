@@ -64,13 +64,14 @@ export class UsersService {
   }
 
   // ── Orders (read-only for account page) ──────────────
-  async getMyOrders(userId: string, page: any = 1, limit: any = 10) {
+  async getMyOrders(userId: string, page: any = 1, limit: any = 10, status?: string) {
     const safePage  = Math.max(1, parseInt(String(page),  10) || 1);
     const safeLimit = Math.min(50, Math.max(1, parseInt(String(limit), 10) || 10));
     const skip = (safePage - 1) * safeLimit;
+    const where = status ? { userId, status: status as any } : { userId };
     const [orders, total] = await Promise.all([
       this.prisma.order.findMany({
-        where: { userId },
+        where,
         include: {
           items: {
             select: {
@@ -78,12 +79,13 @@ export class UsersService {
               quantity: true, unitPrice: true, totalPrice: true,
             },
           },
+          delivery: { select: { status: true, courierName: true, trackingNumber: true, estimatedDate: true } },
         },
         orderBy: { createdAt: 'desc' },
         skip,
         take: safeLimit,
       }),
-      this.prisma.order.count({ where: { userId } }),
+      this.prisma.order.count({ where }),
     ]);
 
     return {

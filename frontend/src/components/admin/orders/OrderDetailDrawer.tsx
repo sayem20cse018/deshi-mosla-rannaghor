@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
-  useAdminOrder, useUpdateOrderStatus,
+  useAdminOrder, useUpdateOrderStatus, useRefundOrder,
   AdminOrderDetail, OrderStatus,
 } from '@/hooks/useAdminOrders';
 import {
@@ -31,15 +31,35 @@ export function OrderDetailDrawer({ orderId, onClose }: OrderDetailDrawerProps) 
   const [statusNote, setStatusNote]   = useState('');
   const [courier, setCourier]         = useState('');
   const [tracking, setTracking]       = useState('');
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [refundAmount, setRefundAmount]       = useState('');
+  const [refundReason, setRefundReason]       = useState('');
+  const refundOrder = useRefundOrder();
 
   const order = data?.data;
 
   function openStatusChange(s: string) {
+    if (s === 'REFUNDED') {
+      setRefundAmount(order ? String(Math.round(Number(order.totalAmount))) : '');
+      setRefundReason('');
+      setShowRefundModal(true);
+      return;
+    }
     setNewStatus(s);
     setStatusNote('');
     setCourier('');
     setTracking('');
     setShowStatusModal(true);
+  }
+
+  async function handleRefund() {
+    if (!order) return;
+    await refundOrder.mutateAsync({
+      orderId: order.id,
+      amount: refundAmount ? Number(refundAmount) : undefined,
+      reason: refundReason || undefined,
+    });
+    setShowRefundModal(false);
   }
 
   async function handleStatusUpdate() {
@@ -269,6 +289,33 @@ export function OrderDetailDrawer({ orderId, onClose }: OrderDetailDrawerProps) 
           )}
         </div>
       </div>
+
+      {/* Refund Modal */}
+      <Modal open={showRefundModal} onClose={() => setShowRefundModal(false)} title="Process Refund" size="md">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Refund Amount (optional)</label>
+            <input
+              type="number" value={refundAmount} onChange={(e) => setRefundAmount(e.target.value)}
+              placeholder="Leave blank for full refund"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Reason (optional)</label>
+            <textarea value={refundReason} onChange={(e) => setRefundReason(e.target.value)} rows={3}
+              placeholder="Reason for refund..."
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <AdminBtn variant="secondary" onClick={() => setShowRefundModal(false)} className="flex-1">Cancel</AdminBtn>
+            <AdminBtn variant="primary" loading={refundOrder.isPending} onClick={handleRefund} className="flex-1">
+              Process Refund
+            </AdminBtn>
+          </div>
+        </div>
+      </Modal>
 
       {/* Status Update Modal */}
       <Modal open={showStatusModal} onClose={() => setShowStatusModal(false)} title={`Update to ${ORDER_STATUS_CONFIG[newStatus]?.label ?? newStatus}`} size="md">

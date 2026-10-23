@@ -155,6 +155,16 @@ export default function OrderDetailPage() {
     },
   });
 
+  const returnMutation = useMutation({
+    mutationFn: () => api.patch('/orders/' + id + '/return', { reason: 'Customer return request' }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-order', id] });
+      qc.invalidateQueries({ queryKey: ['my-orders'] });
+      toast.success('Return request submitted.');
+    },
+    onError: () => toast.error('Return request failed.'),
+  });
+
   if (isLoading)
     return (
       <div className="flex justify-center py-16">
@@ -338,7 +348,19 @@ export default function OrderDetailPage() {
                 <Star className="w-3.5 h-3.5" /> রিভিউ দিন
               </Link>
             )}
-          </div>
+            {data.status === 'DELIVERED' && (
+              <button
+                onClick={() => returnMutation.mutate()}
+                disabled={returnMutation.isPending}
+                className="flex items-center gap-1.5 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50">
+                <RotateCcw className="w-3.5 h-3.5" /> {returnMutation.isPending ? '...' : 'Return'}
+              </button>
+            )}
+            <Link
+              href={'/account/orders/' + id + '/invoice'}
+              className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-3.5 py-2 rounded-xl transition-colors">
+              <Package className="w-3.5 h-3.5" /> Invoice
+            </Link>          </div>
         </div>
 
         {/* ── Delivery card ── */}

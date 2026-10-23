@@ -212,3 +212,15 @@ export function useBulkUpdateOrderStatus() {
     },
   });
 }
+export function useRefundOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ orderId, amount, reason }: { orderId: string; amount?: number; reason?: string }) => {
+      const { data } = await api.post('/admin/orders/' + orderId + '/refund', { amount, reason });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+    },
+  });
+}

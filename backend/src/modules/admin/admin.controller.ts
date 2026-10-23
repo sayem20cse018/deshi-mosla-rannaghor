@@ -140,6 +140,14 @@ export class AdminController {
   adminBulkUpdateStatus(@Body() body: { orderIds: string[]; status: string }) {
     return this.adminService.adminBulkUpdateStatus(body.orderIds, body.status);
   }
+  @Post('orders/:id/refund')
+  adminRefundOrder(
+    @Param('id') id: string,
+    @Body() body: { amount?: number; reason?: string },
+  ) {
+    return this.adminService.adminRefundOrder(id, body.amount, body.reason);
+  }
+
 
   // ---------------------------------------------------------------------------
   // ADMIN CATEGORIES

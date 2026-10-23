@@ -384,6 +384,7 @@ export class AdminService {
         discountAmount: Number(o.discountAmount),
         couponDiscount: Number(o.couponDiscount),
         itemCount: o._count.items,
+        user: o.user ?? { id: '', name: 'Guest', email: 'guest', phone: (o as any).address?.phone ?? '', avatar: null },
       })),
       meta: {
         page, limit, total,
@@ -570,6 +571,37 @@ export class AdminService {
     return { success: true, data: result };
   }
 
+  // -- Admin: Refund order --
+  async adminRefundOrder(orderId: string, amount?: number, reason?: string) {
+    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error('Order not found');
+    if (!['RETURNED', 'CANCELLED'].includes(order.status)) {
+      throw new Error('Refunds are only allowed on returned or cancelled orders.');
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: orderId },
+        data: { status: 'REFUNDED', paymentStatus: 'REFUNDED' },
+      });
+      await tx.orderStatusHistory.create({
+        data: {
+          orderId,
+          status: 'REFUNDED',
+          note: reason ?? 'Refund processed by admin',
+          createdBy: 'ADMIN',
+        },
+      });
+      await tx.payment.updateMany({
+        where: { orderId },
+        data: {
+          paymentStatus: 'REFUNDED',
+          ...(amount !== undefined ? { refundAmount: amount } : {}),
+          ...(reason ? { refundReason: reason } : {}),
+        },
+      });
+    });
+    return { success: true, message: 'Order refunded successfully.' };
+  }
   // ---------------------------------------------------------------------------
   // ADMIN CATEGORIES CRUD
   // ---------------------------------------------------------------------------
