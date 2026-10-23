@@ -12,8 +12,8 @@ import { useCartStore } from '@/store/cart.store';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
-const G  = '#0f4c2a';
-const G2 = '#1a6b3c';
+const G  = '#ea580c';
+const G2 = '#c2410c';
 const BD_PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
 
 function PasswordStrength({ password }: { password: string }) {
@@ -24,7 +24,7 @@ function PasswordStrength({ password }: { password: string }) {
     { label: 'ছোট হাত',     ok: /[a-z]/.test(password) },
   ];
   const score = checks.filter(c => c.ok).length;
-  const bar = score <= 1 ? 'bg-red-400' : score === 2 ? 'bg-amber-400' : score === 3 ? 'bg-yellow-400' : 'bg-[#0f4c2a]';
+  const bar = score <= 1 ? 'bg-red-400' : score === 2 ? 'bg-amber-400' : score === 3 ? 'bg-yellow-400' : 'bg-[#ea580c]';
   if (!password) return null;
   return (
     <div className="mt-2 space-y-1.5">
@@ -33,7 +33,7 @@ function PasswordStrength({ password }: { password: string }) {
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
         {checks.map(({ label, ok }) => (
-          <span key={label} className={cn('flex items-center gap-1 text-[11px]', ok ? 'text-[#0f4c2a]' : 'text-gray-400')}
+          <span key={label} className={cn('flex items-center gap-1 text-[11px]', ok ? 'text-[#ea580c]' : 'text-gray-400')}
                 style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
             {ok ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} {label}
           </span>
@@ -93,7 +93,7 @@ export default function RegisterPage() {
     'transition-all duration-150 focus:outline-none focus:ring-2',
     errors[field]
       ? 'border-red-300 focus:ring-red-100'
-      : 'border-gray-200 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a]',
+      : 'border-gray-200 focus:ring-[#ea580c]/15 focus:border-[#ea580c]',
   );
 
   return (
@@ -208,7 +208,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {form.confirm && form.password === form.confirm && (
-                  <p className="text-[#0f4c2a] text-xs mt-1 flex items-center gap-1" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                  <p className="text-[#ea580c] text-xs mt-1 flex items-center gap-1" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                     <Check className="w-3 h-3" /> পাসওয়ার্ড মিলেছে
                   </p>
                 )}
@@ -218,7 +218,7 @@ export default function RegisterPage() {
               {/* Terms */}
               <label className="flex items-start gap-2.5 cursor-pointer group">
                 <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded border-gray-300 accent-[#0f4c2a] flex-shrink-0" />
+                  className="w-4 h-4 mt-0.5 rounded border-gray-300 accent-[#ea580c] flex-shrink-0" />
                 <span className="text-xs text-gray-500 leading-relaxed" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                   আমি{' '}
                   <Link href="/terms" className="font-bold hover:underline" style={{ color: G }}>শর্তাবলী</Link>

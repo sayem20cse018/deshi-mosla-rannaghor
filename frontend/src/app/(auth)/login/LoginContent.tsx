@@ -13,10 +13,10 @@ import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
 
-const G  = '#0f4c2a';
-const G2 = '#1a6b3c';
-const GL = '#f0fdf4';
-const GB = '#bbf7d0';
+const G  = '#ea580c';
+const G2 = '#c2410c';
+const GL = '#fff7ed';
+const GB = '#fed7aa';
 
 export default function LoginContent() {
   const router       = useRouter();
@@ -95,7 +95,7 @@ export default function LoginContent() {
     'transition-all duration-150 focus:outline-none focus:ring-2',
     errors[field]
       ? 'border-red-300 focus:ring-red-100'
-      : 'border-gray-200 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a]',
+      : 'border-gray-200 focus:ring-[#ea580c]/15 focus:border-[#ea580c]',
   );
 
   return (
@@ -186,7 +186,7 @@ export default function LoginContent() {
               <div className="text-right -mt-1">
                 <Link href="/forgot-password"
                       className="text-xs font-bold hover:underline"
-                      style={{ color: G, fontFamily: 'Noto Sans Bengali, sans-serif' }}>
+                      style={{ color: '#ea580c', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
                   Forgot Password?
                 </Link>
               </div>
@@ -227,7 +227,7 @@ export default function LoginContent() {
                   <input type="tel" value={otpPhone} onChange={e => setOtpPhone(e.target.value)}
                     placeholder="Mobile Number"
                     inputMode="tel"
-                    className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2.5 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a] transition-all" />
+                    className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2.5 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ea580c]/15 focus:border-[#ea580c] transition-all" />
                 </div>
                 <button type="button" onClick={handleSendOtp} disabled={otpLoad}
                   className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-white text-xs font-black transition-all active:scale-95 disabled:opacity-60"
@@ -242,7 +242,7 @@ export default function LoginContent() {
                   <input type="text" value={otp} onChange={e => setOtp(e.target.value)}
                     placeholder="Enter 6-digit OTP"
                     maxLength={6} inputMode="numeric"
-                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-center tracking-[0.3em] font-bold placeholder:text-gray-400 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#0f4c2a]/15 focus:border-[#0f4c2a] transition-all" />
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-center tracking-[0.3em] font-bold placeholder:text-gray-400 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#ea580c]/15 focus:border-[#ea580c] transition-all" />
                   <button type="button" onClick={handleVerifyOtp} disabled={verLoad}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-60"
                     style={{ background: GB, color: G, fontFamily: 'Manrope, sans-serif' }}>
@@ -283,11 +283,7 @@ export default function LoginContent() {
           </div>
         </div>
 
-        {/* Test creds */}
-        <div className="mt-4 bg-white border border-gray-200 rounded-2xl px-4 py-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.08em] mb-1" style={{ color: G, fontFamily: 'Manrope, sans-serif' }}>🧪 Test Account</p>
-          <p className="text-xs text-gray-500" style={{ fontFamily: 'Manrope, sans-serif' }}>rahim@test.com • Customer@123</p>
-        </div>
+        
 
         <div className="text-center mt-4">
           <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors" style={{ fontFamily: 'Noto Sans Bengali, sans-serif' }}>
