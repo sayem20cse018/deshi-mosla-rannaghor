@@ -8,7 +8,6 @@ import { useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
 import { useAuthStore } from '@/store/auth.store';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 export interface ProductCardData {
@@ -72,7 +71,6 @@ export function ProductCard({ product, className, variant = 'default' }: Product
   const { addItem }                                           = useCartStore();
   const { isWishlisted, addToWishlist, removeFromWishlist }  = useWishlistStore();
   const { isAuthenticated }                                  = useAuthStore();
-  const router                                               = useRouter();
   const [adding,   setAdding]   = useState(false);
   const [wishBusy, setWishBusy] = useState(false);
 
@@ -98,7 +96,6 @@ export function ProductCard({ product, className, variant = 'default' }: Product
       availableStock: product.availableStock ?? 99,
     }, 1);
     setAdding(false);
-    toast.success('কার্টে যোগ হয়েছে', { icon: '🛒' });
   }
 
   function handleWishlist(e: React.MouseEvent) {
