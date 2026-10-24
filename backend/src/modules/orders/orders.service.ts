@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateOrderDto, SupportedPaymentMethod } from './dto/create-order.dto';
 import { CreateGuestOrderDto } from './dto/create-guest-order.dto';
+import { GUEST_SENTINEL } from '../payments/payments.service';
 import { PaymentsService } from '../payments/payments.service';
 
 // COD payment methods — don't need gateway redirect
@@ -792,7 +793,7 @@ export class OrdersService {
     });
 
     if (isOnline) {
-      const gatewayResult = await this.paymentsService.initiateSSLCommerzPayment('guest', {
+      const gatewayResult = await this.paymentsService.initiateSSLCommerzPayment(GUEST_SENTINEL, {
         orderId:         order.id,
         paymentMethod:   method as any,
         customerName:    guestName,
