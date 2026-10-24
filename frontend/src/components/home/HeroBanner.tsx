@@ -20,47 +20,6 @@ interface DBSlide {
   isActive: boolean; sortOrder: number;
 }
 
-const FALLBACK: DBSlide[] = [
-  {
-    id: 'f1',
-    title: null, titleEn: 'Real Taste',
-    subtitle: null, subtitleEn: 'Premium deshi spices and daily essentials, delivered to your door.',
-    tag: null, tagEn: '100% Pure Deshi',
-    badge: null, badgeEn: 'Up to 30% OFF',
-    image: null, imageMobile: null,
-    ctaLabel: null, ctaLabelEn: 'Shop Now', ctaUrl: '/shop',
-    cta2Label: null, cta2LabelEn: 'View Recipes', cta2Url: '/recipes',
-    bgColor: 'from-[#0a1f10] via-[#0f4c2a] to-[#1a6b3c]',
-    emoji: String.fromCodePoint(0x1F336),
-    isActive: true, sortOrder: 0,
-  },
-  {
-    id: 'f2',
-    title: null, titleEn: 'Eid Special Collection',
-    subtitle: null, subtitleEn: 'Biriyani, Korma, Halim — all the spices for your favourite recipes.',
-    tag: null, tagEn: 'Eid Special',
-    badge: null, badgeEn: 'Free Delivery',
-    image: null, imageMobile: null,
-    ctaLabel: null, ctaLabelEn: 'Shop Collection', ctaUrl: '/shop',
-    cta2Label: null, cta2LabelEn: 'View Offers', cta2Url: '/shop',
-    bgColor: 'from-[#081a0e] via-[#0f4c2a] to-[#1b5e35]',
-    emoji: String.fromCodePoint(0x1F35B),
-    isActive: true, sortOrder: 1,
-  },
-  {
-    id: 'f3',
-    title: null, titleEn: 'Nature\'s Finest Gift',
-    subtitle: null, subtitleEn: 'Pure Sundarbans honey, collected directly from the source. No additives.',
-    tag: null, tagEn: 'Sundarbans Honey',
-    badge: null, badgeEn: 'Limited Stock',
-    image: null, imageMobile: null,
-    ctaLabel: null, ctaLabelEn: 'Shop Honey', ctaUrl: '/shop',
-    cta2Label: null, cta2LabelEn: 'All Products', cta2Url: '/shop',
-    bgColor: 'from-[#0a1f10] via-[#0f4c2a] to-[#2d6a3f]',
-    emoji: String.fromCodePoint(0x1F36F),
-    isActive: true, sortOrder: 2,
-  },
-];
 
 function useHeroSlides() {
   return useQuery({
@@ -81,8 +40,9 @@ function useHeroSlides() {
 
 export function HeroBanner() {
   const { data: dbSlides } = useHeroSlides();
-  const slides = dbSlides && dbSlides.length > 0 ? dbSlides : FALLBACK;
+  const slides = dbSlides ?? [];
   const [idx, setIdx] = useState(0);
+
   const [animating, setAnimating] = useState(false);
 
   const goTo = useCallback((next: number) => {
@@ -93,9 +53,21 @@ export function HeroBanner() {
   }, [animating]);
 
   useEffect(() => {
+    if (!slides.length) return;
     const t = setInterval(() => goTo((idx + 1) % slides.length), 6000);
     return () => clearInterval(t);
   }, [idx, slides.length, goTo]);
+
+  // No slides yet — render skeleton banner while loading or when CMS is empty
+  if (!slides.length) {
+    return (
+      <section
+        className="relative w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 animate-pulse"
+        style={{ height: 'clamp(480px, 80vh, 860px)' }}
+        aria-label="Loading banner"
+      />
+    );
+  }
 
   const s = slides[idx];
   const bg = s.bgColor ?? 'from-[#0a1f10] via-[#0f4c2a] to-[#1a6b3c]';

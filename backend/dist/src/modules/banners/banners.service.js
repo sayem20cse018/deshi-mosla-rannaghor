@@ -16,8 +16,36 @@ let BannersService = class BannersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async getHeroSlides() {
+        const now = new Date();
+        const slides = await this.prisma.heroSlide.findMany({
+            where: {
+                isActive: true,
+                OR: [
+                    { startDate: null },
+                    { startDate: { lte: now } },
+                ],
+                AND: [
+                    { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+                ],
+            },
+            orderBy: { sortOrder: 'asc' },
+        });
+        return { success: true, data: slides };
+    }
+    async getHomepageSections() {
+        const sections = await this.prisma.homepageSection.findMany({
+            where: { isEnabled: true },
+            orderBy: { sortOrder: 'asc' },
+        });
+        return { success: true, data: sections };
+    }
+    async getHomepageSection(key) {
+        const section = await this.prisma.homepageSection.findUnique({ where: { key } });
+        return { success: true, data: section ?? null };
+    }
     async findAll() {
-        return { success: true, message: 'Banners module - coming soon', data: [] };
+        return this.getHeroSlides();
     }
 };
 exports.BannersService = BannersService;

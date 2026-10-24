@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var PaymentsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaymentsService = void 0;
+exports.GUEST_SENTINEL = exports.PaymentsService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const axios_1 = __importDefault(require("axios"));
@@ -23,39 +23,66 @@ const SSL_SANDBOX = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php';
 const SSL_LIVE = 'https://securepay.sslcommerz.com/gwprocess/v4/api.php';
 const SSL_VERIFY_SANDBOX = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php';
 const SSL_VERIFY_LIVE = 'https://securepay.sslcommerz.com/validator/api/validationserverAPI.php';
+const GUEST_SENTINEL = '__GUEST__';
+exports.GUEST_SENTINEL = GUEST_SENTINEL;
 let PaymentsService = PaymentsService_1 = class PaymentsService {
     constructor(prisma, config) {
         this.prisma = prisma;
         this.config = config;
         this.logger = new common_1.Logger(PaymentsService_1.name);
     }
+    getCallbackUrls() {
+        const nodeEnv = this.config.get('NODE_ENV', 'development');
+        const isProduction = nodeEnv === 'production';
+        const frontendUrl = this.stripTrailingSlash(this.config.get('FRONTEND_URL', 'http://localhost:3000'));
+        let backendUrl = this.config.get('BACKEND_URL', '');
+        if (!backendUrl) {
+            if (isProduction) {
+                throw new common_1.InternalServerErrorException('BACKEND_URL environment variable is required in production for SSLCommerz IPN callbacks.');
+            }
+            const port = this.config.get('PORT', '5000');
+            backendUrl = `http://localhost:${port}`;
+        }
+        backendUrl = this.stripTrailingSlash(backendUrl);
+        const apiPrefix = this.stripTrailingSlash(this.config.get('API_PREFIX', 'api/v1'));
+        const successUrl = this.config.get('SSLCOMMERZ_SUCCESS_URL', `${frontendUrl}/payment/success`);
+        const failUrl = this.config.get('SSLCOMMERZ_FAIL_URL', `${frontendUrl}/payment/failed`);
+        const cancelUrl = this.config.get('SSLCOMMERZ_CANCEL_URL', `${frontendUrl}/payment/cancel`);
+        const ipnUrl = this.config.get('SSLCOMMERZ_WEBHOOK_URL', `${backendUrl}/${apiPrefix}/payments/webhook/sslcommerz`);
+        return { successUrl, failUrl, cancelUrl, ipnUrl };
+    }
+    stripTrailingSlash(url) {
+        return url.replace(/\/+$/, '');
+    }
     async initiateSSLCommerzPayment(userId, dto) {
+        const isGuest = userId === GUEST_SENTINEL;
         const order = await this.prisma.order.findFirst({
-            where: { id: dto.orderId, userId },
+            where: isGuest
+                ? { id: dto.orderId, userId: null }
+                : { id: dto.orderId, userId },
             include: { address: true, payment: true, user: true },
         });
-        if (!order)
-            throw new common_1.NotFoundException('অর্ডারটি পাওয়া যায়নি');
+        if (!order) {
+            throw new common_1.NotFoundException(isGuest
+                ? 'Guest order not found.'
+                : 'Order not found or does not belong to you.');
+        }
         if (order.paymentStatus === 'PAID') {
-            throw new common_1.BadRequestException('এই অর্ডারটি ইতিমধ্যে পরিশোধ করা হয়েছে');
+            throw new common_1.BadRequestException('This order has already been paid.');
         }
         if (order.paymentStatus === 'PROCESSING') {
-            throw new common_1.BadRequestException('পেমেন্ট ইতিমধ্যে প্রক্রিয়াধীন আছে');
+            throw new common_1.BadRequestException('Payment is already in progress for this order.');
         }
+        const customerName = dto.customerName ?? order.user?.name ?? order.address.fullName;
+        const customerEmail = dto.customerEmail ?? order.user?.email ?? 'guest@deshimoslar.com';
+        const customerPhone = dto.customerPhone ?? order.user?.phone ?? order.address.phone;
+        const customerAddress = dto.customerAddress ?? order.address.fullAddress;
         const tran_id = `DMR-${order.orderNumber}-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`;
         const storeId = this.config.get('SSLCOMMERZ_STORE_ID', 'testbox');
         const storePass = this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty');
         const isLive = this.config.get('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-        const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
-        const backendUrl = `http://localhost:${this.config.get('PORT', '5000')}/api/v1`;
-        const successUrl = this.config.get('SSLCOMMERZ_SUCCESS_URL', `${frontendUrl}/payment/success`);
-        const failUrl = this.config.get('SSLCOMMERZ_FAIL_URL', `${frontendUrl}/payment/failed`);
-        const cancelUrl = this.config.get('SSLCOMMERZ_CANCEL_URL', `${frontendUrl}/payment/cancel`);
-        const ipnUrl = this.config.get('SSLCOMMERZ_WEBHOOK_URL', `${backendUrl}/payments/webhook/sslcommerz`);
-        const customerName = dto.customerName ?? order.user?.name ?? order.address.fullName;
-        const customerEmail = dto.customerEmail ?? order.user?.email ?? 'customer@deshimoslar.com';
-        const customerPhone = dto.customerPhone ?? order.user?.phone ?? order.address.phone;
-        const customerAddress = dto.customerAddress ?? order.address.fullAddress;
+        const { successUrl, failUrl, cancelUrl, ipnUrl } = this.getCallbackUrls();
+        this.logger.log(`SSLCommerz initiate: orderId=${order.id} ipnUrl=${ipnUrl}`);
         const params = new URLSearchParams({
             store_id: storeId,
             store_passwd: storePass,
@@ -84,15 +111,16 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             product_category: 'Grocery',
             product_profile: 'general',
             value_a: order.id,
-            value_b: userId,
+            value_b: isGuest ? 'guest' : userId,
             value_c: order.orderNumber,
-            value_d: '',
+            value_d: isGuest ? 'guest' : 'auth',
         });
         await this.prisma.$transaction(async (tx) => {
             await tx.order.update({
                 where: { id: order.id },
                 data: { paymentStatus: 'PROCESSING', paymentMethod: dto.paymentMethod },
             });
+            let paymentId;
             if (order.payment) {
                 await tx.payment.update({
                     where: { id: order.payment.id },
@@ -103,9 +131,10 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                         paymentRef: tran_id,
                     },
                 });
+                paymentId = order.payment.id;
             }
             else {
-                await tx.payment.create({
+                const newPayment = await tx.payment.create({
                     data: {
                         orderId: order.id,
                         transactionId: tran_id,
@@ -115,10 +144,11 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                         paymentRef: tran_id,
                     },
                 });
+                paymentId = newPayment.id;
             }
             await tx.paymentTransaction.create({
                 data: {
-                    paymentId: (order.payment?.id ?? (await tx.payment.findUnique({ where: { orderId: order.id } })).id),
+                    paymentId,
                     txnId: tran_id,
                     amount: order.totalAmount,
                     status: 'INITIATED',
@@ -147,18 +177,18 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                 };
             }
             await this.rollbackPaymentStatus(order.id);
-            throw new common_1.BadRequestException(`পেমেন্ট গেটওয়ে সংযোগ ব্যর্থ হয়েছে: ${sslData?.failedreason ?? 'Unknown error'}`);
+            throw new common_1.BadRequestException(`Payment gateway error: ${sslData?.failedreason ?? 'Unknown error'}`);
         }
         catch (err) {
-            if (err instanceof common_1.BadRequestException)
+            if (err instanceof common_1.BadRequestException || err instanceof common_1.InternalServerErrorException)
                 throw err;
             await this.rollbackPaymentStatus(order.id);
             this.logger.error(`SSLCommerz init failed: ${err.message}`);
-            throw new common_1.BadRequestException('পেমেন্ট গেটওয়ের সাথে সংযোগ করা যাচ্ছে না। পরে চেষ্টা করুন।');
+            throw new common_1.BadRequestException('Could not connect to payment gateway. Please try again.');
         }
     }
     async handleSSLCommerzIPN(body) {
-        const { tran_id, val_id, status, amount, currency, value_a: orderId } = body;
+        const { tran_id, val_id, status, value_a: orderId } = body;
         this.logger.log(`IPN received: tran_id=${tran_id}, status=${status}, orderId=${orderId}`);
         if (!tran_id || !orderId) {
             this.logger.warn('IPN missing tran_id or orderId');
@@ -177,28 +207,23 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             return { received: true };
         }
         const isLive = this.config.get('SSLCOMMERZ_IS_LIVE', 'false') === 'true';
-        const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
         const storeId = this.config.get('SSLCOMMERZ_STORE_ID', 'testbox');
         const storePass = this.config.get('SSLCOMMERZ_STORE_PASSWORD', 'qwerty');
+        const verifyEndpoint = isLive ? SSL_VERIFY_LIVE : SSL_VERIFY_SANDBOX;
         let verified = false;
         let rawVerification = null;
         if (status === 'VALID' || status === 'VALIDATED') {
             try {
                 const vRes = await axios_1.default.get(verifyEndpoint, {
-                    params: {
-                        val_id,
-                        store_id: storeId,
-                        store_passwd: storePass,
-                        format: 'json',
-                    },
+                    params: { val_id, store_id: storeId, store_passwd: storePass, format: 'json' },
                     timeout: 10000,
                 });
                 rawVerification = vRes.data;
                 verified = vRes.data?.status === 'VALID' || vRes.data?.status === 'VALIDATED';
-                this.logger.log(`SSL verify: ${vRes.data?.status}`);
+                this.logger.log(`IPN SSL verify: ${vRes.data?.status}`);
             }
             catch (e) {
-                this.logger.error(`SSL verification failed: ${e.message}`);
+                this.logger.error(`IPN SSL verification failed: ${e.message}`);
             }
         }
         const txnStatus = verified ? 'SUCCESS' : (status === 'FAILED' ? 'FAILED' : 'CANCELLED');
@@ -241,7 +266,9 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                 data: {
                     orderId: payment.orderId,
                     status: ordStatus,
-                    note: verified ? 'SSLCommerz পেমেন্ট যাচাই সম্পন্ন' : `পেমেন্ট ব্যর্থ: ${status}`,
+                    note: verified
+                        ? 'SSLCommerz payment verified via IPN'
+                        : `Payment failed via IPN: ${status}`,
                     createdBy: 'PAYMENT_GATEWAY',
                 },
             });
@@ -305,7 +332,7 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                         data: {
                             orderId: payment.orderId,
                             status: 'CONFIRMED',
-                            note: 'পেমেন্ট সফল — অর্ডার নিশ্চিত',
+                            note: 'Payment successful — order confirmed',
                             createdBy: 'PAYMENT_GATEWAY',
                         },
                     });
@@ -314,14 +341,14 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             }
         }
         catch (e) {
-            this.logger.error(`Success verify failed: ${e.message}`);
+            this.logger.error(`Success callback verify failed: ${e.message}`);
         }
         return { success: false, orderId: payment.orderId };
     }
     async handlePaymentFailed(body) {
         const { tran_id, value_a: orderId } = body;
         if (tran_id)
-            await this.markPaymentFailed(tran_id, 'পেমেন্ট ব্যর্থ হয়েছে');
+            await this.markPaymentFailed(tran_id, 'Payment failed at gateway');
         return { success: false, orderId: orderId ?? null };
     }
     async handlePaymentCancelled(body) {
@@ -336,9 +363,9 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             include: { order: true },
         });
         if (!payment)
-            throw new common_1.NotFoundException('পেমেন্ট তথ্য পাওয়া যায়নি');
+            throw new common_1.NotFoundException('Payment record not found.');
         if (payment.paymentStatus !== 'PAID') {
-            throw new common_1.BadRequestException('শুধুমাত্র পরিশোধিত অর্ডারে রিফান্ড করা যাবে');
+            throw new common_1.BadRequestException('Refunds are only allowed for paid orders.');
         }
         const refundAmount = amount ?? Number(payment.amount);
         const isPartial = refundAmount < Number(payment.amount);
@@ -364,29 +391,24 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
                 data: {
                     orderId,
                     status: 'REFUNDED',
-                    note: `রিফান্ড প্রক্রিয়া শুরু: ${reason}`,
+                    note: `Refund initiated: ${reason}`,
                     createdBy: 'SYSTEM',
                 },
             });
         });
         return {
             success: true,
-            message: 'রিফান্ড প্রক্রিয়া শুরু হয়েছে',
+            message: 'Refund process started.',
             refundAmount,
         };
     }
     async getPaymentStatus(orderId, userId) {
         const payment = await this.prisma.payment.findFirst({
             where: { orderId, order: { userId } },
-            include: {
-                transactions: {
-                    orderBy: { createdAt: 'desc' },
-                    take: 5,
-                },
-            },
+            include: { transactions: { orderBy: { createdAt: 'desc' }, take: 5 } },
         });
         if (!payment)
-            throw new common_1.NotFoundException('পেমেন্ট তথ্য পাওয়া যায়নি');
+            throw new common_1.NotFoundException('Payment record not found.');
         return {
             success: true,
             data: {

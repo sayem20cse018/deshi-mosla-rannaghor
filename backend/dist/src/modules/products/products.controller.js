@@ -61,6 +61,24 @@ let ProductsController = class ProductsController {
     toggleFlag(id, flag) {
         return this.productsService.toggleFlag(id, flag);
     }
+    adminFindAll(query) {
+        return this.productsService.adminFindAll(query);
+    }
+    bulkDelete(body) {
+        return this.productsService.bulkDelete(body.ids);
+    }
+    bulkStatus(body) {
+        return this.productsService.bulkStatus(body.ids, body.isActive);
+    }
+    addImage(id, body) {
+        return this.productsService.addImage(id, body.url, body.altText, body.isPrimary);
+    }
+    deleteImage(imageId) {
+        return this.productsService.deleteImage(imageId);
+    }
+    setPrimaryImage(id, imageId) {
+        return this.productsService.setPrimaryImage(id, imageId);
+    }
 };
 exports.ProductsController = ProductsController;
 __decorate([
@@ -184,6 +202,80 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "toggleFlag", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Get)('admin/list'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] List all products including inactive' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [query_product_dto_1.QueryProductDto]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "adminFindAll", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Post)('admin/bulk-delete'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Bulk delete products' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "bulkDelete", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Post)('admin/bulk-status'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Bulk update product status' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "bulkStatus", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Post)(':id/images'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Add product image' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "addImage", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Delete)('images/:imageId'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Delete product image' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('imageId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "deleteImage", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.Patch)(':id/images/:imageId/primary'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Set primary image' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('imageId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "setPrimaryImage", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, swagger_1.ApiTags)('Products'),
     (0, common_1.Controller)('products'),

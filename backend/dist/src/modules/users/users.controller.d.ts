@@ -44,7 +44,7 @@ export declare class UsersController {
         success: boolean;
         message: string;
     }>;
-    getOrders(userId: string, page?: number, limit?: number): Promise<{
+    getOrders(userId: string, page?: number, limit?: number, status?: string): Promise<{
         success: boolean;
         data: {
             subtotal: number;
@@ -52,6 +52,12 @@ export declare class UsersController {
             deliveryCharge: number;
             discountAmount: number;
             couponDiscount: number;
+            delivery: {
+                status: import(".prisma/client").$Enums.DeliveryStatus;
+                courierName: string | null;
+                trackingNumber: string | null;
+                estimatedDate: Date | null;
+            } | null;
             items: {
                 productImage: string | null;
                 productName: string;
@@ -62,11 +68,11 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
             orderNumber: string;
-            userId: string;
+            userId: string | null;
             addressId: string;
             couponId: string | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
             paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
             paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
             deliveryNote: string | null;
@@ -110,7 +116,7 @@ export declare class UsersController {
                 fullAddress: string;
                 postalCode: string | null;
                 isDefault: boolean;
-                userId: string;
+                userId: string | null;
             };
             payment: {
                 id: string;
@@ -150,11 +156,11 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
             orderNumber: string;
-            userId: string;
+            userId: string | null;
             addressId: string;
             couponId: string | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
             paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
             paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
             deliveryNote: string | null;
@@ -184,7 +190,7 @@ export declare class UsersController {
             fullAddress: string;
             postalCode: string | null;
             isDefault: boolean;
-            userId: string;
+            userId: string | null;
         }[];
     }>;
     createAddress(userId: string, dto: CreateAddressDto): Promise<{
@@ -203,7 +209,7 @@ export declare class UsersController {
             fullAddress: string;
             postalCode: string | null;
             isDefault: boolean;
-            userId: string;
+            userId: string | null;
         };
     }>;
     updateAddress(userId: string, addressId: string, dto: UpdateAddressDto): Promise<{
@@ -222,7 +228,7 @@ export declare class UsersController {
             fullAddress: string;
             postalCode: string | null;
             isDefault: boolean;
-            userId: string;
+            userId: string | null;
         };
     }>;
     deleteAddress(userId: string, addressId: string): Promise<{
@@ -270,8 +276,8 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             status: import(".prisma/client").$Enums.ReviewStatus;
+            userId: string;
             orderId: string | null;
             productId: string;
             rating: number;

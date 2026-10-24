@@ -1,5 +1,6 @@
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateGuestOrderDto } from './dto/create-guest-order.dto';
 import { PaymentsService } from '../payments/payments.service';
 export declare class OrdersService {
     private readonly prisma;
@@ -30,7 +31,7 @@ export declare class OrdersService {
                 fullAddress: string;
                 postalCode: string | null;
                 isDefault: boolean;
-                userId: string;
+                userId: string | null;
             } | undefined;
             payment?: {
                 id: string;
@@ -58,11 +59,11 @@ export declare class OrdersService {
             id?: string | undefined;
             createdAt?: Date | undefined;
             updatedAt?: Date | undefined;
+            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
             orderNumber?: string | undefined;
-            userId?: string | undefined;
+            userId?: string | null | undefined;
             addressId?: string | undefined;
             couponId?: string | null | undefined;
-            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
             paymentMethod?: import(".prisma/client").$Enums.PaymentMethod | undefined;
             paymentStatus?: import(".prisma/client").$Enums.PaymentStatus | undefined;
             deliveryNote?: string | null | undefined;
@@ -99,7 +100,7 @@ export declare class OrdersService {
                 fullAddress: string;
                 postalCode: string | null;
                 isDefault: boolean;
-                userId: string;
+                userId: string | null;
             } | undefined;
             payment?: {
                 id: string;
@@ -127,11 +128,11 @@ export declare class OrdersService {
             id?: string | undefined;
             createdAt?: Date | undefined;
             updatedAt?: Date | undefined;
+            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
             orderNumber?: string | undefined;
-            userId?: string | undefined;
+            userId?: string | null | undefined;
             addressId?: string | undefined;
             couponId?: string | null | undefined;
-            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
             paymentMethod?: import(".prisma/client").$Enums.PaymentMethod | undefined;
             paymentStatus?: import(".prisma/client").$Enums.PaymentStatus | undefined;
             deliveryNote?: string | null | undefined;
@@ -229,4 +230,220 @@ export declare class OrdersService {
         }[];
     }>;
     private serializeOrder;
+    placeGuestOrder(dto: CreateGuestOrderDto): Promise<{
+        success: boolean;
+        requiresGateway: boolean;
+        message: string;
+        gatewayUrl: any;
+        transactionId: string;
+        data: {
+            subtotal: number;
+            totalAmount: number;
+            deliveryCharge: number;
+            discountAmount: number;
+            couponDiscount: number;
+            address?: {
+                phone: string;
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                label: string | null;
+                fullName: string;
+                division: string;
+                district: string;
+                area: string;
+                fullAddress: string;
+                postalCode: string | null;
+                isDefault: boolean;
+                userId: string | null;
+            } | undefined;
+            payment?: {
+                id: string;
+                paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+                paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+                codStatus: import(".prisma/client").$Enums.CodStatus | null;
+            } | null | undefined;
+            delivery?: {
+                status: import(".prisma/client").$Enums.DeliveryStatus;
+                estimatedDate: Date | null;
+            } | null | undefined;
+            items?: {
+                productImage: string | null;
+                id: string;
+                createdAt: Date;
+                orderId: string;
+                productId: string;
+                productName: string;
+                productSku: string;
+                quantity: number;
+                unitPrice: import("@prisma/client/runtime/library").Decimal;
+                discountPrice: import("@prisma/client/runtime/library").Decimal | null;
+                totalPrice: import("@prisma/client/runtime/library").Decimal;
+            }[] | undefined;
+            id?: string | undefined;
+            createdAt?: Date | undefined;
+            updatedAt?: Date | undefined;
+            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
+            orderNumber?: string | undefined;
+            userId?: string | null | undefined;
+            addressId?: string | undefined;
+            couponId?: string | null | undefined;
+            paymentMethod?: import(".prisma/client").$Enums.PaymentMethod | undefined;
+            paymentStatus?: import(".prisma/client").$Enums.PaymentStatus | undefined;
+            deliveryNote?: string | null | undefined;
+            estimatedDelivery?: Date | null | undefined;
+            confirmedAt?: Date | null | undefined;
+            packedAt?: Date | null | undefined;
+            shippedAt?: Date | null | undefined;
+            deliveredAt?: Date | null | undefined;
+            cancelledAt?: Date | null | undefined;
+            cancelReason?: string | null | undefined;
+            returnedAt?: Date | null | undefined;
+            returnReason?: string | null | undefined;
+        };
+    } | {
+        success: boolean;
+        requiresGateway: boolean;
+        message: string;
+        data: {
+            subtotal: number;
+            totalAmount: number;
+            deliveryCharge: number;
+            discountAmount: number;
+            couponDiscount: number;
+            address?: {
+                phone: string;
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                label: string | null;
+                fullName: string;
+                division: string;
+                district: string;
+                area: string;
+                fullAddress: string;
+                postalCode: string | null;
+                isDefault: boolean;
+                userId: string | null;
+            } | undefined;
+            payment?: {
+                id: string;
+                paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+                paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+                codStatus: import(".prisma/client").$Enums.CodStatus | null;
+            } | null | undefined;
+            delivery?: {
+                status: import(".prisma/client").$Enums.DeliveryStatus;
+                estimatedDate: Date | null;
+            } | null | undefined;
+            items?: {
+                productImage: string | null;
+                id: string;
+                createdAt: Date;
+                orderId: string;
+                productId: string;
+                productName: string;
+                productSku: string;
+                quantity: number;
+                unitPrice: import("@prisma/client/runtime/library").Decimal;
+                discountPrice: import("@prisma/client/runtime/library").Decimal | null;
+                totalPrice: import("@prisma/client/runtime/library").Decimal;
+            }[] | undefined;
+            id?: string | undefined;
+            createdAt?: Date | undefined;
+            updatedAt?: Date | undefined;
+            status?: import(".prisma/client").$Enums.OrderStatus | undefined;
+            orderNumber?: string | undefined;
+            userId?: string | null | undefined;
+            addressId?: string | undefined;
+            couponId?: string | null | undefined;
+            paymentMethod?: import(".prisma/client").$Enums.PaymentMethod | undefined;
+            paymentStatus?: import(".prisma/client").$Enums.PaymentStatus | undefined;
+            deliveryNote?: string | null | undefined;
+            estimatedDelivery?: Date | null | undefined;
+            confirmedAt?: Date | null | undefined;
+            packedAt?: Date | null | undefined;
+            shippedAt?: Date | null | undefined;
+            deliveredAt?: Date | null | undefined;
+            cancelledAt?: Date | null | undefined;
+            cancelReason?: string | null | undefined;
+            returnedAt?: Date | null | undefined;
+            returnReason?: string | null | undefined;
+        };
+        gatewayUrl?: undefined;
+        transactionId?: undefined;
+    }>;
+    requestReturn(userId: string, orderId: string, reason: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    getInvoice(userId: string, orderId: string): Promise<{
+        success: boolean;
+        data: {
+            subtotal: number;
+            totalAmount: number;
+            deliveryCharge: number;
+            discountAmount: number;
+            couponDiscount: number;
+            items: {
+                unitPrice: number;
+                discountPrice: number | null;
+                totalPrice: number;
+                productImage: string | null;
+                id: string;
+                createdAt: Date;
+                orderId: string;
+                productId: string;
+                productName: string;
+                productSku: string;
+                quantity: number;
+            }[];
+            address: {
+                phone: string;
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                label: string | null;
+                fullName: string;
+                division: string;
+                district: string;
+                area: string;
+                fullAddress: string;
+                postalCode: string | null;
+                isDefault: boolean;
+                userId: string | null;
+            };
+            coupon: {
+                code: string;
+                discountType: import(".prisma/client").$Enums.DiscountType;
+                discountValue: import("@prisma/client/runtime/library").Decimal;
+            } | null;
+            payment: {
+                paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+                paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+                transactionId: string | null;
+                paidAt: Date | null;
+            } | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            orderNumber: string;
+            userId: string | null;
+            addressId: string;
+            couponId: string | null;
+            paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+            paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+            deliveryNote: string | null;
+            estimatedDelivery: Date | null;
+            confirmedAt: Date | null;
+            packedAt: Date | null;
+            shippedAt: Date | null;
+            deliveredAt: Date | null;
+            cancelledAt: Date | null;
+            cancelReason: string | null;
+            returnedAt: Date | null;
+            returnReason: string | null;
+        };
+    }>;
 }

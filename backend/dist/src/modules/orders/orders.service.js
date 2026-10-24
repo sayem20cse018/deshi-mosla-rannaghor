@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
 const create_order_dto_1 = require("./dto/create-order.dto");
 const payments_service_1 = require("../payments/payments.service");
+const payments_service_2 = require("../payments/payments.service");
 const COD_METHODS = new Set([create_order_dto_1.SupportedPaymentMethod.CASH_ON_DELIVERY]);
 const ONLINE_METHODS = new Set([
     create_order_dto_1.SupportedPaymentMethod.SSLCOMMERZ,
@@ -509,11 +510,258 @@ let OrdersService = class OrdersService {
             couponDiscount: Number(order.couponDiscount),
         };
     }
+    async placeGuestOrder(dto) {
+        const method = dto.paymentMethod ?? create_order_dto_1.SupportedPaymentMethod.CASH_ON_DELIVERY;
+        const isOnline = ONLINE_METHODS.has(method);
+        const productIds = dto.items.map((i) => i.productId);
+        const products = await this.prisma.product.findMany({
+            where: { id: { in: productIds } },
+            include: {
+                images: { where: { isPrimary: true }, take: 1 },
+                inventory: true,
+            },
+        });
+        if (products.length !== productIds.length) {
+            throw new common_1.BadRequestException('One or more products not found.');
+        }
+        let subtotal = 0;
+        let itemDiscount = 0;
+        for (const orderItem of dto.items) {
+            const p = products.find((pr) => pr.id === orderItem.productId);
+            if (!p.isActive)
+                throw new common_1.BadRequestException(`"${p.name}" is not available.`);
+            if (p.stockStatus === 'OUT_OF_STOCK')
+                throw new common_1.BadRequestException(`"${p.name}" is out of stock.`);
+            const available = p.inventory?.availableStock ?? 0;
+            if (available < orderItem.quantity)
+                throw new common_1.BadRequestException(`"${p.name}" has only ${available} unit(s) available.`);
+            const orig = Number(p.price);
+            const eff = p.discountPrice ? Number(p.discountPrice) : orig;
+            subtotal += eff * orderItem.quantity;
+            itemDiscount += (orig - eff) * orderItem.quantity;
+        }
+        let couponDiscount = 0;
+        let couponId;
+        if (dto.couponCode) {
+            const coupon = await this.prisma.coupon.findUnique({ where: { code: dto.couponCode.toUpperCase() } });
+            if (coupon && coupon.isActive && new Date() <= coupon.expiryDate) {
+                if (!coupon.minOrderAmount || subtotal >= Number(coupon.minOrderAmount)) {
+                    if (coupon.discountType === 'PERCENTAGE') {
+                        couponDiscount = (subtotal * Number(coupon.discountValue)) / 100;
+                        if (coupon.maxDiscount)
+                            couponDiscount = Math.min(couponDiscount, Number(coupon.maxDiscount));
+                    }
+                    else if (coupon.discountType === 'FIXED_AMOUNT') {
+                        couponDiscount = Math.min(Number(coupon.discountValue), subtotal);
+                    }
+                    else if (coupon.discountType === 'FREE_DELIVERY') {
+                        couponDiscount = DEFAULT_DELIVERY_CHARGE;
+                    }
+                    couponId = coupon.id;
+                }
+            }
+        }
+        const afterCoupon = subtotal - couponDiscount;
+        const isFreeDelivery = dto.couponCode
+            ? (await this.prisma.coupon.findUnique({ where: { code: dto.couponCode.toUpperCase() } }))?.discountType === 'FREE_DELIVERY'
+            : false;
+        const deliveryCharge = (afterCoupon >= FREE_DELIVERY_THRESHOLD || isFreeDelivery) ? 0 : DEFAULT_DELIVERY_CHARGE;
+        const totalAmount = afterCoupon + deliveryCharge;
+        const addr = await this.prisma.address.create({
+            data: {
+                userId: null,
+                fullName: dto.deliveryAddress.fullName,
+                phone: dto.deliveryAddress.phone,
+                division: dto.deliveryAddress.division,
+                district: dto.deliveryAddress.district,
+                area: dto.deliveryAddress.area,
+                fullAddress: dto.deliveryAddress.fullAddress,
+                postalCode: dto.deliveryAddress.postalCode,
+                isDefault: false,
+            },
+        });
+        const guestName = dto.deliveryAddress.fullName;
+        const guestEmail = dto.deliveryAddress.email ?? '';
+        const guestPhone = dto.deliveryAddress.phone;
+        const order = await this.prisma.$transaction(async (tx) => {
+            let orderNumber = generateOrderNumber();
+            let attempt = 0;
+            while (attempt < 5) {
+                const exists = await tx.order.findUnique({ where: { orderNumber } });
+                if (!exists)
+                    break;
+                orderNumber = generateOrderNumber();
+                attempt++;
+            }
+            const newOrder = await tx.order.create({
+                data: {
+                    orderNumber,
+                    userId: null,
+                    addressId: addr.id,
+                    couponId,
+                    status: 'PENDING',
+                    subtotal,
+                    discountAmount: itemDiscount,
+                    couponDiscount,
+                    deliveryCharge,
+                    totalAmount,
+                    paymentMethod: method,
+                    paymentStatus: isOnline ? 'PROCESSING' : 'PENDING',
+                    deliveryNote: dto.deliveryNote,
+                    estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                    items: {
+                        create: dto.items.map((orderItem) => {
+                            const p = products.find((pr) => pr.id === orderItem.productId);
+                            const orig = Number(p.price);
+                            const eff = p.discountPrice ? Number(p.discountPrice) : orig;
+                            return {
+                                productId: p.id,
+                                productName: p.name,
+                                productSku: p.sku,
+                                productImage: p.images?.[0]?.url ?? null,
+                                quantity: orderItem.quantity,
+                                unitPrice: eff,
+                                discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
+                                totalPrice: eff * orderItem.quantity,
+                            };
+                        }),
+                    },
+                },
+                include: { items: true, address: true },
+            });
+            await tx.orderStatusHistory.create({
+                data: { orderId: newOrder.id, status: 'PENDING', note: 'Guest order placed', createdBy: 'CUSTOMER' },
+            });
+            await tx.payment.create({
+                data: {
+                    orderId: newOrder.id,
+                    amount: totalAmount,
+                    paymentMethod: method,
+                    paymentStatus: isOnline ? 'PROCESSING' : 'PENDING',
+                    codStatus: !isOnline ? 'PENDING' : undefined,
+                },
+            });
+            await tx.delivery.create({
+                data: {
+                    orderId: newOrder.id,
+                    status: 'PENDING',
+                    deliveryCharge,
+                    estimatedDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                },
+            });
+            for (const orderItem of dto.items) {
+                const p = products.find((pr) => pr.id === orderItem.productId);
+                const inv = p.inventory;
+                if (!inv)
+                    continue;
+                const newAvailable = Math.max(0, inv.availableStock - orderItem.quantity);
+                await tx.inventory.update({
+                    where: { productId: p.id },
+                    data: { availableStock: newAvailable, soldQuantity: { increment: orderItem.quantity } },
+                });
+                await tx.inventoryLog.create({
+                    data: {
+                        inventoryId: inv.id,
+                        changeQty: -orderItem.quantity,
+                        type: 'SALE',
+                        reason: `Guest Order #${orderNumber}`,
+                        reference: newOrder.id,
+                    },
+                });
+                const newStatus = newAvailable === 0 ? 'OUT_OF_STOCK' : newAvailable <= inv.lowStockAlert ? 'LOW_STOCK' : 'IN_STOCK';
+                await tx.product.update({ where: { id: p.id }, data: { stockStatus: newStatus } });
+            }
+            if (couponId) {
+                await tx.coupon.update({ where: { id: couponId }, data: { usedCount: { increment: 1 } } });
+            }
+            return newOrder;
+        });
+        const fullOrder = await this.prisma.order.findUnique({
+            where: { id: order.id },
+            include: {
+                items: true,
+                address: true,
+                payment: { select: { id: true, paymentMethod: true, paymentStatus: true, codStatus: true } },
+                delivery: { select: { status: true, estimatedDate: true } },
+            },
+        });
+        if (isOnline) {
+            const gatewayResult = await this.paymentsService.initiateSSLCommerzPayment(payments_service_1.GUEST_SENTINEL, {
+                orderId: order.id,
+                paymentMethod: method,
+                customerName: guestName,
+                customerEmail: guestEmail,
+                customerPhone: guestPhone,
+                customerAddress: dto.deliveryAddress.fullAddress,
+            });
+            return {
+                success: true, requiresGateway: true,
+                message: 'Redirect to payment gateway',
+                gatewayUrl: gatewayResult.gatewayUrl,
+                transactionId: gatewayResult.transactionId,
+                data: { ...fullOrder, subtotal, totalAmount, deliveryCharge, discountAmount: itemDiscount, couponDiscount },
+            };
+        }
+        return {
+            success: true,
+            requiresGateway: false,
+            message: 'Order placed successfully!',
+            data: { ...fullOrder, subtotal, totalAmount, deliveryCharge, discountAmount: itemDiscount, couponDiscount },
+        };
+    }
+    async requestReturn(userId, orderId, reason) {
+        const order = await this.prisma.order.findFirst({ where: { id: orderId, userId } });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found.');
+        if (order.status !== 'DELIVERED') {
+            throw new common_1.BadRequestException('Returns are only allowed on delivered orders.');
+        }
+        await this.prisma.$transaction(async (tx) => {
+            await tx.order.update({
+                where: { id: orderId },
+                data: { status: 'RETURNED', returnedAt: new Date(), returnReason: reason },
+            });
+            await tx.orderStatusHistory.create({
+                data: { orderId, status: 'RETURNED', note: reason, createdBy: 'CUSTOMER' },
+            });
+        });
+        return { success: true, message: 'Return request submitted.' };
+    }
+    async getInvoice(userId, orderId) {
+        const order = await this.prisma.order.findFirst({
+            where: { id: orderId, userId },
+            include: {
+                items: true,
+                address: true,
+                payment: { select: { paymentMethod: true, paymentStatus: true, paidAt: true, transactionId: true } },
+                coupon: { select: { code: true, discountType: true, discountValue: true } },
+            },
+        });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found.');
+        return {
+            success: true,
+            data: {
+                ...order,
+                subtotal: Number(order.subtotal),
+                totalAmount: Number(order.totalAmount),
+                deliveryCharge: Number(order.deliveryCharge),
+                discountAmount: Number(order.discountAmount),
+                couponDiscount: Number(order.couponDiscount),
+                items: order.items.map((i) => ({
+                    ...i,
+                    unitPrice: Number(i.unitPrice),
+                    discountPrice: i.discountPrice ? Number(i.discountPrice) : null,
+                    totalPrice: Number(i.totalPrice),
+                })),
+            },
+        };
+    }
 };
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        payments_service_1.PaymentsService])
+        payments_service_2.PaymentsService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

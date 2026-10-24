@@ -109,8 +109,8 @@ export declare class ProductsController {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                userId: string;
                 status: import(".prisma/client").$Enums.ReviewStatus;
+                userId: string;
                 orderId: string | null;
                 productId: string;
                 rating: number;
@@ -184,6 +184,7 @@ export declare class ProductsController {
             minOrderQty: number;
             maxOrderQty: number | null;
             stockStatus: import(".prisma/client").$Enums.StockStatus;
+            avgRating: number | null;
             isFeatured: boolean;
             isBestSeller: boolean;
             isNewArrival: boolean;
@@ -219,6 +220,7 @@ export declare class ProductsController {
             minOrderQty: number;
             maxOrderQty: number | null;
             stockStatus: import(".prisma/client").$Enums.StockStatus;
+            avgRating: number | null;
             isFeatured: boolean;
             isBestSeller: boolean;
             isNewArrival: boolean;
@@ -257,11 +259,106 @@ export declare class ProductsController {
             minOrderQty: number;
             maxOrderQty: number | null;
             stockStatus: import(".prisma/client").$Enums.StockStatus;
+            avgRating: number | null;
             isFeatured: boolean;
             isBestSeller: boolean;
             isNewArrival: boolean;
             metaTitle: string | null;
             metaDesc: string | null;
         };
+    }>;
+    adminFindAll(query: QueryProductDto): Promise<{
+        success: boolean;
+        data: {
+            price: number;
+            discountPrice: number | null;
+            primaryImage: any;
+            availableStock: any;
+            reviewCount: any;
+            orderCount: any;
+            images: undefined;
+            inventory: undefined;
+            category: {
+                name: string;
+                id: string;
+                slug: string;
+            };
+            brand: {
+                name: string;
+                id: string;
+            } | null;
+            _count: {
+                reviews: number;
+                orderItems: number;
+            };
+            tags: string[];
+            description: string | null;
+            name: string;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            nameEn: string | null;
+            slug: string;
+            sku: string;
+            categoryId: string;
+            brandId: string | null;
+            ingredients: string | null;
+            usage: string | null;
+            storageInfo: string | null;
+            origin: string | null;
+            weight: string | null;
+            size: string | null;
+            discountPercent: number | null;
+            minOrderQty: number;
+            maxOrderQty: number | null;
+            stockStatus: import(".prisma/client").$Enums.StockStatus;
+            avgRating: number | null;
+            isFeatured: boolean;
+            isBestSeller: boolean;
+            isNewArrival: boolean;
+            metaTitle: string | null;
+            metaDesc: string | null;
+        }[];
+        meta: import("../../common/utils/pagination.util").PaginationMeta;
+    }>;
+    bulkDelete(body: {
+        ids: string[];
+    }): Promise<{
+        success: boolean;
+        message: string;
+        count: number;
+    }>;
+    bulkStatus(body: {
+        ids: string[];
+        isActive: boolean;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        count: number;
+    }>;
+    addImage(id: string, body: {
+        url: string;
+        altText?: string;
+        isPrimary?: boolean;
+    }): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            productId: string;
+            isPrimary: boolean;
+            url: string;
+            altText: string | null;
+            sortOrder: number;
+        };
+    }>;
+    deleteImage(imageId: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    setPrimaryImage(id: string, imageId: string): Promise<{
+        success: boolean;
+        message: string;
     }>;
 }

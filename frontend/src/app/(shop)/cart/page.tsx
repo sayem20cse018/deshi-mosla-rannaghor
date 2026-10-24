@@ -150,28 +150,15 @@ export default function CartPage() {
               </button>
             </div>
 
-            {/* You may also like — quick add section */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 mt-2">
-              <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                💡 আপনার পছন্দ হতে পারে
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { name: 'ধনে গুঁড়া', slug: 'coriander-powder' },
-                  { name: 'সরিষার তেল', slug: 'cold-press-mustard-oil' },
-                  { name: 'সুন্দরবন মধু', slug: 'sundarbans-pure-honey' },
-                  { name: 'বিরিয়ানি মসলা', slug: 'biryani-masala' },
-                  { name: 'মিনিকেট চাল', slug: 'premium-miniket-rice' },
-                ].map((p) => (
-                  <Link
-                    key={p.slug}
-                    href={`/product/${p.slug}`}
-                    className="chip text-xs hover:bg-orange-50 transition-colors"
-                  >
-                    {p.name}
-                  </Link>
-                ))}
-              </div>
+            {/* Continue shopping */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 mt-2 text-center">
+              <p className="text-sm text-gray-500 mb-2">আরও পণ্য দেখতে চান?</p>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-orange-600 hover:underline"
+              >
+                সব পণ্য দেখুন →
+              </Link>
             </div>
           </div>
 

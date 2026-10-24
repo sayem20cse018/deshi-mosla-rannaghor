@@ -20,13 +20,14 @@ const class_validator_1 = require("class-validator");
 const swagger_2 = require("@nestjs/swagger");
 const orders_service_1 = require("./orders.service");
 const create_order_dto_1 = require("./dto/create-order.dto");
+const create_guest_order_dto_1 = require("./dto/create-guest-order.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const public_decorator_1 = require("../../common/decorators/public.decorator");
 class CancelOrderDto {
 }
 __decorate([
-    (0, swagger_2.ApiPropertyOptional)({ example: 'ভুলে অর্ডার দিয়েছিলাম' }),
+    (0, swagger_2.ApiPropertyOptional)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(500),
@@ -38,6 +39,9 @@ let OrdersController = class OrdersController {
     }
     placeOrder(userId, dto) {
         return this.ordersService.placeOrder(userId, dto);
+    }
+    placeGuestOrder(dto) {
+        return this.ordersService.placeGuestOrder(dto);
     }
     trackOrder(orderNumber, phone) {
         return this.ordersService.trackOrderByNumber(orderNumber, phone);
@@ -54,11 +58,17 @@ let OrdersController = class OrdersController {
     cancelOrder(userId, orderId, dto) {
         return this.ordersService.cancelOrder(userId, orderId, dto.reason);
     }
+    requestReturn(userId, orderId, dto) {
+        return this.ordersService.requestReturn(userId, orderId, dto.reason ?? 'Return requested by customer');
+    }
+    getInvoice(userId, orderId) {
+        return this.ordersService.getInvoice(userId, orderId);
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Place a new order (COD or online)' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Place a new order (requires login)' }),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
@@ -68,9 +78,19 @@ __decorate([
 ], OrdersController.prototype, "placeOrder", null);
 __decorate([
     (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('guest'),
+    (0, swagger_1.ApiOperation)({ summary: 'Place a guest order without authentication' }),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_guest_order_dto_1.CreateGuestOrderDto]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "placeGuestOrder", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('track/:orderNumber'),
     (0, swagger_1.ApiOperation)({ summary: 'Track order by order number (public)' }),
-    (0, swagger_1.ApiQuery)({ name: 'phone', required: false, description: 'Phone for verification' }),
+    (0, swagger_1.ApiQuery)({ name: 'phone', required: false }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('orderNumber')),
     __param(1, (0, common_1.Query)('phone')),
@@ -121,6 +141,27 @@ __decorate([
     __metadata("design:paramtypes", [String, String, CancelOrderDto]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "cancelOrder", null);
+__decorate([
+    (0, common_1.Patch)(':id/return'),
+    (0, swagger_1.ApiOperation)({ summary: 'Request return on a delivered order' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, CancelOrderDto]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "requestReturn", null);
+__decorate([
+    (0, common_1.Get)(':id/invoice'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get invoice data for an order' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "getInvoice", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, swagger_1.ApiTags)('Orders'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

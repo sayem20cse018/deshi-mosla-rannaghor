@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -24,21 +24,6 @@ const COLOR_MAP: Record<string, { from: string; to: string; border: string; text
 
 const DEFAULT_COLOR = { from: '#f8fafc', to: '#f1f5f9', border: '#e2e8f0', text: '#1e293b', iconBg: '#f1f5f9' };
 
-const MOCK_CATEGORIES = [
-  { id:'1',  name:'মসলা',       nameEn:'Spices',    slug:'mosla',    icon:'🌶️', _count:{ products: 24 } },
-  { id:'2',  name:'তেল',        nameEn:'Oil',        slug:'tel',      icon:'🫙',  _count:{ products: 12 } },
-  { id:'3',  name:'চাল',        nameEn:'Rice',       slug:'chal',     icon:'🍚',  _count:{ products: 8  } },
-  { id:'4',  name:'ডাল',        nameEn:'Dal',        slug:'dal',      icon:'🫘',  _count:{ products: 15 } },
-  { id:'5',  name:'আটা',        nameEn:'Flour',      slug:'ata',      icon:'🌾',  _count:{ products: 10 } },
-  { id:'6',  name:'মধু',        nameEn:'Honey',      slug:'modhu',    icon:'🍯',  _count:{ products: 6  } },
-  { id:'7',  name:'চা',         nameEn:'Tea',        slug:'cha',      icon:'☕',  _count:{ products: 9  } },
-  { id:'8',  name:'স্ন্যাকস',  nameEn:'Snacks',     slug:'snacks',   icon:'🍿',  _count:{ products: 18 } },
-  { id:'9',  name:'নুডলস',     nameEn:'Noodles',    slug:'noodles',  icon:'🍜',  _count:{ products: 7  } },
-  { id:'10', name:'সস',         nameEn:'Sauce',      slug:'sauce',    icon:'🥫',  _count:{ products: 11 } },
-  { id:'11', name:'আচার',       nameEn:'Pickle',     slug:'achar',    icon:'🥒',  _count:{ products: 14 } },
-  { id:'12', name:'সুপারফুড',  nameEn:'Super Food', slug:'superfood',icon:'🌿',  _count:{ products: 5  } },
-];
-
 interface FeaturedCategoriesProps {
   title?: string;
   subtitle?: string;
@@ -48,8 +33,8 @@ export function FeaturedCategories({
   title   = 'Featured Categories',
   subtitle = 'পছন্দের ক্যাটাগরি থেকে বেছে নিন',
 }: FeaturedCategoriesProps) {
-  const { data: rawCats = [], isLoading } = useCategories();
-  const cats = (rawCats.length > 0 ? rawCats : MOCK_CATEGORIES) as any[];
+  const { data: rawCats = [], isLoading, isError } = useCategories();
+  const cats = rawCats as any[];
 
   return (
     <section className="py-12 bg-white" style={{ fontFamily: 'Noto Sans Bengali, Manrope, sans-serif' }}>
@@ -78,6 +63,10 @@ export function FeaturedCategories({
               <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
             ))}
           </div>
+        ) : isError ? (
+          <div className="py-8 text-center text-gray-400 text-sm">Categories could not be loaded.</div>
+        ) : cats.length === 0 ? (
+          <div className="py-8 text-center text-gray-400 text-sm">No categories found.</div>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {cats.map((cat: any) => {

@@ -34,8 +34,8 @@ let UsersController = class UsersController {
     changePassword(userId, dto) {
         return this.usersService.changePassword(userId, dto);
     }
-    getOrders(userId, page, limit) {
-        return this.usersService.getMyOrders(userId, page, limit);
+    getOrders(userId, page, limit, status) {
+        return this.usersService.getMyOrders(userId, page, limit, status);
     }
     getOrderDetail(userId, orderId) {
         return this.usersService.getOrderDetail(userId, orderId);
@@ -123,8 +123,9 @@ __decorate([
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.Query)('page')),
     __param(2, (0, common_1.Query)('limit')),
+    __param(3, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, Number]),
+    __metadata("design:paramtypes", [String, Number, Number, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getOrders", null);
 __decorate([

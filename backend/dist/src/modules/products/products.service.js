@@ -310,6 +310,94 @@ let ProductsService = class ProductsService {
             default: return { createdAt: 'desc' };
         }
     }
+    async adminFindAll(query) {
+        const { skip, take, page, limit } = (0, pagination_util_1.getPaginationParams)(query.page, query.limit);
+        const where = {};
+        if (query.search) {
+            where.OR = [
+                { name: { contains: query.search, mode: 'insensitive' } },
+                { nameEn: { contains: query.search, mode: 'insensitive' } },
+                { sku: { contains: query.search, mode: 'insensitive' } },
+            ];
+        }
+        if (query.category)
+            where.category = { slug: query.category };
+        if (query.brand)
+            where.brand = { slug: query.brand };
+        if (query.isActive !== undefined) {
+            where.isActive = query.isActive === 'true' || query.isActive === true;
+        }
+        if (query.stockStatus)
+            where.stockStatus = query.stockStatus;
+        const orderBy = this.buildOrderBy(query.sortBy);
+        const [products, total] = await Promise.all([
+            this.prisma.product.findMany({
+                where, skip, take, orderBy,
+                include: {
+                    category: { select: { id: true, name: true, slug: true } },
+                    brand: { select: { id: true, name: true } },
+                    images: { where: { isPrimary: true }, select: { url: true }, take: 1 },
+                    inventory: { select: { availableStock: true } },
+                    _count: { select: { reviews: true, orderItems: true } },
+                },
+            }),
+            this.prisma.product.count({ where }),
+        ]);
+        return {
+            success: true,
+            data: products.map(p => ({
+                ...p,
+                price: Number(p.price),
+                discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
+                primaryImage: p.images?.[0]?.url ?? null,
+                availableStock: p.inventory?.availableStock ?? 0,
+                reviewCount: p._count?.reviews ?? 0,
+                orderCount: p._count?.orderItems ?? 0,
+                images: undefined,
+                inventory: undefined,
+            })),
+            meta: (0, pagination_util_1.paginate)(total, page, limit),
+        };
+    }
+    async bulkDelete(ids) {
+        const result = await this.prisma.product.deleteMany({ where: { id: { in: ids } } });
+        return { success: true, message: `${result.count} products deleted`, count: result.count };
+    }
+    async bulkStatus(ids, isActive) {
+        const result = await this.prisma.product.updateMany({
+            where: { id: { in: ids } },
+            data: { isActive },
+        });
+        return { success: true, message: `${result.count} products updated`, count: result.count };
+    }
+    async addImage(productId, url, altText, isPrimary = false) {
+        await this.findById(productId);
+        if (isPrimary) {
+            await this.prisma.productImage.updateMany({
+                where: { productId },
+                data: { isPrimary: false },
+            });
+        }
+        const img = await this.prisma.productImage.create({
+            data: { productId, url, altText, isPrimary },
+        });
+        return { success: true, data: img };
+    }
+    async deleteImage(imageId) {
+        await this.prisma.productImage.delete({ where: { id: imageId } });
+        return { success: true, message: 'Image deleted' };
+    }
+    async setPrimaryImage(productId, imageId) {
+        await this.prisma.productImage.updateMany({
+            where: { productId },
+            data: { isPrimary: false },
+        });
+        await this.prisma.productImage.update({
+            where: { id: imageId },
+            data: { isPrimary: true },
+        });
+        return { success: true, message: 'Primary image set' };
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([

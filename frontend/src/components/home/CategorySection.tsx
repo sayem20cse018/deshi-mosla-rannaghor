@@ -5,20 +5,6 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { useCategories } from '@/hooks/useCategories';
 
-const MOCK_CATEGORIES = [
-  { id:'1', name:'মসলা',      nameEn:'Spices',  slug:'mosla',   icon:'🌶️', _count:{products:0} },
-  { id:'2', name:'তেল',       nameEn:'Oil',     slug:'tel',     icon:'🫙',  _count:{products:0} },
-  { id:'3', name:'চাল',       nameEn:'Rice',    slug:'chal',    icon:'🍚',  _count:{products:0} },
-  { id:'4', name:'ডাল',       nameEn:'Dal',     slug:'dal',     icon:'🫘',  _count:{products:0} },
-  { id:'5', name:'আটা',       nameEn:'Flour',   slug:'ata',     icon:'🌾',  _count:{products:0} },
-  { id:'6', name:'মধু',       nameEn:'Honey',   slug:'modhu',   icon:'🍯',  _count:{products:0} },
-  { id:'7', name:'চিনি',      nameEn:'Sugar',   slug:'chini',   icon:'🍬',  _count:{products:0} },
-  { id:'8', name:'চা',        nameEn:'Tea',     slug:'cha',     icon:'☕',  _count:{products:0} },
-  { id:'9', name:'স্ন্যাকস', nameEn:'Snacks',  slug:'snacks',  icon:'🍿',  _count:{products:0} },
-  { id:'10',name:'নুডলস',    nameEn:'Noodles', slug:'noodles', icon:'🍜',  _count:{products:0} },
-  { id:'11',name:'সস',        nameEn:'Sauce',   slug:'sauce',   icon:'🥫',  _count:{products:0} },
-  { id:'12',name:'আচার',      nameEn:'Pickle',  slug:'achar',   icon:'🥒',  _count:{products:0} },
-];
 
 // Fallback color map by slug
 const COLOR_MAP: Record<string, { color: string; border: string; text: string }> = {
@@ -107,7 +93,7 @@ function SkeletonCat() {
 
 export function CategorySection() {
   const { data: rawCats = [], isLoading } = useCategories();
-  const categories = rawCats.length > 0 ? rawCats : MOCK_CATEGORIES as any[];
+  const categories = rawCats;
 
   return (
     <section className="section-wrap bg-gray-50">
@@ -122,6 +108,14 @@ export function CategorySection() {
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2.5 md:gap-3">
           {isLoading ? (
             Array.from({ length: 13 }).map((_, i) => <SkeletonCat key={i} />)
+          ) : isError ? (
+            <div className="col-span-full py-8 text-center text-gray-400 text-sm">
+              Categories could not be loaded. Please refresh.
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="col-span-full py-8 text-center text-gray-400 text-sm">
+              No categories found.
+            </div>
           ) : (
             <>
               {categories.map((cat) => {

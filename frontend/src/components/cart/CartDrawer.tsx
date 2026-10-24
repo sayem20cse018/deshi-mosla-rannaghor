@@ -293,57 +293,6 @@ export function CartDrawer() {
                 )}
               </div>
 
-              {/* --- You May Also Like --- */}
-              <div className="px-4 mt-5 mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm" style={{ fontFamily: 'Manrope,sans-serif' }}>
-                      You May Also Like
-                    </h3>
-                    <div className="h-0.5 w-8 rounded-full mt-0.5" style={{ background: OR }} />
-                  </div>
-                  <div className="flex gap-1">
-                    <button className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-300 transition-colors">
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                    </button>
-                    <button className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-300 transition-colors">
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-                {/* Product suggestion tiles */}
-                <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
-                  {[
-                    { name: 'Mustard Oil', slug: 'mustard-oil', price: 320 },
-                    { name: 'Pure Honey', slug: 'pure-honey', price: 550 },
-                    { name: 'Red Chili', slug: 'red-chili', price: 180 },
-                  ].map((s) => (
-                    <Link key={s.slug} href={'/product/' + s.slug} onClick={closeCart}
-                      className="flex-none w-[130px] border border-gray-100 rounded-xl p-2.5 hover:border-orange-200 hover:shadow-sm transition-all">
-                      <div className="w-full h-20 bg-gray-50 rounded-lg mb-2 flex items-center justify-center text-3xl">
-                        *
-                      </div>
-                      <p className="text-[12px] font-semibold text-gray-800 line-clamp-2 leading-tight">{s.name}</p>
-                      <div className="flex items-center justify-between mt-1.5">
-                        <span className="text-[12px] font-black" style={{ color: OR, fontFamily: 'Manrope,sans-serif' }}>
-                          {formatPriceEn(s.price)}
-                        </span>
-                        <button
-                          className="text-[10px] font-bold px-2 py-0.5 rounded-full border transition-colors"
-                          style={{ borderColor: OR, color: OR }}
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          + Add
-                        </button>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
         {/* ===== STICKY FOOTER ===== */}
         {items.length > 0 && (
           <div className="flex-shrink-0 border-t border-gray-100 bg-white">
