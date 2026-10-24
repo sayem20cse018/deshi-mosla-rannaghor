@@ -1,5 +1,7 @@
--- CreateTable
-CREATE TABLE "collections" (
+-- Collections, collection_products, product_variants
+-- Using IF NOT EXISTS so this is idempotent even if a prior partial run created some tables
+
+CREATE TABLE IF NOT EXISTS "collections" (
     "id" TEXT NOT NULL,
     "name" VARCHAR(200) NOT NULL,
     "nameEn" VARCHAR(200),
@@ -13,23 +15,19 @@ CREATE TABLE "collections" (
     "metaDesc" VARCHAR(500),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "collections_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "collection_products" (
+CREATE TABLE IF NOT EXISTS "collection_products" (
     "id" TEXT NOT NULL,
     "collectionId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "collection_products_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "product_variants" (
+CREATE TABLE IF NOT EXISTS "product_variants" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "name" VARCHAR(200) NOT NULL,
@@ -44,29 +42,42 @@ CREATE TABLE "product_variants" (
     "attributes" JSONB NOT NULL DEFAULT '{}',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "collections_slug_key" ON "collections"("slug");
-CREATE INDEX "collections_isActive_sortOrder_idx" ON "collections"("isActive", "sortOrder");
+CREATE UNIQUE INDEX IF NOT EXISTS "collections_slug_key" ON "collections"("slug");
+CREATE INDEX IF NOT EXISTS "collections_isActive_sortOrder_idx" ON "collections"("isActive", "sortOrder");
 
--- CreateIndex
-CREATE UNIQUE INDEX "collection_products_collectionId_productId_key" ON "collection_products"("collectionId", "productId");
-CREATE INDEX "collection_products_collectionId_idx" ON "collection_products"("collectionId");
-CREATE INDEX "collection_products_productId_idx" ON "collection_products"("productId");
+CREATE UNIQUE INDEX IF NOT EXISTS "collection_products_collectionId_productId_key" ON "collection_products"("collectionId", "productId");
+CREATE INDEX IF NOT EXISTS "collection_products_collectionId_idx" ON "collection_products"("collectionId");
+CREATE INDEX IF NOT EXISTS "collection_products_productId_idx" ON "collection_products"("productId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "product_variants_sku_key" ON "product_variants"("sku");
-CREATE INDEX "product_variants_productId_idx" ON "product_variants"("productId");
+CREATE UNIQUE INDEX IF NOT EXISTS "product_variants_sku_key" ON "product_variants"("sku");
+CREATE INDEX IF NOT EXISTS "product_variants_productId_idx" ON "product_variants"("productId");
 
--- AddForeignKey
-ALTER TABLE "collection_products" ADD CONSTRAINT "collection_products_collectionId_fkey"
-    FOREIGN KEY ("collectionId") REFERENCES "collections"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'collection_products_collectionId_fkey'
+  ) THEN
+    ALTER TABLE "collection_products" ADD CONSTRAINT "collection_products_collectionId_fkey"
+      FOREIGN KEY ("collectionId") REFERENCES "collections"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE "collection_products" ADD CONSTRAINT "collection_products_productId_fkey"
-    FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'collection_products_productId_fkey'
+  ) THEN
+    ALTER TABLE "collection_products" ADD CONSTRAINT "collection_products_productId_fkey"
+      FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_productId_fkey"
-    FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'product_variants_productId_fkey'
+  ) THEN
+    ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_productId_fkey"
+      FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;

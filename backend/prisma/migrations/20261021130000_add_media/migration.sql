@@ -1,4 +1,7 @@
-CREATE TABLE "media_files" (
+-- media_files table
+-- Using IF NOT EXISTS so this is idempotent even if table was created by a later migration
+
+CREATE TABLE IF NOT EXISTS "media_files" (
   "id" TEXT NOT NULL,
   "publicId" VARCHAR(300) NOT NULL,
   "url" VARCHAR(500) NOT NULL,
@@ -16,6 +19,7 @@ CREATE TABLE "media_files" (
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "media_files_pkey" PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX "media_files_publicId_key" ON "media_files"("publicId");
-CREATE INDEX "media_files_folder_idx" ON "media_files"("folder");
-CREATE INDEX "media_files_createdAt_idx" ON "media_files"("createdAt");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "media_files_publicId_key" ON "media_files"("publicId");
+CREATE INDEX IF NOT EXISTS "media_files_folder_idx" ON "media_files"("folder");
+CREATE INDEX IF NOT EXISTS "media_files_createdAt_idx" ON "media_files"("createdAt");

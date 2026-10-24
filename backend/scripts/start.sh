@@ -1,11 +1,10 @@
 #!/bin/sh
-set -e
-
-echo "=== Resolving any failed migrations ==="
-npx prisma migrate resolve --rolled-back 20261021121449_add_collections_variants || echo "Migration already resolved or not found, continuing..."
-
-echo "=== Running migrations ==="
+echo '=== Step 1: Resolve failed migration (safe - idempotent) ==='
+npx prisma migrate resolve --rolled-back 20261021121449_add_collections_variants
+echo 'Step 1 done (exit ignored)'
+echo ''
+echo '=== Step 2: Deploy all pending migrations ==='
 npx prisma migrate deploy
-
-echo "=== Starting server ==="
-node dist/src/main
+echo ''
+echo '=== Step 3: Starting NestJS server ==='
+exec node dist/src/main
