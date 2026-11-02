@@ -110,15 +110,17 @@ export function Header() {
                 <Link href="/" className="flex items-center gap-3 mr-3 group">
                   <div className="relative w-[46px] h-[46px] flex-shrink-0">
                     <div className="absolute inset-0 rounded-[14px] bg-gradient-to-br from-[#0f4c2a] via-[#0f4c2a] to-[#072d18] shadow-lg shadow-[#0f4c2a]/30 transition-transform duration-200 group-hover:scale-105" />
-                    <div className="absolute inset-[3px] rounded-[11px] border border-white/15 flex items-center justify-center">
-                      <span className="text-white font-black text-[15px] leading-none" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>দম</span>
+                    <div className="absolute inset-[3px] rounded-[11px] border border-white/15 flex items-center justify-center overflow-hidden">
+                      {gs?.logoUrl
+                        ? <Image src={gs.logoUrl} alt="logo" width={40} height={40} className="object-contain p-0.5 w-full h-full" />
+                        : <span className="text-white font-black text-[15px] leading-none" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>দম</span>}
                     </div>
                     <div className="absolute top-[6px] right-[6px] w-[5px] h-[5px] rounded-full bg-white/40" />
                   </div>
                   <div className="leading-none hidden xl:block">
-                    <p className="text-gray-900 font-black text-[17px] leading-snug" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>দেশি মসলার রান্নাঘর</p>
+                    <p className="text-gray-900 font-black text-[17px] leading-snug" style={{fontFamily:'Noto Sans Bengali,sans-serif'}}>{gs?.storeName || 'দেশি মসলার রান্নাঘর'}</p>
                     <p className="text-orange-600 text-[10.5px] font-bold tracking-[0.2em] uppercase mt-1" style={{fontFamily:'Manrope,sans-serif'}}>
-                      Deshi Moslar Rannaghar
+                      {gs?.storeNameEn || 'Deshi Moslar Rannaghar'}
                     </p>
                   </div>
                 </Link>
@@ -408,11 +410,11 @@ export function Header() {
             <Link href="/" className="flex-1 flex flex-col items-center justify-center gap-[3px] min-w-0">
               <span className="text-orange-600 font-black leading-tight tracking-tight truncate"
                     style={{ fontSize: '17px', fontFamily: 'Noto Sans Bengali, sans-serif' }}>
-                দেশি মসলার রান্নাঘর
+                {gs?.storeName || 'দেশি মসলার রান্নাঘর'}
               </span>
               <span className="text-gray-400 font-semibold uppercase leading-none"
                     style={{ fontSize: '9px', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.14em' }}>
-                Deshi Moslar Rannaghar
+                {gs?.storeNameEn || 'Deshi Moslar Rannaghar'}
               </span>
             </Link>
 
